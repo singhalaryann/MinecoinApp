@@ -19,31 +19,33 @@ import GameCard from '../components/games/GameCard';
 import NotificationBanner from '../components/common/NotificationBanner';
 import { fetchGameAssets } from '../config/firebase';
 import { useUser } from '../context/UserContext';
-import { colors } from './theme';
+import { useThemeColors, colors as staticColors } from './theme'; // ← IMPORTANT: Import both!
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 40; // Adjusted for more padding
+const CARD_WIDTH = width - 40;
 
 // ==================== COMPONENTS ====================
 
 // Simple Hero Section
-const SimpleGamingHero = React.memo(({ gameCount, selectedSection, filteredCount }) => {
+const SimpleGamingHero = React.memo(({ gameCount, selectedSection, filteredCount, colors }) => {
   return (
-    <View style={styles.heroContainer}>
-      <Text style={styles.heroTitle}>GAME ASSETS</Text>
-      <Text style={styles.heroSubtitle}>
+    <View style={[styles.heroContainer]}>
+      <Text style={[styles.heroTitle, { color: colors.accent, textShadowColor: colors.accentGlow }]}>
+        GAME ASSETS
+      </Text>
+      <Text style={[styles.heroSubtitle, { color: colors.lightText }]}>
         {selectedSection === 'all'
           ? `Explore ${gameCount} premium assets`
           : `Showing ${filteredCount} ${selectedSection} assets`
         }
       </Text>
-      <View style={styles.heroDivider} />
+      <View style={[styles.heroDivider, { backgroundColor: colors.accent }]} />
     </View>
   );
 });
 
 // Clean Filter Bar
-const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChange }) => {
+const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChange, colors }) => {
   const sectionConfigs = {
     survival: { emoji: '🌲', name: 'Survival' },
     lifesteal: { emoji: '⚔️', name: 'Lifesteal' },
@@ -54,7 +56,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
   };
 
   return (
-    <View style={styles.filterContainer}>
+    <View style={[styles.filterContainer, { borderBottomColor: colors.border }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -63,12 +65,21 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
         <TouchableOpacity
           style={[
             styles.filterButton,
-            selectedSection === 'all' && styles.filterButtonActive,
+            { backgroundColor: colors.card, borderColor: colors.border },
+            selectedSection === 'all' && [styles.filterButtonActive, { 
+              backgroundColor: colors.accent, 
+              borderColor: colors.accent,
+              shadowColor: colors.accentGlow 
+            }],
           ]}
           onPress={() => onSectionChange('all')}
           activeOpacity={0.7}
         >
-          <Text style={[styles.filterButtonText, selectedSection === 'all' && styles.filterButtonTextActive]}>
+          <Text style={[
+            styles.filterButtonText, 
+            { color: colors.lightText },
+            selectedSection === 'all' && [styles.filterButtonTextActive, { color: colors.text }]
+          ]}>
             🎮 All Games
           </Text>
         </TouchableOpacity>
@@ -83,12 +94,21 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
               key={section}
               style={[
                 styles.filterButton,
-                isActive && styles.filterButtonActive,
+                { backgroundColor: colors.card, borderColor: colors.border },
+                isActive && [styles.filterButtonActive, { 
+                  backgroundColor: colors.accent, 
+                  borderColor: colors.accent,
+                  shadowColor: colors.accentGlow 
+                }],
               ]}
               onPress={() => onSectionChange(section)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.filterButtonText, isActive && styles.filterButtonTextActive]}>
+              <Text style={[
+                styles.filterButtonText,
+                { color: colors.lightText },
+                isActive && [styles.filterButtonTextActive, { color: colors.text }]
+              ]}>
                 {config.emoji} {config.name}
               </Text>
             </TouchableOpacity>
@@ -99,7 +119,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
   );
 });
 
-// Animated Game Card (Simplified)
+// Animated Game Card
 const AnimatedGameCard = React.memo(({ game, index }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
@@ -140,44 +160,64 @@ const AnimatedGameCard = React.memo(({ game, index }) => {
   );
 });
 
-// Section Header (Simplified)
-const SimpleSectionHeader = React.memo(({ title, count }) => {
+// Section Header
+const SimpleSectionHeader = React.memo(({ title, count, colors }) => {
   return (
     <View style={styles.sectionHeaderContainer}>
-      <Text style={styles.sectionTitle}>{title.toUpperCase()}</Text>
-      <Text style={styles.sectionCount}>{count} Assets</Text>
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>
+        {title.toUpperCase()}
+      </Text>
+      <Text style={[styles.sectionCount, { color: colors.mutedText }]}>
+        {count} Assets
+      </Text>
     </View>
   );
 });
 
 // Loading State
-const SimpleLoadingState = React.memo(() => (
+const SimpleLoadingState = React.memo(({ colors }) => (
   <View style={styles.centeredContainer}>
     <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={styles.loadingText}>Loading Assets...</Text>
+    <Text style={[styles.loadingText, { color: colors.lightText }]}>
+      Loading Assets...
+    </Text>
   </View>
 ));
 
 // Error State
-const SimpleErrorState = React.memo(({ error, onRetry }) => (
+const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
   <View style={styles.centeredContainer}>
-    <Text style={styles.errorText}>Error: {error}</Text>
-    <TouchableOpacity style={styles.retryButton} onPress={onRetry}>
-      <Text style={styles.retryButtonText}>Retry</Text>
+    <Text style={[styles.errorText, { color: colors.error }]}>
+      Error: {error}
+    </Text>
+    <TouchableOpacity 
+      style={[styles.retryButton, { backgroundColor: colors.primary, shadowColor: colors.shadow }]} 
+      onPress={onRetry}
+    >
+      <Text style={[styles.retryButtonText, { color: colors.text }]}>
+        Retry
+      </Text>
     </TouchableOpacity>
   </View>
 ));
 
 // Empty State
-const SimpleEmptyState = React.memo(({ selectedSection }) => (
+const SimpleEmptyState = React.memo(({ selectedSection, colors }) => (
   <View style={styles.centeredContainer}>
-    <Text style={styles.emptyText}>No {selectedSection !== 'all' ? selectedSection : ''} assets found.</Text>
+    <Text style={[styles.emptyText, { color: colors.mutedText }]}>
+      No {selectedSection !== 'all' ? selectedSection : ''} assets found.
+    </Text>
   </View>
 ));
 
 // ==================== MAIN COMPONENT ====================
 
 const MainScreen = () => {
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors; // Use Nova colors or fallback to static
+  
+  // State management
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [gameAssets, setGameAssets] = useState([]);
@@ -230,7 +270,7 @@ const MainScreen = () => {
 
   const renderGameContent = () => {
     if (filteredGames.length === 0) {
-      return <SimpleEmptyState selectedSection={selectedSection} />;
+      return <SimpleEmptyState selectedSection={selectedSection} colors={colors} />;
     }
     if (selectedSection === 'all') {
       return sections.map((section) => {
@@ -241,6 +281,7 @@ const MainScreen = () => {
             <SimpleSectionHeader
               title={section.charAt(0).toUpperCase() + section.slice(1)}
               count={sectionGames.length}
+              colors={colors}
             />
             <View style={styles.gamesList}>
               {sectionGames.map((game, index) => (
@@ -271,30 +312,30 @@ const MainScreen = () => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
         <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
-        <SimpleLoadingState />
+        <SimpleLoadingState colors={colors} />
       </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
         <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
-        <SimpleErrorState error={error} onRetry={loadGameAssets} />
+        <SimpleErrorState error={error} onRetry={loadGameAssets} colors={colors} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
 
@@ -310,12 +351,14 @@ const MainScreen = () => {
           gameCount={gameAssets.length}
           selectedSection={selectedSection}
           filteredCount={filteredGames.length}
+          colors={colors}
         />
 
         <CleanGamingFilter
           sections={sections}
           selectedSection={selectedSection}
           onSectionChange={setSelectedSection}
+          colors={colors}
         />
 
         {renderGameContent()}
@@ -325,12 +368,14 @@ const MainScreen = () => {
 
       {/* Support FAB */}
       <TouchableOpacity
-        style={styles.fab}
+        style={[styles.fab, { shadowColor: colors.fabShadow }]}
         activeOpacity={0.8}
         onPress={() => Linking.openURL('https://t.me/xgamingclub')}
       >
         <LinearGradient colors={colors.activeGradient} style={styles.fabGradient}>
-          <Text style={styles.fabText}>SUPPORT</Text>
+          <Text style={[styles.fabText, { color: colors.background }]}>
+            SUPPORT
+          </Text>
         </LinearGradient>
       </TouchableOpacity>
     </SafeAreaView>
@@ -338,10 +383,10 @@ const MainScreen = () => {
 };
 
 // ==================== STYLES ====================
+// Using static colors for base styles (performance optimization)
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -350,7 +395,7 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
 
-  // Centered Containers for Loading/Error/Empty
+  // Centered Containers
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -360,32 +405,26 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 15,
     fontSize: 16,
-    color: colors.lightText,
     fontWeight: '600',
   },
   errorText: {
     fontSize: 16,
-    color: colors.error,
     textAlign: 'center',
     marginBottom: 20,
   },
   retryButton: {
-    backgroundColor: colors.primary,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 6,
   },
   retryButtonText: {
-    color: colors.text,
     fontWeight: 'bold',
   },
   emptyText: {
     fontSize: 16,
-    color: colors.mutedText,
     textAlign: 'center',
   },
 
@@ -398,24 +437,20 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 28,
     fontWeight: '900',
-    color: colors.accent,
     letterSpacing: 1.5,
     marginBottom: 8,
-    textShadowColor: colors.accentGlow,
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
   },
   heroSubtitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: colors.lightText,
     opacity: 0.85,
     marginBottom: 15,
   },
   heroDivider: {
     width: 170,
     height: 3,
-    backgroundColor: '#10B981',
     borderRadius: 2,
   },
 
@@ -424,7 +459,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
   filterScrollContent: {
     paddingHorizontal: 20,
@@ -434,30 +468,27 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 20,
-    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: colors.border,
   },
   filterButtonActive: {
-    backgroundColor: '#10B981',
-    borderColor: colors.accent,
-    shadowColor: colors.accentGlow,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.7,
     shadowRadius: 8,
   },
   filterButtonText: {
-    color: colors.lightText,
     fontWeight: '700',
     fontSize: 13,
   },
   filterButtonTextActive: {
-    color: colors.text,
+    // Color set dynamically
   },
 
   // Game Cards
   gamesList: {
     paddingHorizontal: 20,
+  },
+  gameCard: {
+    // Styles handled by GameCard component
   },
 
   // Section Headers
@@ -474,13 +505,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '800',
-    color: colors.text,
     letterSpacing: 1,
   },
   sectionCount: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.mutedText,
   },
 
   // FAB
@@ -491,7 +520,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     overflow: 'hidden',
     elevation: 8,
-    shadowColor: colors.fabShadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 6,
@@ -503,7 +531,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   fabText: {
-    color: colors.background,
     fontWeight: '800',
     fontSize: 14,
     letterSpacing: 0.5,

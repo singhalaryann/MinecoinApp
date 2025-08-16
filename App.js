@@ -10,33 +10,14 @@ import { UserProvider } from './src/context/UserContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import MaintenanceCheck from './src/components/common/MaintenanceCheck';
 import { adapty } from 'react-native-adapty';
-import { NovaProvider, useNova } from 'nova-react-sdk';
+import { NovaProvider } from 'nova-react-sdk';
 import NovaRegistry from './src/nova-objects.json';
 
 adapty.activate('public_live_a2ZpIYeH.UBLMWSv1MLfHElcx8N9j');
 
-// --- Component that handles experience loading ---
+// UPDATED: Simplified NovaLoader - no loading here anymore
 const NovaLoader = ({ children }) => {
-  const { loadAllExperiences } = useNova();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const init = async () => {
-      try {
-        await loadAllExperiences(); // or loadExperience("theme")
-      } catch (err) {
-        console.warn("Nova experience load failed:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    init();
-  }, [loadAllExperiences]);
-
-  if (loading) {
-    return null; // or splash screen / loader
-  }
-
+  // Just pass through children - loading happens after login in AuthContext
   return children;
 };
 

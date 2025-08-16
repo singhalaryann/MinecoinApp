@@ -2,9 +2,14 @@ import { useNovaExperience } from "nova-react-sdk";
 
 // Custom hook to get theme colors from Nova SDK
 export const useThemeColors = () => {
-  const { objects } = useNovaExperience("theme");
+  const { objects, loaded } = useNovaExperience("theme"); // UPDATED: Also get loaded status
   const novaTheme = objects?.["ui-theme"];
-
+  
+  // UPDATED: Return static colors if Nova not loaded yet
+  if (!loaded || !novaTheme) {
+    return colors;
+  }
+  
   // Return colors object with Nova SDK values or fallbacks
   return {
     // Core Gamer Aesthetic - Blue + Emerald + Magenta Accent
@@ -37,18 +42,32 @@ export const useThemeColors = () => {
     borderStrong: novaTheme?.borderStrong || '#3B82F6',
     glow: novaTheme?.glow || 'rgba(59, 130, 246, 0.4)',
     
-    // Buttons
-    inactiveButton: novaTheme?.inactiveButton || ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
-    activeGradient: novaTheme?.activeGradient || ['#10B981', '#10B981'],
-    dangerGradient: novaTheme?.dangerGradient || ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
-    loadingGradient: novaTheme?.loadingGradient || ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
+    // UPDATED: Array colors with safety check to prevent .map errors
+    inactiveButton: Array.isArray(novaTheme?.inactiveButton) 
+      ? novaTheme.inactiveButton 
+      : ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
+    
+    activeGradient: Array.isArray(novaTheme?.activeGradient)
+      ? novaTheme.activeGradient
+      : ['#10B981', '#10B981'],
+    
+    dangerGradient: Array.isArray(novaTheme?.dangerGradient)
+      ? novaTheme.dangerGradient
+      : ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
+    
+    loadingGradient: Array.isArray(novaTheme?.loadingGradient)
+      ? novaTheme.loadingGradient
+      : ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
+    
+    gradientDark: Array.isArray(novaTheme?.gradientDark)
+      ? novaTheme.gradientDark
+      : ['#0A0A0A', '#111827', '#0A0A0A'],
     
     // Shadows
     shadow: novaTheme?.shadow || '#1E3A8A',
     fabShadow: novaTheme?.fabShadow || '#10B981',
     
     // Misc
-    gradientDark: novaTheme?.gradientDark || ['#0A0A0A', '#111827', '#0A0A0A'],
     sectionUnderline: novaTheme?.sectionUnderline || '#93C5FD',
     error: novaTheme?.error || '#EF4444'
   };
@@ -86,7 +105,7 @@ export const colors = {
   borderStrong: '#3B82F6',
   glow: 'rgba(59, 130, 246, 0.4)',
   
-  // Buttons
+  // Buttons - Arrays for gradients
   inactiveButton: ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
   activeGradient: ['#10B981', '#10B981'],
   dangerGradient: ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],

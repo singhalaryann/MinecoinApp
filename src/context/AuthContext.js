@@ -10,7 +10,7 @@ import {
   updateFCMToken,
   checkMaintenanceMode,
 } from "../config/firebase";
-import { doc, updateDoc,runTransaction, Timestamp } from 'firebase/firestore';
+import { doc, updateDoc, runTransaction, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useNova } from "nova-react-sdk";
 
@@ -26,7 +26,8 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   console.log("AuthProvider initialized");
   
-  const { setUser: setNovaUser } = useNova();
+  // UPDATED: Get both setUser and loadAllExperiences from Nova
+  const { setUser: setNovaUser, loadAllExperiences } = useNova();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [hasMcVerification, setHasMcVerification] = useState(false);
@@ -47,8 +48,7 @@ export const AuthProvider = ({ children }) => {
         const notificationUnsubscribe = setupNotificationHandlers();
         const tokenUnsubscribe = await setupTokenRefreshListener(userEmail);
 
-        // NEW: A quick check/log for clarity (or any other logic if needed)
-        console.log("Token refresh listener attached for:", userEmail); // <-- NEW
+        console.log("Token refresh listener attached for:", userEmail);
 
         return () => {
           notificationUnsubscribe();
@@ -66,10 +66,9 @@ export const AuthProvider = ({ children }) => {
     restoreUser();
   }, []);
 
-  // NEW: Now also call setupNotifications whenever we have a valid user
   useEffect(() => {
     if (user && user.email) {
-      setupNotifications(user.email); // <-- NEW
+      setupNotifications(user.email);
     }
   }, [user]);
 
@@ -151,6 +150,11 @@ export const AuthProvider = ({ children }) => {
                 coinBalance: firestoreData.coinBalance || 0,
               }
             });
+            
+            // UPDATED: Load experiences AFTER setting user!
+            await loadAllExperiences();
+            console.log("✅ Experiences loaded for:", updatedUser.email);
+            
           } catch (error) {
             console.error("Nova setUser failed:", error);
           }
@@ -170,15 +174,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-
   const signInWithGoogle = async () => {
     try {
-      // NEW: Check maintenance mode first
-      const { isMaintenanceMode } = false ;
+      const { isMaintenanceMode } = false;
       if (isMaintenanceMode) {
         throw new Error("App is under maintenance");
-    }
+      }
 
       console.log("Starting Google Sign In process");
       const userCredential = await firebaseSignInWithGoogle();
@@ -204,8 +205,7 @@ export const AuthProvider = ({ children }) => {
         console.log("Existing user found in Firestore");
       }
 
-      
-      // NEW: Check for daily reward on sign in
+      // Check for daily reward on sign in
       if (firestoreData && firestoreData.hasMcVerified) {
         const now = new Date().getTime();
         const lastReward = firestoreData.lastRewardTimestamp || 0;
@@ -227,7 +227,6 @@ export const AuthProvider = ({ children }) => {
             lastRewardTimestamp: now
           };
 
-          // NEW: Sync with player collection if MC verified
           if (firestoreData.mcUsername) {
             const playerRef = doc(db, "players", firestoreData.mcUsername);
             await updateDoc(playerRef, {
@@ -261,6 +260,11 @@ export const AuthProvider = ({ children }) => {
             coinBalance: firestoreData?.coinBalance || 0,
           }
         });
+        
+        // UPDATED: Load experiences AFTER setting user!
+        await loadAllExperiences();
+        console.log("✅ Experiences loaded for:", userData.email);
+        
       } catch (error) {
         console.error("Nova setUser failed:", error);
       }
@@ -292,6 +296,8 @@ export const AuthProvider = ({ children }) => {
           userId: "guest_" + Date.now(),
           userProfile: { cohort: "guest" }
         });
+        // UPDATED: Load default experiences for guest
+        await loadAllExperiences();
       } catch (error) {
         console.error("Nova setUser failed:", error);
       }
