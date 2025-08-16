@@ -10,6 +10,7 @@ import { useAuth } from "./AuthContext";
 import { doc,setDoc, updateDoc, getDoc, arrayUnion, onSnapshot,increment, } from "firebase/firestore";
 import { db } from "../config/firebase";
 import _ from 'lodash';
+import { useNova } from "nova-react-sdk";
 
 const UserContext = createContext(null);
 
@@ -20,6 +21,7 @@ export const UserProvider = ({ children }) => {
     isInitialMount.current = false;
   }  
   
+  const { updateUserProfile } = useNova();
   const { isLoggedIn, user } = useAuth();
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
@@ -283,6 +285,16 @@ export const UserProvider = ({ children }) => {
         ...updatedPlayerData
       });
 
+      // Update Nova user profile
+      try {
+        await updateUserProfile({
+          hasMcVerified: true,
+          mcUsername: username
+        });
+      } catch (error) {
+        console.error("Nova updateUserProfile failed:", error);
+      }
+
       return true;
     } catch (error) {
       console.error("Error updating MC credentials:", error);
@@ -514,6 +526,16 @@ const subtractBalance = useCallback(async (amount) => {
 
     setBalance(newBalance);
 
+    // Update Nova user profile
+    try {
+      await updateUserProfile({
+        coinBalance: newBalance,
+        lastTransaction: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Nova updateUserProfile failed:", error);
+    }
+
     console.log(`Subtracted ${amount} coins of user ${user.email}`);
     await refreshBalance();
     return true;
@@ -540,6 +562,17 @@ const addBalance = useCallback(async (amount) => {
     ]);
 
     setBalance(newBalance);
+    
+    // Update Nova user profile
+    try {
+      await updateUserProfile({
+        coinBalance: newBalance,
+        lastTransaction: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Nova updateUserProfile failed:", error);
+    }
+    
     console.log(`Added ${amount} coins coins of user ${user.email}`);
     await refreshBalance();
     return true;
@@ -577,6 +610,16 @@ const addCoins = useCallback(
 
       setBalance(newBalance);
       setTransactions((prev) => [...prev, transaction]);
+      
+      // Update Nova user profile
+      try {
+        await updateUserProfile({
+          coinBalance: newBalance,
+          lastTransaction: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error("Nova updateUserProfile failed:", error);
+      }
       
       return true;
     } catch (error) {

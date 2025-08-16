@@ -12,6 +12,7 @@ import {
 } from "../config/firebase";
 import { doc, updateDoc,runTransaction, Timestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
+import { useNova } from "nova-react-sdk";
 
 import { 
   requestNotificationPermission, 
@@ -25,6 +26,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   console.log("AuthProvider initialized");
   
+  const { setUser: setNovaUser } = useNova();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [hasMcVerification, setHasMcVerification] = useState(false);
@@ -139,6 +141,20 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
           setHasMcVerification(firestoreData.hasMcVerified || false);
 
+          // Set Nova user
+          try {
+            await setNovaUser({
+              userId: updatedUser.email,
+              userProfile: {
+                displayName: updatedUser.displayName,
+                hasMcVerified: firestoreData.hasMcVerified || false,
+                coinBalance: firestoreData.coinBalance || 0,
+              }
+            });
+          } catch (error) {
+            console.error("Nova setUser failed:", error);
+          }
+
           await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
           setupNotifications(updatedUser.email);
         } else {
@@ -235,6 +251,20 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
       setHasMcVerification(firestoreData?.hasMcVerified || false);
       
+      // Set Nova user
+      try {
+        await setNovaUser({
+          userId: userData.email,
+          userProfile: {
+            displayName: userData.displayName,
+            hasMcVerified: firestoreData?.hasMcVerified || false,
+            coinBalance: firestoreData?.coinBalance || 0,
+          }
+        });
+      } catch (error) {
+        console.error("Nova setUser failed:", error);
+      }
+      
       setupNotifications(userData.email);
       
       console.log("Sign in process completed");
@@ -255,6 +285,16 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(false);
       setHasMcVerification(false);
       setFcmToken("");
+      
+      // Set Nova guest user
+      try {
+        await setNovaUser({
+          userId: "guest_" + Date.now(),
+          userProfile: { cohort: "guest" }
+        });
+      } catch (error) {
+        console.error("Nova setUser failed:", error);
+      }
       
       console.log("Sign out completed successfully");
     } catch (error) {

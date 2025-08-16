@@ -120,7 +120,7 @@ const getUserData = async (email) => {
 const fetchGameAssets = async () => {
   try {
     console.log("Fetching game assets...");
-    const gameAssetsRef = collection(db, "gameAssets");
+    const gameAssetsRef = collection(db, "gamesAssets");
     const snapshot = await getDocs(gameAssetsRef);
     return snapshot.docs.map(doc => ({
       id: doc.id,

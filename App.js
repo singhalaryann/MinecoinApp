@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Platform, PermissionsAndroid, Alert } from 'react-native';
-import PermissionsDialog from './PermissionsDialog'; // adjust path
+import { Platform, PermissionsAndroid, StatusBar } from 'react-native';
+import PermissionsDialog from './PermissionsDialog'; 
 import messaging from '@react-native-firebase/messaging';
-import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -11,8 +10,35 @@ import { UserProvider } from './src/context/UserContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import MaintenanceCheck from './src/components/common/MaintenanceCheck';
 import { adapty } from 'react-native-adapty';
+import { NovaProvider, useNova } from 'nova-react-sdk';
+import NovaRegistry from './src/nova-objects.json';
 
 adapty.activate('public_live_a2ZpIYeH.UBLMWSv1MLfHElcx8N9j');
+
+// --- Component that handles experience loading ---
+const NovaLoader = ({ children }) => {
+  const { loadAllExperiences } = useNova();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await loadAllExperiences(); // or loadExperience("theme")
+      } catch (err) {
+        console.warn("Nova experience load failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
+  }, [loadAllExperiences]);
+
+  if (loading) {
+    return null; // or splash screen / loader
+  }
+
+  return children;
+};
 
 const App = () => {
   const [showPermissionsDialog, setShowPermissionsDialog] = useState(false);
@@ -24,9 +50,6 @@ const App = () => {
           const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
           );
-
-          console.log('Notification permission status:', granted);
-
           if (granted === PermissionsAndroid.RESULTS.DENIED) {
             setShowPermissionsDialog(true);
           }
@@ -39,7 +62,6 @@ const App = () => {
 
     requestPermissions();
 
-    // Setup background message handler
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('Message handled in the background!', remoteMessage);
     });
@@ -51,9 +73,6 @@ const App = () => {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
         );
-
-        console.log('Notification permission status after button click:', granted);
-
         if (granted === PermissionsAndroid.RESULTS.DENIED) {
           setShowPermissionsDialog(true);
         } else {
@@ -71,24 +90,36 @@ const App = () => {
         visible={showPermissionsDialog}
         onRequestPermissions={handleRequestPermissions}
       />
-      <AuthProvider>
-        <UserProvider>
-          <MaintenanceCheck>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <SafeAreaProvider>
-                <StatusBar
-                  barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
-                  backgroundColor="#0a0a0a"
-                  translucent
-                />
-                <NavigationContainer>
-                  <AppNavigator />
-                </NavigationContainer>
-              </SafeAreaProvider>
-            </GestureHandlerRootView>
-          </MaintenanceCheck>
-        </UserProvider>
-      </AuthProvider>
+      <NovaProvider
+        config={{
+          organisationId: "0952e33a-5ba0-4104-baf0-d0904d87f85d", 
+          appId: "4f3c0206-d4ef-46d4-ac82-1aa63f09f7c5", 
+          apiEndpoint: "https://nova-manager-475016739432.us-central1.run.app", 
+          apiKey: "key123",
+          registry: NovaRegistry,
+        }}
+      >
+        <NovaLoader>
+          <AuthProvider>
+            <UserProvider>
+              <MaintenanceCheck>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <SafeAreaProvider>
+                    <StatusBar
+                      barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
+                      backgroundColor="#0a0a0a"
+                      translucent
+                    />
+                    <NavigationContainer>
+                      <AppNavigator />
+                    </NavigationContainer>
+                  </SafeAreaProvider>
+                </GestureHandlerRootView>
+              </MaintenanceCheck>
+            </UserProvider>
+          </AuthProvider>
+        </NovaLoader>
+      </NovaProvider>
     </>
   );
 };
