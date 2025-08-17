@@ -20,12 +20,12 @@ import NotificationBanner from '../components/common/NotificationBanner';
 import CategoryFilter from './CategoryFilter';
 import { fetchGameAssets } from '../config/firebase';
 import { useUser } from '../context/UserContext';
-import { useNovaExperience } from 'nova-react-sdk'; // NOVA SDK
+import { useNovaExperience } from 'nova-react-sdk';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width - 40;
 
-// Simple Hero Section
+// Hero Section
 const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedCategory, filteredCount, colors, heroTitle }) => {
   const getCategoryText = () => {
     if (selectedCategory === 'all') return '';
@@ -47,7 +47,7 @@ const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedCateg
   );
 });
 
-// Clean Filter Bar
+// Filter Bar
 const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChange, colors, sectionConfigs }) => {
   return (
     <View style={[styles.filterContainer, { borderBottomColor: colors.border }]}>
@@ -110,7 +110,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
   );
 });
 
-// Animated Game Card
+// Game Card
 const AnimatedGameCard = React.memo(({ game, index }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
@@ -157,7 +157,7 @@ const SimpleSectionHeader = React.memo(({ title, count, colors }) => (
   </View>
 ));
 
-// Loading State
+// Loading
 const SimpleLoadingState = React.memo(({ colors }) => (
   <View style={styles.centeredContainer}>
     <ActivityIndicator size="large" color={colors.accent} />
@@ -165,7 +165,7 @@ const SimpleLoadingState = React.memo(({ colors }) => (
   </View>
 ));
 
-// Error State
+// Error
 const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
   <View style={styles.centeredContainer}>
     <Text style={[styles.errorText, { color: colors.error }]}>Error: {error}</Text>
@@ -178,7 +178,7 @@ const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
   </View>
 ));
 
-// Empty State
+// Empty
 const SimpleEmptyState = React.memo(({ selectedSection, selectedCategory, colors }) => (
   <View style={styles.centeredContainer}>
     <Text style={[styles.emptyText, { color: colors.mutedText }]}>
@@ -191,55 +191,69 @@ const MainScreen = () => {
   // Nova SDK hook to load experience configs & data
   const { objects, loaded: novaLoaded } = useNovaExperience("home");
 
-  // Extract Nova configs & theme
+  // --- Real-time Nova config extraction ---
   const uiTheme = objects?.["ui-theme"];
   const gameSections = objects?.["game-sections"];
   const appConfig = objects?.["app-config"];
   const novaGameAssetsObj = objects?.["game-assets"];
-
   const colors = uiTheme || {};
+
+  // Section configs (Nova or default)
+  let sectionConfigs = {
+    survival: { emoji: '🌲', name: 'Survival' },
+    lifesteal: { emoji: '⚔', name: 'Lifesteal' },
+    creative: { emoji: '🎨', name: 'Creative' },
+    pvp: { emoji: '⚡', name: 'PvP' },
+    skyblock: { emoji: '☁', name: 'Skyblock' },
+    prison: { emoji: '🔒', name: 'Prison' },
+  };
+  if (gameSections?.sectionConfigs) {
+    try {
+      sectionConfigs = typeof gameSections.sectionConfigs === 'string'
+        ? JSON.parse(gameSections.sectionConfigs)
+        : gameSections.sectionConfigs;
+    } catch {
+      // fallback is already above
+    }
+  }
 
   const defaultSection = gameSections?.defaultSection || 'all';
 
+  // State
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [gameAssets, setGameAssets] = useState([]); 
-  const [novaAssets, setNovaAssets] = useState([]); 
+  const [gameAssets, setGameAssets] = useState([]); // Firebase
+  const [novaAssets, setNovaAssets] = useState([]); // Nova
   const [sections, setSections] = useState(gameSections?.sections || []);
   const [categories, setCategories] = useState(['all']);
   const [selectedSection, setSelectedSection] = useState(defaultSection);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const { balance } = useUser();
 
-  // Load Firebase game assets
+  // --- Load Firebase game assets ---
   const loadFirebaseGameAssets = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
       const assets = await fetchGameAssets();
-
-      const normalizedAssets = assets.map(asset => ({
-        ...asset,
-        section: asset.section || 'survival',
-        tag: asset.tag?.toLowerCase() || 'uncategorized',
-      }));
-
+      const normalizedAssets = Array.isArray(assets)
+        ? assets.map(asset => ({
+          ...asset,
+          section: asset.section || 'survival',
+          tag: asset.tag?.toLowerCase() || 'uncategorized',
+        })) : [];
       if (normalizedAssets.length === 0) {
         setError('No game assets available');
       } else {
         setGameAssets(normalizedAssets);
-
         if (gameSections?.sections && gameSections.sections.length > 0) {
           setSections(gameSections.sections);
         } else {
           const uniqueSections = [...new Set(normalizedAssets.map(g => g.section).filter(Boolean))].sort();
           setSections(uniqueSections);
         }
-
         const uniqueTags = ['all', ...Array.from(new Set(normalizedAssets.map(g => g.tag).filter(Boolean)))];
         setCategories(uniqueTags);
-
         setSelectedCategory('all');
       }
     } catch (err) {
@@ -250,32 +264,32 @@ const MainScreen = () => {
     }
   }, [gameSections]);
 
-  // Load Nova SDK assets when available
+  // --- Load Nova SDK assets (with array type check) ---
   const loadNovaGameAssets = useCallback(() => {
-    try {
-      if (novaGameAssetsObj?.content) {
+    if (novaGameAssetsObj?.content) {
+      let assets;
+      if (typeof novaGameAssetsObj.content === "string") {
         try {
-          const raw = novaGameAssetsObj.content;
-          const assets = typeof raw === "string" ? JSON.parse(raw) : raw;
-          const normalizedAssets = assets.map(asset => ({
-            ...asset,
-            section: asset.section || 'survival',
-            tag: asset.tag?.toLowerCase() || 'uncategorized',
-          }));
-          setNovaAssets(normalizedAssets);
-        } catch (err) {
-          console.error('Error parsing Nova game assets:', err);
-          setNovaAssets([]);
+          assets = JSON.parse(novaGameAssetsObj.content);
+        } catch {
+          assets = [];
         }
       } else {
-        setNovaAssets([]);
+        assets = novaGameAssetsObj.content;
       }
-    } catch (err) {
-      console.error('Error loading Nova game assets:', err);
+      if (!Array.isArray(assets)) assets = [];
+      const normalizedAssets = assets.map(asset => ({
+        ...asset,
+        section: asset.section || 'survival',
+        tag: asset.tag?.toLowerCase() || 'uncategorized',
+      }));
+      setNovaAssets(normalizedAssets);
+    } else {
       setNovaAssets([]);
     }
   }, [novaGameAssetsObj]);
 
+  // --- Effects ---
   useEffect(() => {
     loadFirebaseGameAssets();
   }, [loadFirebaseGameAssets]);
@@ -310,28 +324,8 @@ const MainScreen = () => {
     }, {});
   }, [gameAssets, sections, selectedCategory]);
 
-  // Section configs (Nova or default)
-  let sectionConfigs = {
-    survival: { emoji: '🌲', name: 'Survival' },
-    lifesteal: { emoji: '⚔', name: 'Lifesteal' },
-    creative: { emoji: '🎨', name: 'Creative' },
-    pvp: { emoji: '⚡', name: 'PvP' },
-    skyblock: { emoji: '☁', name: 'Skyblock' },
-    prison: { emoji: '🔒', name: 'Prison' },
-  };
-  if (gameSections?.sectionConfigs) {
-    try {
-      sectionConfigs = typeof gameSections.sectionConfigs === 'string'
-        ? JSON.parse(gameSections.sectionConfigs)
-        : gameSections.sectionConfigs;
-    } catch {
-      // fallback is already above
-    }
-  }
-
-  // Render game content
+  // --- Render game content (Nova and Firebase) ---
   const renderGameContent = () => {
-    // Personalised assets (Nova)
     const content = [];
 
     if (novaAssets.length > 0) {
