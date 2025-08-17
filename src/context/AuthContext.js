@@ -25,7 +25,8 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   console.log("AuthProvider initialized");
-  
+
+
   // UPDATED: Get both setUser and loadAllExperiences from Nova
   const { setUser: setNovaUser, loadAllExperiences } = useNova();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -140,6 +141,8 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
           setHasMcVerification(firestoreData.hasMcVerified || false);
 
+
+
           // Set Nova user
           try {
             await setNovaUser({
@@ -250,6 +253,8 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
       setHasMcVerification(firestoreData?.hasMcVerified || false);
       
+      
+
       // Set Nova user
       try {
         await setNovaUser({
