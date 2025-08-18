@@ -72,22 +72,6 @@ export const AuthProvider = ({ children }) => {
       });
 
       console.log("✅ Nova user set successfully");
-      console.log("🆔 Nova internal userId:", novaState.user?.novaUserId);
-
-      // Load all experiences for the user
-      console.log("🚀 Loading all Nova experiences...");
-      const experiences = await loadAllExperiences();
-      console.log("📦 Experiences loaded:", experiences);
-
-      // Log the current Nova state after sync
-      console.log("🔍 Current Nova state:", {
-        userId: novaState.user?.userId,
-        novaUserId: novaState.user?.novaUserId,
-        userProfile: novaState.user?.userProfile,
-        experiences: novaState.experiences,
-        loading: novaState.loading,
-        error: novaState.error
-      });
 
       return true;
     } catch (error) {
@@ -137,6 +121,23 @@ export const AuthProvider = ({ children }) => {
       console.error("🚨 Nova error detected:", novaState.error);
     }
   }, [novaState.error]);
+
+  // Add this new useEffect in the AuthProvider component
+  useEffect(() => {
+    // This effect runs whenever novaState.user.novaUserId changes
+    if (novaState.user?.novaUserId && isLoggedIn) {
+      console.log("🆔 Nova user ID detected:", novaState.user.novaUserId);
+      console.log("🚀 Loading all Nova experiences...");
+      
+      loadAllExperiences()
+        .then(experiences => {
+          console.log("📦 Experiences loaded successfully");
+        })
+        .catch(error => {
+          console.error("❌ Failed to load experiences:", error);
+        });
+    }
+  }, [novaState.user?.novaUserId, isLoggedIn, loadAllExperiences]);
 
   // -- Notification setup left unchanged --
   const setupNotifications = async (userEmail) => {
