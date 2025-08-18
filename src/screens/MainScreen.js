@@ -21,6 +21,7 @@ import CategoryFilter from './CategoryFilter';
 import { fetchGameAssets } from '../config/firebase';
 import { useUser } from '../context/UserContext';
 import { useNovaExperience } from 'nova-react-sdk';
+import NovaDebugPanel from '../components/common/NovaDebugPanel';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width - 40;
@@ -33,16 +34,19 @@ const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedCateg
   };
   return (
     <View style={[styles.heroContainer]}>
-      <Text style={[styles.heroTitle, { color: colors.accent, textShadowColor: colors.accentGlow }]}>
+      <Text style={[styles.heroTitle, { 
+        color: colors.accent || '#10B981', 
+        textShadowColor: colors.accentGlow || 'rgba(16, 185, 129, 0.25)' 
+      }]}>
         {heroTitle}
       </Text>
-      <Text style={[styles.heroSubtitle, { color: colors.lightText }]}>
+      <Text style={[styles.heroSubtitle, { color: colors.lightText || '#D1D5DB' }]}>
         {selectedSection === 'all' && selectedCategory === 'all'
           ? `Explore ${gameCount} premium assets`
           : `Showing ${filteredCount} ${getCategoryText()}${selectedSection === 'all' ? 'items' : selectedSection + ' assets'}`
         }
       </Text>
-      <View style={[styles.heroDivider, { backgroundColor: colors.accent }]} />
+      <View style={[styles.heroDivider, { backgroundColor: colors.accent || '#10B981' }]} />
     </View>
   );
 });
@@ -50,7 +54,7 @@ const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedCateg
 // Filter Bar
 const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChange, colors, sectionConfigs }) => {
   return (
-    <View style={[styles.filterContainer, { borderBottomColor: colors.border }]}>
+    <View style={[styles.filterContainer, { borderBottomColor: colors.border || 'rgba(59, 130, 246, 0.2)' }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -59,11 +63,14 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
         <TouchableOpacity
           style={[
             styles.filterButton,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            { 
+              backgroundColor: colors.card || 'rgba(17, 24, 39, 0.95)', 
+              borderColor: colors.border || 'rgba(59, 130, 246, 0.2)' 
+            },
             selectedSection === 'all' && [styles.filterButtonActive, {
-              backgroundColor: colors.accent,
-              borderColor: colors.accent,
-              shadowColor: colors.accentGlow,
+              backgroundColor: colors.accent || '#10B981',
+              borderColor: colors.accent || '#10B981',
+              shadowColor: colors.accentGlow || 'rgba(16, 185, 129, 0.25)',
             }],
           ]}
           onPress={() => onSectionChange('all')}
@@ -71,13 +78,13 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
         >
           <Text style={[
             styles.filterButtonText,
-            { color: colors.lightText },
-            selectedSection === 'all' && [styles.filterButtonTextActive, { color: colors.text }]
+            { color: colors.lightText || '#D1D5DB' },
+            selectedSection === 'all' && [styles.filterButtonTextActive, { color: colors.text || '#F3F4F6' }]
           ]}>
             🎮 All Games
           </Text>
         </TouchableOpacity>
-        {sections.map((section) => {
+        {Array.isArray(sections) ? sections.map((section) => {
           const config = sectionConfigs[section.toLowerCase()] || { emoji: '🎮', name: section };
           const isActive = selectedSection === section;
           return (
@@ -85,11 +92,14 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
               key={section}
               style={[
                 styles.filterButton,
-                { backgroundColor: colors.card, borderColor: colors.border },
+                { 
+                  backgroundColor: colors.card || 'rgba(17, 24, 39, 0.95)', 
+                  borderColor: colors.border || 'rgba(59, 130, 246, 0.2)' 
+                },
                 isActive && [styles.filterButtonActive, {
-                  backgroundColor: colors.accent,
-                  borderColor: colors.accent,
-                  shadowColor: colors.accentGlow,
+                  backgroundColor: colors.accent || '#10B981',
+                  borderColor: colors.accent || '#10B981',
+                  shadowColor: colors.accentGlow || 'rgba(16, 185, 129, 0.25)',
                 }],
               ]}
               onPress={() => onSectionChange(section)}
@@ -97,14 +107,14 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
             >
               <Text style={[
                 styles.filterButtonText,
-                { color: colors.lightText },
-                isActive && [styles.filterButtonTextActive, { color: colors.text }]
+                { color: colors.lightText || '#D1D5DB' },
+                isActive && [styles.filterButtonTextActive, { color: colors.text || '#F3F4F6' }]
               ]}>
                 {config.emoji} {config.name}
               </Text>
             </TouchableOpacity>
           );
-        })}
+        }) : null}
       </ScrollView>
     </View>
   );
@@ -152,28 +162,31 @@ const AnimatedGameCard = React.memo(({ game, index }) => {
 // Section Header
 const SimpleSectionHeader = React.memo(({ title, count, colors }) => (
   <View style={styles.sectionHeaderContainer}>
-    <Text style={[styles.sectionTitle, { color: colors.text }]}>{title.toUpperCase()}</Text>
-    <Text style={[styles.sectionCount, { color: colors.mutedText }]}>{count} Assets</Text>
+    <Text style={[styles.sectionTitle, { color: colors.text || '#F3F4F6' }]}>{title.toUpperCase()}</Text>
+    <Text style={[styles.sectionCount, { color: colors.mutedText || '#6B7280' }]}>{count} Assets</Text>
   </View>
 ));
 
 // Loading
 const SimpleLoadingState = React.memo(({ colors }) => (
   <View style={styles.centeredContainer}>
-    <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={[styles.loadingText, { color: colors.lightText }]}>Loading Assets...</Text>
+    <ActivityIndicator size="large" color={colors.accent || '#10B981'} />
+    <Text style={[styles.loadingText, { color: colors.lightText || '#D1D5DB' }]}>Loading Assets...</Text>
   </View>
 ));
 
 // Error
 const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
   <View style={styles.centeredContainer}>
-    <Text style={[styles.errorText, { color: colors.error }]}>Error: {error}</Text>
+    <Text style={[styles.errorText, { color: colors.error || '#EF4444' }]}>Error: {error}</Text>
     <TouchableOpacity
-      style={[styles.retryButton, { backgroundColor: colors.primary, shadowColor: colors.shadow }]}
+      style={[styles.retryButton, { 
+        backgroundColor: colors.primary || '#3B82F6', 
+        shadowColor: colors.shadow || '#1E3A8A' 
+      }]}
       onPress={onRetry}
     >
-      <Text style={[styles.retryButtonText, { color: colors.text }]}>Retry</Text>
+      <Text style={[styles.retryButtonText, { color: colors.text || '#F3F4F6' }]}>Retry</Text>
     </TouchableOpacity>
   </View>
 ));
@@ -181,7 +194,7 @@ const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
 // Empty
 const SimpleEmptyState = React.memo(({ selectedSection, selectedCategory, colors }) => (
   <View style={styles.centeredContainer}>
-    <Text style={[styles.emptyText, { color: colors.mutedText }]}>
+    <Text style={[styles.emptyText, { color: colors.mutedText || '#6B7280' }]}>
       No {selectedCategory !== 'all' ? selectedCategory : ''} {selectedSection !== 'all' ? selectedSection : ''} assets found.
     </Text>
   </View>
@@ -189,14 +202,52 @@ const SimpleEmptyState = React.memo(({ selectedSection, selectedCategory, colors
 
 const MainScreen = () => {
   // Nova SDK hook to load experience configs & data
-  const { objects, loaded: novaLoaded } = useNovaExperience("home");
+  const { objects, loaded: novaLoaded, error: novaError } = useNovaExperience("home");
+
+  // Log Nova state for debugging
+  console.log('🔍 MainScreen Nova state:', {
+    objects: objects ? Object.keys(objects) : 'undefined',
+    loaded: novaLoaded,
+    error: novaError,
+    uiTheme: objects?.["ui-theme"] ? 'loaded' : 'not loaded'
+  });
 
   // --- Real-time Nova config extraction ---
   const uiTheme = objects?.["ui-theme"];
   const gameSections = objects?.["game-sections"];
   const appConfig = objects?.["app-config"];
   const novaGameAssetsObj = objects?.["game-assets"];
-  const colors = uiTheme || {};
+  
+  // Provide default colors if Nova theme hasn't loaded yet
+  const colors = uiTheme || {
+    primary: '#3B82F6',
+    primaryDark: '#1E3A8A',
+    primaryLight: '#93C5FD',
+    primaryFaded: 'rgba(59, 130, 246, 0.1)',
+    accent: '#10B981',
+    accentDark: '#059669',
+    accentGlow: 'rgba(16, 185, 129, 0.25)',
+    highlight: '#EC4899',
+    highlightGlow: 'rgba(236, 72, 153, 0.2)',
+    background: '#0A0A0A',
+    backgroundLight: '#111827',
+    card: 'rgba(17, 24, 39, 0.95)',
+    text: '#F3F4F6',
+    lightText: '#D1D5DB',
+    mutedText: '#6B7280',
+    border: 'rgba(59, 130, 246, 0.2)',
+    borderStrong: '#3B82F6',
+    glow: 'rgba(59, 130, 246, 0.4)',
+    inactiveButton: ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
+    activeGradient: ['#10B981', '#10B981'],
+    dangerGradient: ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
+    loadingGradient: ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
+    shadow: '#1E3A8A',
+    fabShadow: '#10B981',
+    gradientDark: ['#0A0A0A', '#111827', '#0A0A0A'],
+    sectionUnderline: '#93C5FD',
+    error: '#EF4444'
+  };
 
   // Section configs (Nova or default)
   let sectionConfigs = {
@@ -228,6 +279,7 @@ const MainScreen = () => {
   const [categories, setCategories] = useState(['all']);
   const [selectedSection, setSelectedSection] = useState(defaultSection);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
   const { balance } = useUser();
 
   // --- Load Firebase game assets ---
@@ -266,25 +318,42 @@ const MainScreen = () => {
 
   // --- Load Nova SDK assets (with array type check) ---
   const loadNovaGameAssets = useCallback(() => {
+    console.log('🔄 Loading Nova game assets:', {
+      hasContent: !!novaGameAssetsObj?.content,
+      contentType: typeof novaGameAssetsObj?.content,
+      content: novaGameAssetsObj?.content
+    });
+
     if (novaGameAssetsObj?.content) {
       let assets;
       if (typeof novaGameAssetsObj.content === "string") {
         try {
           assets = JSON.parse(novaGameAssetsObj.content);
-        } catch {
+          console.log('✅ Parsed Nova assets from string:', assets);
+        } catch (parseError) {
+          console.error('❌ Failed to parse Nova assets string:', parseError);
           assets = [];
         }
       } else {
         assets = novaGameAssetsObj.content;
+        console.log('📦 Using Nova assets directly:', assets);
       }
-      if (!Array.isArray(assets)) assets = [];
+      
+      if (!Array.isArray(assets)) {
+        console.warn('⚠️ Nova assets is not an array, converting to array');
+        assets = [];
+      }
+      
       const normalizedAssets = assets.map(asset => ({
         ...asset,
         section: asset.section || 'survival',
         tag: asset.tag?.toLowerCase() || 'uncategorized',
       }));
+      
+      console.log('🎯 Normalized Nova assets:', normalizedAssets);
       setNovaAssets(normalizedAssets);
     } else {
+      console.log('📭 No Nova game assets content available');
       setNovaAssets([]);
     }
   }, [novaGameAssetsObj]);
@@ -295,13 +364,24 @@ const MainScreen = () => {
   }, [loadFirebaseGameAssets]);
 
   useEffect(() => {
-    if (novaLoaded) {
+    console.log('🔄 Nova loading effect triggered:', { novaLoaded, novaError });
+    if (novaLoaded && !novaError) {
+      console.log('✅ Nova loaded successfully, loading game assets');
       loadNovaGameAssets();
+    } else if (novaError) {
+      console.error('❌ Nova loading failed:', novaError);
+    } else {
+      console.log('⏳ Nova still loading...');
     }
-  }, [novaLoaded, loadNovaGameAssets]);
+  }, [novaLoaded, novaError, loadNovaGameAssets]);
 
   // Filtering logic for Firebase assets
   const filteredGames = useMemo(() => {
+    if (!Array.isArray(gameAssets)) {
+      console.warn('⚠️ gameAssets is not an array:', gameAssets);
+      return [];
+    }
+    
     let filtered = gameAssets;
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(game => game.tag === selectedCategory);
@@ -314,6 +394,16 @@ const MainScreen = () => {
 
   // Group by section for all-section view
   const groupedGames = useMemo(() => {
+    if (!Array.isArray(gameAssets)) {
+      console.warn('⚠️ gameAssets is not an array in groupedGames:', gameAssets);
+      return {};
+    }
+    
+    if (!Array.isArray(sections)) {
+      console.warn('⚠️ sections is not an array:', sections);
+      return {};
+    }
+    
     let gamesToGroup = gameAssets;
     if (selectedCategory !== 'all') {
       gamesToGroup = gamesToGroup.filter(game => game.tag === selectedCategory);
@@ -328,7 +418,8 @@ const MainScreen = () => {
   const renderGameContent = () => {
     const content = [];
 
-    if (novaAssets.length > 0) {
+    // Safety check for novaAssets
+    if (Array.isArray(novaAssets) && novaAssets.length > 0) {
       content.push(
         <View key="personalised" style={styles.sectionGroup}>
           <SimpleSectionHeader title="Personalised Assets" count={novaAssets.length} colors={colors} />
@@ -341,14 +432,14 @@ const MainScreen = () => {
       );
     }
 
-    if (filteredGames.length === 0 && novaAssets.length === 0) {
+    if (filteredGames.length === 0 && (!Array.isArray(novaAssets) || novaAssets.length === 0)) {
       return <SimpleEmptyState selectedSection={selectedSection} selectedCategory={selectedCategory} colors={colors} />;
     }
     
-    if (selectedSection === 'all') {
+    if (selectedSection === 'all' && Array.isArray(sections)) {
       sections.forEach(section => {
         const sectionGames = groupedGames[section];
-        if (sectionGames.length === 0) return;
+        if (!sectionGames || sectionGames.length === 0) return;
         content.push(
           <View key={section} style={styles.sectionGroup}>
             <SimpleSectionHeader title={section.charAt(0).toUpperCase() + section.slice(1)} count={sectionGames.length} colors={colors} />
@@ -361,13 +452,15 @@ const MainScreen = () => {
         );
       });
     } else {
-      content.push(
-        <View key="filtered" style={styles.gamesList}>
-          {filteredGames.map((game, index) => (
-            <AnimatedGameCard key={game.id || `filtered-${index}`} game={game} index={index} />
-          ))}
-        </View>
-      );
+      if (Array.isArray(filteredGames)) {
+        content.push(
+          <View key="filtered" style={styles.gamesList}>
+            {filteredGames.map((game, index) => (
+              <AnimatedGameCard key={game.id || `filtered-${index}`} game={game} index={index} />
+            ))}
+          </View>
+        );
+      }
     }
 
     return content;
@@ -376,9 +469,9 @@ const MainScreen = () => {
   // Loading or error UI
   if (loading) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background || '#0A0A0A' }]}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.background || '#0A0A0A'} />
+        <LinearGradient colors={colors.gradientDark || ['#0A0A0A', '#111827', '#0A0A0A']} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
         <SimpleLoadingState colors={colors} />
@@ -387,9 +480,9 @@ const MainScreen = () => {
   }
   if (error) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background || '#0A0A0A' }]}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.background || '#0A0A0A'} />
+        <LinearGradient colors={colors.gradientDark || ['#0A0A0A', '#111827', '#0A0A0A']} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
         <SimpleErrorState error={error} onRetry={loadFirebaseGameAssets} colors={colors} />
@@ -398,9 +491,9 @@ const MainScreen = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-      <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background || '#0A0A0A' }]}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.background || '#0A0A0A'} />
+      <LinearGradient colors={colors.gradientDark || ['#0A0A0A', '#111827', '#0A0A0A']} style={StyleSheet.absoluteFill} />
       <Header balance={balance} />
       <NotificationBanner />
       <ScrollView
@@ -434,16 +527,38 @@ const MainScreen = () => {
       </ScrollView>
       {/* Support FAB uses Nova config */}
       <TouchableOpacity
-        style={[styles.fab, { shadowColor: colors.fabShadow }]}
+        style={[styles.fab, { shadowColor: colors.fabShadow || '#10b981' }]}
         activeOpacity={0.8}
         onPress={() => Linking.openURL(appConfig?.supportUrl || 'https://t.me/xgamingclub')}
       >
-        <LinearGradient colors={colors.activeGradient} style={styles.fabGradient}>
-          <Text style={[styles.fabText, { color: colors.background }]}>
+        <LinearGradient 
+          colors={colors.activeGradient || ['#10B981', '#10B981']} 
+          style={styles.fabGradient}
+        >
+          <Text style={[styles.fabText, { color: colors.background || '#0a0a0a' }]}>
             {appConfig?.supportButtonText || 'SUPPORT'}
           </Text>
         </LinearGradient>
       </TouchableOpacity>
+
+      {/* Nova Debug Button */}
+      <TouchableOpacity
+        style={[styles.debugFab, { shadowColor: colors.fabShadow || '#8b5cf6' }]}
+        activeOpacity={0.8}
+        onPress={() => setShowDebugPanel(true)}
+      >
+        <LinearGradient colors={['#8b5cf6', '#a855f7']} style={styles.fabGradient}>
+          <Text style={[styles.fabText, { color: colors.background || '#0a0a0a' }]}>
+            🔧
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      {/* Nova Debug Panel */}
+      <NovaDebugPanel 
+        visible={showDebugPanel} 
+        onClose={() => setShowDebugPanel(false)} 
+      />
     </SafeAreaView>
   );
 };
@@ -475,6 +590,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 20, fontWeight: '800', letterSpacing: 1 },
   sectionCount: { fontSize: 14, fontWeight: '600' },
   fab: { position: 'absolute', right: 20, bottom: Platform.OS === 'ios' ? 30 : 20, borderRadius: 25, overflow: 'hidden', elevation: 8, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 6 },
+  debugFab: { position: 'absolute', right: 20, bottom: Platform.OS === 'ios' ? 100 : 90, borderRadius: 25, overflow: 'hidden', elevation: 8, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.5, shadowRadius: 6 },
   fabGradient: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12 },
   fabText: { fontWeight: '800', fontSize: 14, letterSpacing: 0.5 },
   bottomSpacer: { height: 20 },

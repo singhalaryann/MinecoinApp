@@ -27,13 +27,116 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   console.log("AuthProvider initialized");
 
-  // Nova SDK: Get setUser & experience loader
-  const { setUser: setNovaUser, loadAllExperiences } = useNova();
+  // Nova SDK: Get setUser & experience loader with enhanced functionality
+  const { 
+    setUser: setNovaUser, 
+    loadAllExperiences, 
+    state: novaState,
+    updateUserProfile: updateNovaProfile 
+  } = useNova();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [hasMcVerification, setHasMcVerification] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
+
+  // Enhanced Nova user sync function
+  const syncUserWithNova = async (userData, firestoreData) => {
+    try {
+      console.log("🔄 Starting Nova user sync...");
+      console.log("📊 User data:", {
+        email: userData.email,
+        displayName: userData.displayName,
+        hasMcVerified: firestoreData?.hasMcVerified || false,
+        coinBalance: firestoreData?.coinBalance || 0,
+        mcUsername: firestoreData?.mcUsername || null
+      });
+
+      // Set Nova user with comprehensive profile
+      const novaUserProfile = {
+        displayName: userData.displayName,
+        hasMcVerified: firestoreData?.hasMcVerified || false,
+        coinBalance: firestoreData?.coinBalance || 0,
+        mcUsername: firestoreData?.mcUsername || null,
+        userType: firestoreData?.hasMcVerified ? 'verified' : 'unverified',
+        lastLogin: new Date().toISOString(),
+        platform: 'mobile',
+        appVersion: '1.0.0'
+      };
+
+      console.log("🎯 Setting Nova user with profile:", novaUserProfile);
+      
+      await setNovaUser({
+        userId: userData.email,
+        userProfile: novaUserProfile
+      });
+
+      console.log("✅ Nova user set successfully");
+      console.log("🆔 Nova internal userId:", novaState.user?.novaUserId);
+
+      // Load all experiences for the user
+      console.log("🚀 Loading all Nova experiences...");
+      const experiences = await loadAllExperiences();
+      console.log("📦 Experiences loaded:", experiences);
+
+      // Log the current Nova state after sync
+      console.log("🔍 Current Nova state:", {
+        userId: novaState.user?.userId,
+        novaUserId: novaState.user?.novaUserId,
+        userProfile: novaState.user?.userProfile,
+        experiences: novaState.experiences,
+        loading: novaState.loading,
+        error: novaState.error
+      });
+
+      return true;
+    } catch (error) {
+      console.error("❌ Nova user sync failed:", error);
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        code: error.code
+      });
+      return false;
+    }
+  };
+
+  // Real-time Nova experience monitoring
+  useEffect(() => {
+    if (novaState.experiences && Object.keys(novaState.experiences).length > 0) {
+      console.log("🎨 Nova experiences updated in real-time:");
+      Object.entries(novaState.experiences).forEach(([expName, expData]) => {
+        console.log(`  📱 ${expName}:`, expData);
+      });
+    }
+  }, [novaState.experiences]);
+
+  // Monitor Nova user state changes
+  useEffect(() => {
+    if (novaState.user) {
+
+
+      console.log("👤 Nova user state changed:", {
+        externalUserId: novaState.user.userId,
+        novaUserId: novaState.user.novaUserId,
+        profile: novaState.user.userProfile
+      });
+    }
+  }, [novaState.user]);
+
+  // Monitor Nova loading states
+  useEffect(() => {
+    if (novaState.loading) {
+      console.log("⏳ Nova is loading experiences...");
+    }
+  }, [novaState.loading]);
+
+  // Monitor Nova errors
+  useEffect(() => {
+    if (novaState.error) {
+      console.error("🚨 Nova error detected:", novaState.error);
+    }
+  }, [novaState.error]);
 
   // -- Notification setup left unchanged --
   const setupNotifications = async (userEmail) => {
@@ -134,23 +237,8 @@ export const AuthProvider = ({ children }) => {
           setIsLoggedIn(true);
           setHasMcVerification(firestoreData.hasMcVerified || false);
 
-          // ---------- Nova integration for real-time experience sync ----------
-          try {
-            // Always set Nova user when restoring session!
-            await setNovaUser({
-              userId: updatedUser.email,
-              userProfile: {
-                displayName: updatedUser.displayName,
-                hasMcVerified: firestoreData.hasMcVerified || false,
-                coinBalance: firestoreData.coinBalance || 0,
-              }
-            });
-            // Always reload all Nova experiences here!
-            await loadAllExperiences();
-            console.log("✅ Experiences loaded for:", updatedUser.email);
-          } catch (error) {
-            console.error("Nova setUser failed:", error);
-          }
+          // ---------- Enhanced Nova integration for real-time experience sync ----------
+          await syncUserWithNova(updatedUser, firestoreData);
           // ---------------------------------------------
 
           await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
@@ -236,24 +324,8 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(true);
       setHasMcVerification(firestoreData?.hasMcVerified || false);
       
-      // ---------- Nova integration for real-time experience sync ----------
-      try {
-        // Set Nova user upon sign in!
-        await setNovaUser({
-          userId: userData.email,
-          userProfile: {
-            displayName: userData.displayName,
-            hasMcVerified: firestoreData?.hasMcVerified || false,
-            coinBalance: firestoreData?.coinBalance || 0,
-          }
-        });
-        // Load Nova experience for logged-in user
-        await loadAllExperiences();
-        console.log("✅ Experiences loaded for:", userData.email);
-
-      } catch (error) {
-        console.error("Nova setUser failed:", error);
-      }
+      // ---------- Enhanced Nova integration for real-time experience sync ----------
+      await syncUserWithNova(userData, firestoreData);
       // -----------------------------------------------------
 
       setupNotifications(userData.email);
@@ -275,22 +347,45 @@ export const AuthProvider = ({ children }) => {
       setIsLoggedIn(false);
       setHasMcVerification(false);
       setFcmToken("");
-      // ---- Nova SDK: set guest user and reload experiences ----
+      
+      // ---- Enhanced Nova SDK: set guest user and reload experiences ----
       try {
+        console.log("🔄 Setting Nova guest user...");
         await setNovaUser({
           userId: "guest_" + Date.now(),
-          userProfile: { cohort: "guest" }
+          userProfile: { 
+            cohort: "guest",
+            userType: "guest",
+            lastLogin: new Date().toISOString(),
+            platform: "mobile"
+          }
         });
         await loadAllExperiences();
         console.log("✅ Experiences loaded for guest user");
       } catch (error) {
-        console.error("Nova setUser failed:", error);
+        console.error("❌ Nova setUser failed:", error);
       }
       // --------------------------------------------------------
       console.log("Sign out completed successfully");
     } catch (error) {
       console.error("Sign-out error:", error);
       throw error;
+    }
+  };
+
+  // Function to update Nova user profile when user data changes
+  const updateNovaUserProfile = async (updates) => {
+    if (!user?.email) {
+      console.log("No user logged in, skipping Nova profile update");
+      return;
+    }
+
+    try {
+      console.log("🔄 Updating Nova user profile with:", updates);
+      await updateNovaProfile(updates);
+      console.log("✅ Nova user profile updated successfully");
+    } catch (error) {
+      console.error("❌ Failed to update Nova user profile:", error);
     }
   };
 
@@ -303,6 +398,8 @@ export const AuthProvider = ({ children }) => {
         signInWithGoogle,
         signOut,
         fcmToken,
+        updateNovaUserProfile, // Expose Nova profile update function
+        novaState, // Expose Nova state for debugging
       }}
     >
       {children}
