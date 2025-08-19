@@ -19,6 +19,7 @@ import GameCard from '../components/games/GameCard';
 import NotificationBanner from '../components/common/NotificationBanner';
 import { fetchGameAssets } from '../config/firebase';
 import { useUser } from '../context/UserContext';
+import { useAuth } from '../context/AuthContext';
 import { useThemeColors, colors as staticColors } from './theme'; // ← IMPORTANT: Import both!
 
 const { width } = Dimensions.get('window');
@@ -184,6 +185,16 @@ const SimpleLoadingState = React.memo(({ colors }) => (
   </View>
 ));
 
+// Nova Loading State
+const NovaLoadingState = React.memo(({ colors }) => (
+  <View style={styles.centeredContainer}>
+    <ActivityIndicator size="large" color={colors.accent} />
+    <Text style={[styles.loadingText, { color: colors.lightText }]}>
+      Loading Nova Dashboard...
+    </Text>
+  </View>
+));
+
 // Error State
 const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
   <View style={styles.centeredContainer}>
@@ -216,6 +227,9 @@ const MainScreen = () => {
   // NOVA THEME - Get live colors from dashboard
   const themeColors = useThemeColors();
   const colors = themeColors || staticColors; // Use Nova colors or fallback to static
+  
+  // Get Nova ready state from AuthContext
+  const { isNovaReady } = useAuth();
   
   // State management
   const [loading, setLoading] = useState(true);
@@ -252,8 +266,11 @@ const MainScreen = () => {
   }, []);
 
   useEffect(() => {
-    loadGameAssets();
-  }, [loadGameAssets]);
+    // Only load game assets after Nova is ready
+    if (isNovaReady) {
+      loadGameAssets();
+    }
+  }, [isNovaReady, loadGameAssets]);
 
   const filteredGames = useMemo(() => {
     return selectedSection === 'all'
@@ -309,6 +326,19 @@ const MainScreen = () => {
       );
     }
   };
+
+  // NEW: Show Nova loading state if Nova is not ready
+  if (!isNovaReady) {
+    return (
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: staticColors.background }]}>
+        <StatusBar barStyle="light-content" backgroundColor={staticColors.background} />
+        <LinearGradient colors={staticColors.gradientDark} style={StyleSheet.absoluteFill} />
+        <Header balance={balance} />
+        <NotificationBanner />
+        <NovaLoadingState colors={staticColors} />
+      </SafeAreaView>
+    );
+  }
 
   if (loading) {
     return (

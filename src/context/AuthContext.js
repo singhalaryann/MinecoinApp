@@ -32,6 +32,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [hasMcVerification, setHasMcVerification] = useState(false);
   const [fcmToken, setFcmToken] = useState("");
+  // UPDATED: Simplified Nova loading state since we have theme caching
+  const [isNovaReady, setIsNovaReady] = useState(false);
 
   const setupNotifications = async (userEmail) => {
     try {
@@ -60,6 +62,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // UPDATED: Simplified Nova setup since theme caching handles the heavy lifting
+  const setNovaUserAndWait = async (userData) => {
+    try {
+      console.log("🔄 Starting Nova setup process...");
+      console.log("📝 Setting Nova user:", userData.userId);
+      
+      // Set Nova user first
+      await setNovaUser(userData);
+      console.log("✅ Nova user set successfully");
+      
+      // Load experiences
+      console.log("🔄 Loading Nova experiences...");
+      await loadAllExperiences();
+      console.log("✅ Nova experiences loaded");
+      
+      // UPDATED: Shorter wait since theme caching will show theme immediately
+      console.log("🔄 Short delay to ensure Nova is ready...");
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log("🎉 Marking Nova as ready!");
+      setIsNovaReady(true);
+      console.log("✅ Nova setup completed successfully!");
+      
+    } catch (error) {
+      console.error("❌ Nova setup failed:", error);
+      console.log("⚠️ Marking Nova as ready anyway to prevent infinite loading");
+      setIsNovaReady(true);
+    }
+  };
+
   useEffect(() => {
     console.log("Setting up auth and checking stored user");
     configureGoogleSignIn();
@@ -74,19 +106,19 @@ export const AuthProvider = ({ children }) => {
 
   const restoreUser = async () => {
     try {
-      console.log("Attempting to restore user session");
+      console.log("🔄 Attempting to restore user session");
       const userData = await AsyncStorage.getItem("user");
       if (userData) {
-        console.log("Found stored user data");
+        console.log("✅ Found stored user data");
         const parsedUser = JSON.parse(userData);
 
         if (!parsedUser.email) {
-          console.error("Invalid stored user data");
+          console.error("❌ Invalid stored user data");
           await AsyncStorage.removeItem("user");
           return;
         }
 
-        console.log("Fetching fresh data from Firestore for:", parsedUser.email);
+        console.log("🔄 Fetching fresh data from Firestore for:", parsedUser.email);
         let firestoreData = await getUserData(parsedUser.email);
 
         if (firestoreData) {
@@ -104,7 +136,7 @@ export const AuthProvider = ({ children }) => {
             const lastReward = firestoreData.lastRewardTimestamp || 0;
 
             if (toISTDate(now) !== toISTDate(lastReward)) {
-              console.log("Giving daily reward");
+              console.log("🎁 Giving daily reward");
               const newBalance = (firestoreData.coinBalance || 0) + 20;
               const userRef = doc(db, "users", parsedUser.email);
 
@@ -126,7 +158,7 @@ export const AuthProvider = ({ children }) => {
                 });
               }
 
-              console.log("Daily reward given, new balance:", newBalance);
+              console.log("✅ Daily reward given, new balance:", newBalance);
             }
           }
 
@@ -134,43 +166,47 @@ export const AuthProvider = ({ children }) => {
             ...parsedUser,
             ...firestoreData,
           };
-          console.log("User session restored successfully");
+          console.log("✅ User session restored successfully");
 
           setUser(updatedUser);
           setIsLoggedIn(true);
           setHasMcVerification(firestoreData.hasMcVerified || false);
 
-          // Set Nova user
-          try {
-            await setNovaUser({
-              userId: updatedUser.email,
-              userProfile: {
-                displayName: updatedUser.displayName,
-                hasMcVerified: firestoreData.hasMcVerified || false,
-                coinBalance: firestoreData.coinBalance || 0,
-              }
-            });
-            
-            // UPDATED: Load experiences AFTER setting user!
-            await loadAllExperiences();
-            console.log("✅ Experiences loaded for:", updatedUser.email);
-            
-          } catch (error) {
-            console.error("Nova setUser failed:", error);
-          }
+          // UPDATED: Use new function to set Nova user and wait
+          console.log("🔄 Setting up Nova for restored user...");
+          await setNovaUserAndWait({
+            userId: updatedUser.email,
+            userProfile: {
+              displayName: updatedUser.displayName,
+              hasMcVerified: firestoreData.hasMcVerified || false,
+              coinBalance: firestoreData.coinBalance || 0,
+            }
+          });
 
           await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
           setupNotifications(updatedUser.email);
         } else {
-          console.log("No Firestore data found for user");
+          console.log("❌ No Firestore data found for user");
           await AsyncStorage.removeItem("user");
         }
       } else {
-        console.log("No stored user session found");
+        console.log("ℹ️ No stored user session found");
+        // NEW: Set Nova guest user for non-logged in users
+        console.log("🔄 Setting up Nova guest user...");
+        await setNovaUserAndWait({
+          userId: "guest_" + Date.now(),
+          userProfile: { cohort: "guest" }
+        });
       }
     } catch (error) {
-      console.error("Error restoring user:", error);
+      console.error("❌ Error restoring user:", error);
       await AsyncStorage.removeItem("user");
+      // NEW: Set Nova guest user on error
+      console.log("🔄 Setting up Nova guest user due to error...");
+      await setNovaUserAndWait({
+        userId: "guest_" + Date.now(),
+        userProfile: { cohort: "guest" }
+      });
     }
   };
 
@@ -181,7 +217,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error("App is under maintenance");
       }
 
-      console.log("Starting Google Sign In process");
+      console.log("🔄 Starting Google Sign In process");
       const userCredential = await firebaseSignInWithGoogle();
       
       const token = await getFCMToken();
@@ -192,17 +228,17 @@ export const AuthProvider = ({ children }) => {
         photoURL: userCredential.user.photoURL,
         fcmToken: token
       };
-      console.log("Google Sign In successful:", userData.email);
+      console.log("✅ Google Sign In successful:", userData.email);
 
-      console.log("Checking existing Firestore data");
+      console.log("🔄 Checking existing Firestore data");
       let firestoreData = await getUserData(userData.email);
       
       if (!firestoreData) {
-        console.log("New user - creating Firestore record");
+        console.log("🆕 New user - creating Firestore record");
         await saveUserToFirestore(userData);
         firestoreData = await getUserData(userData.email);
       } else {
-        console.log("Existing user found in Firestore");
+        console.log("✅ Existing user found in Firestore");
       }
 
       // Check for daily reward on sign in
@@ -212,7 +248,7 @@ export const AuthProvider = ({ children }) => {
         const hoursSinceLastReward = (now - lastReward) / (1000 * 60 * 60);
         
         if (hoursSinceLastReward >= 24) {
-          console.log("Giving daily reward on sign in");
+          console.log("🎁 Giving daily reward on sign in");
           const newBalance = (firestoreData.coinBalance || 0) + 15;
           const userRef = doc(db, "users", userData.email);
           
@@ -234,7 +270,7 @@ export const AuthProvider = ({ children }) => {
             });
           }
 
-          console.log("Daily reward given on sign in, new balance:", newBalance);
+          console.log("✅ Daily reward given on sign in, new balance:", newBalance);
         }
       }
 
@@ -243,45 +279,37 @@ export const AuthProvider = ({ children }) => {
         ...firestoreData
       };
 
-      console.log("Saving user data to AsyncStorage");
+      console.log("💾 Saving user data to AsyncStorage");
       await AsyncStorage.setItem("user", JSON.stringify(completeUserData));
       
       setUser(completeUserData);
       setIsLoggedIn(true);
       setHasMcVerification(firestoreData?.hasMcVerified || false);
       
-      // Set Nova user
-      try {
-        await setNovaUser({
-          userId: userData.email,
-          userProfile: {
-            displayName: userData.displayName,
-            hasMcVerified: firestoreData?.hasMcVerified || false,
-            coinBalance: firestoreData?.coinBalance || 0,
-          }
-        });
-        
-        // UPDATED: Load experiences AFTER setting user!
-        await loadAllExperiences();
-        console.log("✅ Experiences loaded for:", userData.email);
-        
-      } catch (error) {
-        console.error("Nova setUser failed:", error);
-      }
+      // UPDATED: Use new function to set Nova user and wait
+      console.log("🔄 Setting up Nova for signed in user...");
+      await setNovaUserAndWait({
+        userId: userData.email,
+        userProfile: {
+          displayName: userData.displayName,
+          hasMcVerified: firestoreData?.hasMcVerified || false,
+          coinBalance: firestoreData?.coinBalance || 0,
+        }
+      });
       
       setupNotifications(userData.email);
       
-      console.log("Sign in process completed");
+      console.log("🎉 Sign in process completed successfully!");
       return true;
     } catch (error) {
-      console.error("Google Sign-In error:", error);
+      console.error("❌ Google Sign-In error:", error);
       return false;
     }
   };
 
   const signOut = async () => {
     try {
-      console.log("Starting sign out process");
+      console.log("🔄 Starting sign out process");
       await firebaseSignOutUser();
       
       await AsyncStorage.clear();
@@ -290,21 +318,17 @@ export const AuthProvider = ({ children }) => {
       setHasMcVerification(false);
       setFcmToken("");
       
-      // Set Nova guest user
-      try {
-        await setNovaUser({
-          userId: "guest_" + Date.now(),
-          userProfile: { cohort: "guest" }
-        });
-        // UPDATED: Load default experiences for guest
-        await loadAllExperiences();
-      } catch (error) {
-        console.error("Nova setUser failed:", error);
-      }
+      // NEW: Reset Nova ready state and set guest user
+      console.log("🔄 Resetting Nova state and setting guest user...");
+      setIsNovaReady(false);
+      await setNovaUserAndWait({
+        userId: "guest_" + Date.now(),
+        userProfile: { cohort: "guest" }
+      });
       
-      console.log("Sign out completed successfully");
+      console.log("✅ Sign out completed successfully");
     } catch (error) {
-      console.error("Sign-out error:", error);
+      console.error("❌ Sign-out error:", error);
       throw error;
     }
   };
@@ -318,6 +342,8 @@ export const AuthProvider = ({ children }) => {
         signInWithGoogle,
         signOut,
         fcmToken,
+        // NEW: Expose Nova ready state
+        isNovaReady,
       }}
     >
       {children}
