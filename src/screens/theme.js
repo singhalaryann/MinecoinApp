@@ -2,9 +2,8 @@ import { useNovaExperience } from "nova-react-sdk";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState, useRef } from "react";
 
-// Cache configuration - SIMPLIFIED: Just TTL, no version checking
+// Cache configuration - SIMPLIFIED: No TTL, just store theme
 const NOVA_THEME_CACHE_KEY = "nova_theme_cache";
-const CACHE_TTL = 25 * 1000; // 25 seconds in milliseconds 
 
 // Cache management functions - SIMPLIFIED
 const cacheNovaTheme = async (theme, userId) => {
@@ -12,8 +11,7 @@ const cacheNovaTheme = async (theme, userId) => {
     const cacheData = {
       theme: theme,
       userId: userId,
-      timestamp: Date.now(),
-      ttl: CACHE_TTL
+      timestamp: Date.now()
     };
     
     await AsyncStorage.setItem(NOVA_THEME_CACHE_KEY, JSON.stringify(cacheData));
@@ -35,24 +33,14 @@ const getCachedNovaTheme = async (userId) => {
     }
 
     const cache = JSON.parse(cachedData);
-    const now = Date.now();
-    const isExpired = (now - cache.timestamp) > cache.ttl;
     const isSameUser = cache.userId === userId;
 
     console.log("🔍 Cache check:", {
       hasCache: !!cachedData,
-      isExpired,
       isSameUser,
-      cacheAge: Math.round((now - cache.timestamp) / 1000) + " seconds",
       cacheUserId: cache.userId,
       currentUserId: userId
     });
-
-    if (isExpired) {
-      console.log("⏰ Cache expired (25 seconds), removing old cache");
-      await AsyncStorage.removeItem(NOVA_THEME_CACHE_KEY);
-      return null;
-    }
 
     if (!isSameUser) {
       console.log("👤 Different user, removing old cache");
@@ -60,9 +48,7 @@ const getCachedNovaTheme = async (userId) => {
       return null;
     }
 
-    console.log("✅ Valid cached theme found:", {
-      age: Math.round((now - cache.timestamp) / 1000) + " seconds"
-    });
+    console.log("✅ Valid cached theme found");
     return cache.theme;
   } catch (error) {
     console.error("❌ Error reading cached theme:", error);
@@ -70,7 +56,7 @@ const getCachedNovaTheme = async (userId) => {
   }
 };
 
-// Custom hook to get theme colors from Nova SDK - SIMPLIFIED
+// Custom hook to get theme colors from Nova SDK - FIXED
 export const useThemeColors = () => {
   const { objects, loaded, error } = useNovaExperience("theme");
   const novaTheme = objects?.["ui-theme"];
@@ -110,7 +96,7 @@ export const useThemeColors = () => {
     checkCache();
   }, []);
 
-  // SIMPLIFIED: Cache theme when Nova loads successfully - no version checking
+  // FIXED: Cache theme when Nova loads successfully and check for changes
   useEffect(() => {
     const cacheTheme = async () => {
       if (loaded && novaTheme) {
@@ -124,17 +110,31 @@ export const useThemeColors = () => {
             novaThemeLoaded: !!novaTheme
           });
           
-          // SIMPLIFIED: Always cache fresh Nova theme if we're not using cache
-          if (!isUsingCacheRef.current) {
-            console.log("💾 Caching fresh Nova theme for user:", userId);
+          // FIXED: Check if theme actually changed before caching
+          if (cachedTheme && JSON.stringify(cachedTheme) !== JSON.stringify(novaTheme)) {
+            console.log("🔄 Theme changed, updating cache for user:", userId);
             await cacheNovaTheme(novaTheme, userId);
-          }
-          
-          // SIMPLIFIED: If we have cached theme, check if it's expired (TTL handles this)
-          if (cachedTheme && isUsingCacheRef.current) {
-            console.log("🔄 TTL-based update: Checking if cache expired...");
-            // TTL will automatically expire cache after 25 seconds
-            // Next render will fetch fresh theme
+            setCachedTheme(novaTheme);
+            currentThemeRef.current = novaTheme;
+            setIsUsingCache(false);
+            isUsingCacheRef.current = false;
+            
+            // 🚀 FORCE REFRESH: Make app re-render with new theme
+            setThemeKey(prev => prev + 1);
+            console.log("🔄 Forcing app refresh with new theme!");
+            
+            // 🚀 IMMEDIATE UPDATE: Force immediate theme change
+            console.log("🎨 Theme updated - app should show new colors immediately!");
+          } else if (!cachedTheme) {
+            // First time loading, cache the theme
+            console.log("💾 First time loading, caching theme for user:", userId);
+            await cacheNovaTheme(novaTheme, userId);
+            setCachedTheme(novaTheme);
+            currentThemeRef.current = novaTheme;
+            setIsUsingCache(false);
+            isUsingCacheRef.current = false;
+          } else {
+            console.log("✅ Theme unchanged, keeping existing cache");
           }
         } catch (error) {
           console.error("❌ Error caching theme:", error);
@@ -143,9 +143,9 @@ export const useThemeColors = () => {
     };
 
     cacheTheme();
-  }, [loaded, novaTheme]); // Simplified dependencies
+  }, [loaded, novaTheme, cachedTheme]);
 
-  // Determine which theme to use - NOW USING REFS for immediate updates
+  // Determine which theme to use - FIXED: Use cache when available
   const activeTheme = isUsingCacheRef.current ? currentThemeRef.current : novaTheme;
   const isFromCache = isUsingCacheRef.current;
 
@@ -188,7 +188,7 @@ export const useThemeColors = () => {
     isFullyLoaded: loaded && novaTheme && Object.values(novaTheme).some(val => typeof val === 'string' && val.startsWith('#'))
   });
 
-  // Cache status logging
+  // Cache status logging - FIXED
   console.log("💾 Cache status:", {
     hasCachedTheme: !!cachedTheme,
     isUsingCache: isUsingCacheRef.current,
@@ -198,15 +198,14 @@ export const useThemeColors = () => {
       currentThemeRef: !!currentThemeRef.current,
       isUsingCacheRef: isUsingCacheRef.current
     },
-    ttlInfo: "25 seconds expiry"
+    cacheInfo: "No TTL - cache stays until theme changes"
   });
   
-  // UPDATED: More robust check - ensure theme has actual color values and is fully loaded
+  // FIXED: More robust check - ensure theme has actual color values
   const isThemeValid = activeTheme && 
     (isFromCache || loaded) && 
     Object.values(activeTheme).some(val => typeof val === 'string' && val.startsWith('#')) &&
-    // NEW: Additional check - ensure we have enough color values
-    Object.keys(activeTheme).length >= 10; // At least 10 theme properties should be loaded
+    Object.keys(activeTheme).length >= 5; // At least 5 theme properties should be loaded
   
   if (!isThemeValid) {
     console.log("⚠️ Using static colors - Theme not ready or invalid");
@@ -216,12 +215,11 @@ export const useThemeColors = () => {
       isFromCache,
       hasColorValues: activeTheme ? Object.values(activeTheme).some(val => typeof val === 'string' && val.startsWith('#')) : false,
       themeKeyCount: activeTheme ? Object.keys(activeTheme).length : 0,
-      // NEW: Show what's missing
       missingRequirements: {
         hasTheme: !!activeTheme,
         isLoaded: loaded || isFromCache,
         hasColors: activeTheme ? Object.values(activeTheme).some(val => typeof val === 'string' && val.startsWith('#')) : false,
-        hasEnoughKeys: activeTheme ? Object.keys(activeTheme).length >= 10 : false
+        hasEnoughKeys: activeTheme ? Object.keys(activeTheme).length >= 5 : false
       }
     });
     return colors;
@@ -263,7 +261,7 @@ export const useThemeColors = () => {
     borderStrong: activeTheme?.borderStrong || '#3B82F6',
     glow: activeTheme?.glow || 'rgba(59, 130, 246, 0.4)',
     
-    // UPDATED: Array colors with safety check to prevent .map errors
+    // FIXED: Array colors with safety check to prevent .map errors
     inactiveButton: Array.isArray(activeTheme?.inactiveButton) 
       ? activeTheme.inactiveButton 
       : ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
