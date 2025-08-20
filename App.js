@@ -73,8 +73,8 @@ const App = () => {
       />
       <NovaProvider
         config={{
-          organisationId: "0952e33a-5ba0-4104-baf0-d0904d87f85d", 
-          appId: "4f3c0206-d4ef-46d4-ac82-1aa63f09f7c5", 
+          organisationId: "5ec53949-64a3-4ad5-8358-67528a1a9be8", 
+          appId: "24fdd990-5a29-4234-ba76-210c3f027131", 
           apiEndpoint: "https://nova-manager-475016739432.us-central1.run.app", 
           apiKey: "key123",
           registry: NovaRegistry,

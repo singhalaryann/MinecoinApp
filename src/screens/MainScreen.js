@@ -14,30 +14,78 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from '../components/common/Header';
 import GameCard from '../components/games/GameCard';
 import NotificationBanner from '../components/common/NotificationBanner';
 import { fetchGameAssets } from '../config/firebase';
 import { useUser } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
-import { useThemeColors, colors as staticColors } from './theme'; // ← IMPORTANT: Import both!
+import { useThemeColors, colors as staticColors } from './theme';
+import { useNovaExperience } from 'nova-react-sdk'; // NEW: Import Nova experience hook
+
+// Simple cache key for Nova assets
+const NOVA_ASSETS_CACHE_KEY = "nova_assets_cache";
+
+// Simple cache functions
+const cacheNovaAssets = async (assets, userId) => {
+  try {
+    const cacheData = { assets, userId, timestamp: Date.now() };
+    await AsyncStorage.setItem(NOVA_ASSETS_CACHE_KEY, JSON.stringify(cacheData));
+    console.log("💾 Nova assets cached for user:", userId);
+  } catch (error) {
+    console.error("❌ Failed to cache Nova assets:", error);
+  }
+};
+
+const getCachedNovaAssets = async (userId) => {
+  try {
+    const cachedData = await AsyncStorage.getItem(NOVA_ASSETS_CACHE_KEY);
+    if (!cachedData) return null;
+
+    const cache = JSON.parse(cachedData);
+    if (cache.userId !== userId) {
+      await AsyncStorage.removeItem(NOVA_ASSETS_CACHE_KEY);
+      return null;
+    }
+
+    console.log("✅ Using cached Nova assets for user:", userId);
+    return cache.assets;
+  } catch (error) {
+    console.error("❌ Error reading cached Nova assets:", error);
+    return null;
+  }
+};
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width - 40;
 
 // ==================== COMPONENTS ====================
 
-// Simple Hero Section
-const SimpleGamingHero = React.memo(({ gameCount, selectedSection, filteredCount, colors }) => {
+// Simple Hero Section - UPDATED to show tag info
+const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedTag, filteredCount, colors }) => {
+  // NEW: Add tag text to subtitle
+  const getFilterText = () => {
+    let text = '';
+    if (selectedTag !== 'all') {
+      const tagNames = { rank: 'Rank', keys: 'Key', companion: 'Companion', assets: 'Asset' };
+      text += `${tagNames[selectedTag] || selectedTag} `;
+    }
+    if (selectedSection !== 'all') {
+      text += `${selectedSection} `;
+    }
+    return text;
+  };
+
   return (
     <View style={[styles.heroContainer]}>
       <Text style={[styles.heroTitle, { color: colors.accent, textShadowColor: colors.accentGlow }]}>
         GAME ASSETS
       </Text>
       <Text style={[styles.heroSubtitle, { color: colors.lightText }]}>
-        {selectedSection === 'all'
+        {selectedSection === 'all' && selectedTag === 'all'
           ? `Explore ${gameCount} premium assets`
-          : `Showing ${filteredCount} ${selectedSection} assets`
+          : `Showing ${filteredCount} ${getFilterText()}assets`
         }
       </Text>
       <View style={[styles.heroDivider, { backgroundColor: colors.accent }]} />
@@ -45,7 +93,64 @@ const SimpleGamingHero = React.memo(({ gameCount, selectedSection, filteredCount
   );
 });
 
-// Clean Filter Bar
+// NEW: Tags Filter Component
+const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
+  console.log('🏷️ TagsFilter Render - Available tags:', tags, 'Selected:', selectedTag);
+  
+  const tagConfigs = {
+    all: { emoji: '🎮', name: 'All', color: colors.accent },
+    rank: { emoji: '👑', name: 'Ranks', color: colors.highlight },
+    keys: { emoji: '🔑', name: 'Keys', color: '#F59E0B' },
+    companion: { emoji: '🐾', name: 'Companions', color: '#8B5CF6' },
+    asset: { emoji: '💎', name: 'Asset', color: colors.primary },
+  };
+
+  return (
+    <View style={[styles.tagsContainer, { borderBottomColor: colors.border }]}>
+      <Text style={[styles.tagsLabel, { color: colors.mutedText }]}>FILTER BY TYPE:</Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tagsScrollContent}
+      >
+        {tags.map((tag) => {
+          const config = tagConfigs[tag] || { emoji: '📦', name: tag, color: colors.accent };
+          const isActive = selectedTag === tag;
+          
+          return (
+            <TouchableOpacity
+              key={tag}
+              style={[
+                styles.tagButton,
+                { backgroundColor: colors.card, borderColor: colors.border },
+                isActive && [styles.tagButtonActive, { 
+                  backgroundColor: config.color, 
+                  borderColor: config.color,
+                  shadowColor: config.color 
+                }],
+              ]}
+              onPress={() => {
+                console.log('🔄 Tag selected:', tag);
+                onTagChange(tag);
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={[
+                styles.tagButtonText,
+                { color: colors.lightText },
+                isActive && { color: '#FFFFFF' }
+              ]}>
+                {config.emoji} {config.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+});
+
+// Clean Filter Bar - Sections
 const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChange, colors }) => {
   const sectionConfigs = {
     survival: { emoji: '🌲', name: 'Survival' },
@@ -162,12 +267,19 @@ const AnimatedGameCard = React.memo(({ game, index }) => {
 });
 
 // Section Header
-const SimpleSectionHeader = React.memo(({ title, count, colors }) => {
+const SimpleSectionHeader = React.memo(({ title, count, colors, isNova = false }) => {
   return (
     <View style={styles.sectionHeaderContainer}>
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>
-        {title.toUpperCase()}
-      </Text>
+      <View style={styles.sectionTitleRow}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          {title.toUpperCase()}
+        </Text>
+        {isNova && (
+          <View style={[styles.novaBadge, { backgroundColor: colors.highlight }]}>
+            <Text style={styles.novaBadgeText}>NOVA</Text>
+          </View>
+        )}
+      </View>
       <Text style={[styles.sectionCount, { color: colors.mutedText }]}>
         {count} Assets
       </Text>
@@ -213,52 +325,300 @@ const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
 ));
 
 // Empty State
-const SimpleEmptyState = React.memo(({ selectedSection, colors }) => (
-  <View style={styles.centeredContainer}>
-    <Text style={[styles.emptyText, { color: colors.mutedText }]}>
-      No {selectedSection !== 'all' ? selectedSection : ''} assets found.
-    </Text>
-  </View>
-));
+const SimpleEmptyState = React.memo(({ selectedSection, selectedTag, colors }) => {
+  const getEmptyMessage = () => {
+    let message = 'No ';
+    if (selectedTag !== 'all') {
+      const tagNames = { rank: 'rank', keys: 'key', companion: 'companion', assets: 'asset' };
+      message += `${tagNames[selectedTag] || selectedTag} `;
+    }
+    if (selectedSection !== 'all') {
+      message += `${selectedSection} `;
+    }
+    message += 'assets found.';
+    return message;
+  };
+
+  return (
+    <View style={styles.centeredContainer}>
+      <Text style={[styles.emptyText, { color: colors.mutedText }]}>
+        {getEmptyMessage()}
+      </Text>
+    </View>
+  );
+});
 
 // ==================== MAIN COMPONENT ====================
 
 const MainScreen = () => {
   // NOVA THEME - Get live colors from dashboard
   const themeColors = useThemeColors();
-  const colors = themeColors || staticColors; // Use Nova colors or fallback to static
+  const colors = themeColors || staticColors;
   
   // Get Nova ready state from AuthContext
   const { isNovaReady } = useAuth();
+  
+  // NEW: Get Nova experience data for dashboard assets
+  const { objects, loaded: novaLoaded, error: novaError } = useNovaExperience(isNovaReady ? "home" : null);
+  
+  // Clear Nova assets when user logs out - IMMEDIATE CLEAR
+  useEffect(() => {
+    if (!isNovaReady) {
+      setNovaAssets([]);
+      setSections([]); // Also clear sections immediately
+    }
+  }, [isNovaReady]);
+
+  // Force refresh when user state changes (login/logout) - IMMEDIATE CLEAR
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!user) {
+      // IMMEDIATE CLEAR: Clear Nova data instantly on logout
+      setNovaAssets([]);
+      setSections([]);
+      setLoading(false); // Stop any loading state
+      
+      // Clear Nova cache immediately to prevent loading flash
+      const clearNovaCache = async () => {
+        try {
+          await AsyncStorage.removeItem(NOVA_ASSETS_CACHE_KEY);
+          console.log("🗑️ Nova cache cleared immediately on logout");
+        } catch (error) {
+          console.error("❌ Error clearing Nova cache:", error);
+        }
+      };
+      clearNovaCache();
+      
+      // IMMEDIATELY load Firebase assets after clearing Nova to show them instantly
+      loadGameAssets();
+      
+      console.log("🚫 User logged out - Nova data cleared immediately, Firebase assets loading");
+    } else if (user) {
+      // IMMEDIATELY load Firebase assets when user logs in to show them instantly
+      // Force load without waiting for Nova to be ready
+      const forceLoadFirebase = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          
+          console.log('🔄 Force loading Firebase assets on login...');
+          const assets = await fetchGameAssets();
+          
+          const normalizedAssets = assets.map(asset => ({
+            ...asset,
+            section: asset.section || 'survival',
+            tag: asset.tag || 'assets',
+            isNova: false
+          }));
+          
+          console.log('📊 Firebase Assets Force Loaded:', {
+            total: normalizedAssets.length,
+            tags: [...new Set(normalizedAssets.map(a => a.tag))],
+            sections: [...new Set(normalizedAssets.map(a => a.section))]
+          });
+          
+          if (normalizedAssets.length === 0) {
+            setError('No game assets available');
+          } else {
+            setGameAssets(normalizedAssets);
+            
+            // Extract unique sections
+            const uniqueSections = [
+              ...new Set(normalizedAssets.map((g) => g.section).filter(Boolean))
+            ].sort();
+            setSections(uniqueSections);
+            
+            console.log('🏷️ Permanent tags (never change):', tags);
+          }
+        } catch (err) {
+          console.error('❌ Error force loading Firebase assets:', err);
+          setError('Failed to load game assets. Please try again.');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      forceLoadFirebase();
+      console.log("✅ User logged in - Firebase assets force loading immediately");
+    }
+  }, [user]);
   
   // State management
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [gameAssets, setGameAssets] = useState([]);
+  const [novaAssets, setNovaAssets] = useState([]); // NEW: Nova dashboard assets
   const [sections, setSections] = useState([]);
+  const [tags, setTags] = useState(['all', 'asset', 'companion', 'keys', 'rank']); // PERMANENT tags
   const [selectedSection, setSelectedSection] = useState('all');
+  const [selectedTag, setSelectedTag] = useState('all'); // NEW: Selected tag filter
   const { balance } = useUser();
+
+  // Check cache on mount
+  useEffect(() => {
+    const checkCachedNovaAssets = async () => {
+      try {
+        const userData = await AsyncStorage.getItem("user");
+        if (userData) {
+          const user = JSON.parse(userData);
+          const userId = user.email || "guest";
+          
+          const cached = await getCachedNovaAssets(userId);
+          if (cached) {
+            setNovaAssets(cached);
+            
+            // Extract sections from cached assets (tags are permanent)
+            const uniqueSections = [...new Set(cached.map(g => g.section).filter(Boolean))].sort();
+            
+            setSections(uniqueSections);
+            // Tags are permanent - don't change them
+            
+            console.log("🎯 Using cached Nova assets for instant display");
+          }
+        }
+      } catch (error) {
+        console.error("❌ Error checking Nova assets cache:", error);
+      }
+    };
+
+    checkCachedNovaAssets();
+  }, []);
+
+  // NEW: Process Nova dashboard assets - ONLY when user is logged in
+  useEffect(() => {
+    if (novaLoaded && objects && user) { // Only load Nova data when user exists
+      console.log('🔍 Nova Objects Available:', Object.keys(objects || {}));
+      
+      // Check for different tag sections in Nova
+      const tagSections = ['game-assets']; // Sirf yahi exists karta hai
+      const combinedNovaAssets = [];
+      
+      tagSections.forEach(sectionKey => {
+        if (objects[sectionKey]?.content) {
+          try {
+            const content = typeof objects[sectionKey].content === 'string' 
+              ? JSON.parse(objects[sectionKey].content) 
+              : objects[sectionKey].content;
+            
+            console.log(`📦 Nova ${sectionKey}:`, { 
+              contentKeys: Object.keys(content || {}), 
+              contentLength: Array.isArray(content) ? content.length : Object.keys(content).length
+            });
+            
+            // Simple: Display all assets directly without priority/order
+            if (Array.isArray(content)) {
+              // If content is already an array, use it directly
+              content.forEach((asset, index) => {
+                combinedNovaAssets.push({
+                  ...asset,
+                  novaSource: sectionKey,
+                  isNova: true
+                });
+              });
+            } else {
+              // If content is an object, convert to array
+              Object.values(content).forEach((asset, index) => {
+                combinedNovaAssets.push({
+                  ...asset,
+                  novaSource: sectionKey,
+                  isNova: true
+                });
+              });
+            }
+          } catch (e) {
+            console.error(`❌ Error parsing Nova ${sectionKey}:`, e);
+          }
+        }
+      });
+      
+      console.log('✅ Processed Nova Assets:', {
+        count: combinedNovaAssets.length,
+        assets: combinedNovaAssets.map(a => ({ 
+          title: a.title, 
+          tag: a.tag 
+        }))
+      });
+      
+      // Cache Nova assets
+      if (combinedNovaAssets.length > 0) {
+        const cacheNovaAssetsAsync = async () => {
+          try {
+            const userData = await AsyncStorage.getItem("user");
+            const userId = userData ? JSON.parse(userData).email : "guest";
+            await cacheNovaAssets(combinedNovaAssets, userId);
+          } catch (error) {
+            console.error("❌ Error caching Nova assets:", error);
+          }
+        };
+        cacheNovaAssetsAsync();
+      }
+      
+      // Only update if the assets have actually changed
+      setNovaAssets(prevAssets => {
+        const prevAssetsString = JSON.stringify(prevAssets);
+        const newAssetsString = JSON.stringify(combinedNovaAssets);
+        
+        if (prevAssetsString !== newAssetsString) {
+          return combinedNovaAssets;
+        }
+        return prevAssets;
+      });
+      
+      // Extract sections from Nova assets (tags are already persistent)
+      const uniqueSections = [...new Set(combinedNovaAssets.map(g => g.section).filter(Boolean))].sort();
+      
+      // Only update sections if changed
+      setSections(prevSections => {
+        const prevSectionsString = JSON.stringify(prevSections);
+        const newSectionsString = JSON.stringify(uniqueSections);
+        
+        if (prevSectionsString !== newSectionsString) {
+          return uniqueSections;
+        }
+        return prevSections;
+      });
+      
+      // Tags are persistent - don't change them
+      console.log('🏷️ Keeping persistent tags:', tags);
+    }
+  }, [novaLoaded, objects]);
 
   const loadGameAssets = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
+      
+      console.log('🔄 Loading Firebase game assets...');
       const assets = await fetchGameAssets();
+      
       const normalizedAssets = assets.map(asset => ({
         ...asset,
         section: asset.section || 'survival',
+        tag: asset.tag || 'assets', // NEW: Ensure tag field exists
+        isNova: false
       }));
+      
+      console.log('📊 Firebase Assets Loaded:', {
+        total: normalizedAssets.length,
+        tags: [...new Set(normalizedAssets.map(a => a.tag))],
+        sections: [...new Set(normalizedAssets.map(a => a.section))]
+      });
+      
       if (normalizedAssets.length === 0) {
         setError('No game assets available');
       } else {
         setGameAssets(normalizedAssets);
+        
+        // Extract unique sections
         const uniqueSections = [
           ...new Set(normalizedAssets.map((g) => g.section).filter(Boolean))
         ].sort();
         setSections(uniqueSections);
+        
+        console.log('🏷️ Permanent tags (never change):', tags);
       }
     } catch (err) {
-      console.error('Error loading game assets:', err);
+      console.error('❌ Error loading game assets:', err);
       setError('Failed to load game assets. Please try again.');
     } finally {
       setLoading(false);
@@ -266,42 +626,128 @@ const MainScreen = () => {
   }, []);
 
   useEffect(() => {
-    // Only load game assets after Nova is ready
     if (isNovaReady) {
       loadGameAssets();
     }
   }, [isNovaReady, loadGameAssets]);
 
+  // NEW: Combined filtering for both section and tag
   const filteredGames = useMemo(() => {
-    return selectedSection === 'all'
-      ? gameAssets
-      : gameAssets.filter((g) => g.section === selectedSection);
-  }, [gameAssets, selectedSection]);
+    console.log('🔍 Filtering games:', { 
+      selectedSection, 
+      selectedTag,
+      firebaseCount: gameAssets.length,
+      novaCount: novaAssets.length 
+    });
+    
+    let filtered = [...gameAssets];
+    
+    // Apply section filter
+    if (selectedSection !== 'all') {
+      filtered = filtered.filter((g) => g.section === selectedSection);
+    }
+    
+    // Apply tag filter
+    if (selectedTag !== 'all') {
+      filtered = filtered.filter((g) => g.tag === selectedTag);
+    }
+    
+    console.log('✅ Filtered results:', filtered.length);
+    return filtered;
+  }, [gameAssets, selectedSection, selectedTag]);
+
+  // NEW: Filter Nova assets based on selected tag
+  const filteredNovaAssets = useMemo(() => {
+    if (selectedTag === 'all') {
+      return novaAssets;
+    }
+    return novaAssets.filter(asset => asset.tag === selectedTag);
+  }, [novaAssets, selectedTag]);
 
   const groupedGames = useMemo(() => {
+    let gamesToGroup = gameAssets;
+    
+    // Apply tag filter to grouped games
+    if (selectedTag !== 'all') {
+      gamesToGroup = gamesToGroup.filter((g) => g.tag === selectedTag);
+    }
+    
     return sections.reduce((acc, section) => {
-      acc[section] = gameAssets.filter((g) => g.section === section);
+      acc[section] = gamesToGroup.filter((g) => g.section === section);
       return acc;
     }, {});
-  }, [gameAssets, sections]);
+  }, [gameAssets, sections, selectedTag]);
 
   const renderGameContent = () => {
-    if (filteredGames.length === 0) {
-      return <SimpleEmptyState selectedSection={selectedSection} colors={colors} />;
+    const hasNovaAssets = filteredNovaAssets.length > 0;
+    const hasFirebaseAssets = filteredGames.length > 0;
+    
+    if (!hasNovaAssets && !hasFirebaseAssets) {
+      return <SimpleEmptyState selectedSection={selectedSection} selectedTag={selectedTag} colors={colors} />;
     }
-    if (selectedSection === 'all') {
-      return sections.map((section) => {
-        const sectionGames = groupedGames[section];
-        if (sectionGames.length === 0) return null;
-        return (
-          <View key={section} style={styles.sectionGroup}>
+    
+    const content = [];
+    
+    // Show Nova Dashboard assets first
+    if (hasNovaAssets) {
+      console.log('🎯 Rendering Nova assets:', filteredNovaAssets.length);
+      content.push(
+        <View key="nova-section" style={styles.sectionGroup}>
+          <SimpleSectionHeader
+            title="Featured Assets"
+            count={filteredNovaAssets.length}
+            colors={colors}
+            isNova={true}
+          />
+          <View style={styles.gamesList}>
+            {filteredNovaAssets.map((game, index) => (
+              <AnimatedGameCard
+                key={`nova-${game.id || index}`}
+                game={game}
+                index={index}
+              />
+            ))}
+          </View>
+        </View>
+      );
+    }
+    
+    // Show Firebase assets
+    if (hasFirebaseAssets) {
+      if (selectedSection === 'all') {
+        sections.forEach((section) => {
+          const sectionGames = groupedGames[section];
+          if (sectionGames.length === 0) return;
+          
+          content.push(
+            <View key={section} style={styles.sectionGroup}>
+              <SimpleSectionHeader
+                title={section.charAt(0).toUpperCase() + section.slice(1)}
+                count={sectionGames.length}
+                colors={colors}
+              />
+              <View style={styles.gamesList}>
+                {sectionGames.map((game, index) => (
+                  <AnimatedGameCard
+                    key={game.id}
+                    game={game}
+                    index={index}
+                  />
+                ))}
+              </View>
+            </View>
+          );
+        });
+      } else {
+        content.push(
+          <View key="filtered" style={styles.sectionGroup}>
             <SimpleSectionHeader
-              title={section.charAt(0).toUpperCase() + section.slice(1)}
-              count={sectionGames.length}
+              title="Game Assets"
+              count={filteredGames.length}
               colors={colors}
             />
             <View style={styles.gamesList}>
-              {sectionGames.map((game, index) => (
+              {filteredGames.map((game, index) => (
                 <AnimatedGameCard
                   key={game.id}
                   game={game}
@@ -311,23 +757,13 @@ const MainScreen = () => {
             </View>
           </View>
         );
-      });
-    } else {
-      return (
-        <View style={styles.gamesList}>
-          {filteredGames.map((game, index) => (
-            <AnimatedGameCard
-              key={game.id}
-              game={game}
-              index={index}
-            />
-          ))}
-        </View>
-      );
+      }
     }
+    
+    return content;
   };
 
-  // NEW: Show Nova loading state if Nova is not ready
+  // Show Nova loading state if Nova is not ready
   if (!isNovaReady) {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: staticColors.background }]}>
@@ -378,9 +814,18 @@ const MainScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <SimpleGamingHero
-          gameCount={gameAssets.length}
+          gameCount={gameAssets.length + novaAssets.length}
           selectedSection={selectedSection}
-          filteredCount={filteredGames.length}
+          selectedTag={selectedTag}
+          filteredCount={filteredGames.length + filteredNovaAssets.length}
+          colors={colors}
+        />
+
+        {/* NEW: Tags Filter */}
+        <TagsFilter
+          tags={tags}
+          selectedTag={selectedTag}
+          onTagChange={setSelectedTag}
           colors={colors}
         />
 
@@ -413,7 +858,6 @@ const MainScreen = () => {
 };
 
 // ==================== STYLES ====================
-// Using static colors for base styles (performance optimization)
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -484,6 +928,40 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
 
+  // NEW: Tags Filter Styles
+  tagsContainer: {
+    marginBottom: 15,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+  },
+  tagsLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+    marginLeft: 20,
+    marginBottom: 10,
+  },
+  tagsScrollContent: {
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+  tagButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 18,
+    borderWidth: 1,
+  },
+  tagButtonActive: {
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  tagButtonText: {
+    fontWeight: '700',
+    fontSize: 12,
+  },
+
   // Filter Bar
   filterContainer: {
     marginBottom: 20,
@@ -509,17 +987,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 13,
   },
-  filterButtonTextActive: {
-    // Color set dynamically
-  },
+  filterButtonTextActive: {},
 
   // Game Cards
   gamesList: {
     paddingHorizontal: 20,
   },
-  gameCard: {
-    // Styles handled by GameCard component
-  },
+  gameCard: {},
 
   // Section Headers
   sectionGroup: {
@@ -532,6 +1006,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 15,
   },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '800',
@@ -540,6 +1019,19 @@ const styles = StyleSheet.create({
   sectionCount: {
     fontSize: 14,
     fontWeight: '600',
+  },
+  
+  // NEW: Nova Badge
+  novaBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+  },
+  novaBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
 
   // FAB
