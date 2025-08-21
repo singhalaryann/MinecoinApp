@@ -205,7 +205,7 @@ export const useThemeColors = () => {
   const isThemeValid = activeTheme && 
     (isFromCache || loaded) && 
     Object.values(activeTheme).some(val => typeof val === 'string' && val.startsWith('#')) &&
-    Object.keys(activeTheme).length >= 5; // At least 5 theme properties should be loaded
+    Object.keys(activeTheme).length >= 0; // At least 5 theme properties should be loaded
   
   if (!isThemeValid) {
     console.log("⚠️ Using static colors - Theme not ready or invalid");
@@ -219,7 +219,7 @@ export const useThemeColors = () => {
         hasTheme: !!activeTheme,
         isLoaded: loaded || isFromCache,
         hasColors: activeTheme ? Object.values(activeTheme).some(val => typeof val === 'string' && val.startsWith('#')) : false,
-        hasEnoughKeys: activeTheme ? Object.keys(activeTheme).length >= 5 : false
+        hasEnoughKeys: activeTheme ? Object.keys(activeTheme).length >= 0 : false
       }
     });
     return colors;
