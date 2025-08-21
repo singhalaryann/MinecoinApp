@@ -18,6 +18,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import { colors } from "../../screens/theme";
 
 const DISCORD_URL = "https://discord.gg/a3KmcgCqDP";
 
@@ -256,11 +257,10 @@ const MCVerificationForm = () => {
             </View>
             <View style={styles.rewardsInfo}>
               <Text style={styles.rewardsBenefit}>
-                🎁 Get 20 free coins daily
+                🎁 Get 20 free coins daily 🎁
               </Text>
               <Text style={styles.rewardsDescription}>
-                Simply open the app once every 24 hours to claim your reward
-                automatically
+                ⏰ Simply open the app once every 24 hours to claim your reward automatically 🚀
               </Text>
             </View>
           </View>
@@ -430,233 +430,311 @@ const MCVerificationForm = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0a0a0a",
+    backgroundColor: "transparent", // Changed to transparent to show gradient
   },
   formContent: {
     padding: 24,
   },
   title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#3aed76",
-    marginBottom: 8,
+    fontSize: 30,
+    fontWeight: "800",
+    color: colors.accent, // Changed from hardcoded green to theme color
+    marginBottom: 10,
+    letterSpacing: 1,
+    textShadowColor: colors.accentGlow,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
-    fontSize: 17,
-    color: "#A1A1AA",
+    fontSize: 18,
+    color: colors.lightText, // Changed to theme color
     marginBottom: 32,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
   formGroup: {
-    gap: 16,
-    marginBottom: 24,
+    gap: 18,
+    marginBottom: 28,
   },
   inputWrapper: {
-    backgroundColor: "#121212",
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#3aed76",
+    backgroundColor: 'rgba(26, 26, 46, 0.8)', // Changed to theme background
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.accent, // Changed to theme color
     overflow: "hidden",
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   inputContent: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
-    gap: 12,
+    padding: 18,
+    gap: 14,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: "#3aed76",
+    fontSize: 17,
+    color: colors.text, // Changed to theme color
     padding: 0,
+    fontWeight: '500',
   },
   showButton: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: 'rgba(0, 212, 255, 0.1)',
   },
   showButtonText: {
-    color: "#3aed76",
+    color: colors.accent, // Changed to theme color
     fontSize: 15,
     fontWeight: "600",
   },
   submitButton: {
-    backgroundColor: "#3aed76",
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.accent, // Changed to theme color
+    borderRadius: 16,
+    padding: 18,
     alignItems: "center",
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   submitButtonDisabled: {
     opacity: 0.7,
   },
   submitButtonText: {
-    color: "#0a0a0a",
-    fontSize: 17,
-    fontWeight: "700",
+    color: colors.background, // Changed to theme color
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
   inputError: {
-    borderColor: "#EF4444",
+    borderColor: colors.error, // Changed to theme error color
   },
   verifiedCard: {
     margin: 24,
     padding: 32,
-    borderRadius: 20,
+    borderRadius: 24,
     alignItems: "center",
-    backgroundColor: "#121212",
-    borderWidth: 1,
-    borderColor: "#3aed76",
-    shadowColor: "#3aed76",
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 14,
-    elevation: 6,
+    backgroundColor: 'rgba(26, 26, 46, 0.9)',
+    borderWidth: 0, // Removed border
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15, // Reduced shadow
+    shadowRadius: 8,
+    elevation: 4, // Reduced elevation
+    overflow: 'hidden',
   },
   verifiedIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#3aed76",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.accent, // Changed to theme color
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
   },
   verifiedTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#3aed76",
-    marginBottom: 8,
+    fontSize: 26,
+    fontWeight: "800",
+    color: colors.accent, // Changed to theme color
+    marginBottom: 10,
+    letterSpacing: 0.5,
+    textShadowColor: colors.accentGlow,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   verifiedUsername: {
-    fontSize: 18,
-    color: "#A1A1AA",
-    marginBottom: 16,
+    fontSize: 20,
+    color: colors.text, // Changed to theme color
+    marginBottom: 18,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
   verifiedDescription: {
-    fontSize: 16,
-    color: "#A1A1AA",
+    fontSize: 17,
+    color: colors.lightText, // Changed to theme color
     textAlign: "center",
     marginBottom: 32,
-    lineHeight: 24,
+    lineHeight: 26,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
   discordButton: {
-    backgroundColor: "#3aed76",
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.accent, // Changed to theme color
+    borderRadius: 16,
+    padding: 18,
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 18,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   discordButtonText: {
-    color: "#0a0a0a",
-    fontSize: 17,
-    fontWeight: "700",
+    color: colors.background, // Changed to theme color
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
   editButton: {
-    borderWidth: 1,
-    borderColor: "#3aed76",
-    borderRadius: 12,
-    padding: 16,
+    borderWidth: 0, // Removed border
+    borderRadius: 16,
+    padding: 18,
     alignItems: "center",
+    backgroundColor: 'rgba(0, 212, 255, 0.15)', // Slightly more visible background
   },
   editButtonText: {
-    color: "#3aed76",
-    fontSize: 17,
-    fontWeight: "700",
+    color: colors.accent, // Changed to theme color
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
   },
   modalContent: {
-    backgroundColor: "#121212",
-    borderRadius: 20,
-    padding: 24,
+    backgroundColor: 'rgba(26, 26, 46, 0.9)',
+    borderRadius: 24,
+    padding: 28,
     width: "100%",
-    maxWidth: 320,
+    maxWidth: 340,
     alignItems: "center",
+    borderWidth: 0, // Removed border
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15, // Reduced shadow
+    shadowRadius: 8,
+    elevation: 4, // Reduced elevation
   },
   successIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#3aed76",
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: colors.accent, // Changed to theme color
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
   },
   modalTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#3aed76",
-    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: "800",
+    color: colors.accent, // Changed to theme color
+    marginBottom: 10,
     textAlign: "center",
+    letterSpacing: 0.5,
   },
   modalDescription: {
-    fontSize: 16,
-    color: "#A1A1AA",
+    fontSize: 17,
+    color: colors.lightText, // Changed to theme color
     textAlign: "center",
-    marginBottom: 24,
-    lineHeight: 24,
+    marginBottom: 28,
+    lineHeight: 26,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
   modalButton: {
-    backgroundColor: "#3aed76",
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.accent, // Changed to theme color
+    borderRadius: 16,
+    padding: 18,
     alignItems: "center",
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 8,
   },
   modalButtonText: {
-    color: "#0a0a0a",
-    fontSize: 17,
-    fontWeight: "700",
+    color: colors.background, // Changed to theme color
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: 0.5,
   },
   validationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
-    gap: 8,
+    marginTop: 6,
+    gap: 10,
   },
   validationText: {
-    fontSize: 14,
-    color: "#A1A1AA",
+    fontSize: 15,
+    color: colors.lightText, // Changed to theme color
+    fontWeight: '500',
   },
   errorText: {
-    color: "#EF4444",
+    color: colors.error, // Changed to theme error color
   },
   successText: {
-    color: "#10B981",
+    color: colors.accent, // Changed to theme accent color
   },
   rewardsContainer: {
-    backgroundColor: "#121212",
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: 'rgba(26, 26, 46, 0.9)',
+    borderRadius: 20,
+    padding: 24,
     marginBottom: 24,
     width: "100%",
-    borderWidth: 1,
-    borderColor: "#3aed76",
+    borderWidth: 0,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   rewardsHeader: {
-    marginBottom: 8,
+    marginBottom: 12,
     alignItems: "center",
   },
   rewardsTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#3aed76",
+    fontSize: 22,
+    fontWeight: "800",
+    color: colors.accent,
     textAlign: "center",
+    letterSpacing: 0.5,
+    textShadowColor: colors.accentGlow,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   rewardsInfo: {
     alignItems: "center",
+    gap: 8,
   },
   rewardsBenefit: {
-    fontSize: 16,
-    color: "#3aed76",
-    fontWeight: "600",
-    marginBottom: 4,
+    fontSize: 18,
+    color: colors.text,
+    fontWeight: "700",
+    marginBottom: 8,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+    textShadowColor: colors.accentGlow,
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   rewardsDescription: {
     fontSize: 15,
-    color: "#A1A1AA",
+    color: colors.lightText,
     textAlign: "center",
     lineHeight: 22,
+    fontWeight: '500',
+    letterSpacing: 0.2,
   },
   loadingContainer: {
     flex: 1,

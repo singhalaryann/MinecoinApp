@@ -100,33 +100,36 @@ const NotificationBanner = () => {
 // Styles for the banner
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#3aed76',  // Purple background color
+    backgroundColor: '#00D4FF',  // Electric blue background color
     width: '100%',
-    // Add subtle shadow effect
-    shadowColor: '#000',
+    // Add enhanced shadow effect
+    shadowColor: '#00D4FF',
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 3,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,  // Shadow for Android
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 6,  // Enhanced shadow for Android
   },
   contentWrapper: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
     justifyContent: 'center',   // Center content vertically
     alignItems: 'center',       // Center content horizontally
-    minHeight: 40,             // Minimum height of banner
+    minHeight: 44,             // Enhanced minimum height of banner
     flexDirection: 'row',      // Arrange items in a row
   },
   text: {
     color: 'white',
     textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '500',
-    letterSpacing: 0.2,        // Spacing between letters
-    lineHeight: 18,           // Height of each line of text
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0.3,        // Enhanced spacing between letters
+    lineHeight: 20,           // Enhanced height of each line of text
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowOpacity: 0.3,
+    textShadowRadius: 2,
   },
 });
 

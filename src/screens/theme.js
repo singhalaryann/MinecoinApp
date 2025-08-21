@@ -294,48 +294,48 @@ export const useThemeColors = () => {
 
 // Static colors export (fallback/default theme)
 export const colors = {
-  // Core Gamer Aesthetic - Blue + Emerald + Magenta Accent
-  primary: '#3B82F6',
-  primaryDark: '#1E3A8A',
-  primaryLight: '#93C5FD',
-  primaryFaded: 'rgba(59, 130, 246, 0.1)',
+  // Core Modern Gaming Dark Theme - Cool and Simple
+  primary: '#00D4FF',
+  primaryDark: '#0099CC',
+  primaryLight: '#66E6FF',
+  primaryFaded: 'rgba(0, 212, 255, 0.08)',
   
-  // Accent - Emerald Green
-  accent: '#10B981',
-  accentDark: '#059669',
-  accentGlow: 'rgba(16, 185, 129, 0.25)',
+  // Accent - Electric Blue (Toned Down)
+  accent: '#00D4FF',
+  accentDark: '#0099CC',
+  accentGlow: 'rgba(0, 212, 255, 0.15)',
   
-  // Secondary Accent - Gamer Pink
-  highlight: '#EC4899',
-  highlightGlow: 'rgba(236, 72, 153, 0.2)',
+  // Secondary Accent - Neon Purple (Toned Down)
+  highlight: '#8A2BE2',
+  highlightGlow: 'rgba(138, 43, 226, 0.12)',
   
-  // Backgrounds
-  background: '#0A0A0A',
-  backgroundLight: '#111827',
-  card: 'rgba(17, 24, 39, 0.95)',
+  // Backgrounds - Deep Purple-Black (Simplified)
+  background: '#0F0F23',
+  backgroundLight: '#1A1A2E',
+  card: 'rgba(26, 26, 46, 0.9)',
   
-  // Text
-  text: '#F3F4F6',
-  lightText: '#D1D5DB',
-  mutedText: '#6B7280',
+  // Text - Clean and Simple
+  text: '#FFFFFF',
+  lightText: '#E6E6FA',
+  mutedText: '#B8B8D1',
   
-  // Borders & Glow
-  border: 'rgba(59, 130, 246, 0.2)',
-  borderStrong: '#3B82F6',
-  glow: 'rgba(59, 130, 246, 0.4)',
+  // Borders & Glow - Subtle and Clean
+  border: 'rgba(0, 212, 255, 0.15)',
+  borderStrong: '#00D4FF',
+  glow: 'rgba(0, 212, 255, 0.2)',
   
   // Buttons - Arrays for gradients
   inactiveButton: ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
-  activeGradient: ['#10B981', '#10B981'],
+  activeGradient: ['#00D4FF', '#0099CC'],
   dangerGradient: ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
-  loadingGradient: ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
+  loadingGradient: ['rgba(0, 212, 255, 0.08)', 'rgba(0, 212, 255, 0.03)'],
   
-  // Shadows
-  shadow: '#1E3A8A',
-  fabShadow: '#10B981',
+  // Shadows - Subtle and Clean
+  shadow: '#0099CC',
+  fabShadow: '#00D4FF',
   
   // Misc
-  gradientDark: ['#0A0A0A', '#111827', '#0A0A0A'],
-  sectionUnderline: '#93C5FD',
+  gradientDark: ['#0F0F23', '#1A1A2E', '#0F0F23'],
+  sectionUnderline: '#00D4FF',
   error: '#EF4444'
 };

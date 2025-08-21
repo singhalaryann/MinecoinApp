@@ -77,12 +77,12 @@ const GameCard = ({ game, style, showSection = true }) => {
         gradient: [colors.accentDark, colors.accent],
         shadowColor: colors.accent,
         borderColor: colors.accentGlow,
-        bgColor: 'rgba(16, 185, 129, 0.15)',
+        bgColor: 'rgba(236, 241, 243, 0.15)',
         icon: '🌲',
         name: 'SURVIVAL',
       },
       lifesteal: {
-        gradient: ['#EF4444', '#DC2626'], // You can add these to theme if desired
+        gradient: ['#EF4444', '#DC2626'],
         shadowColor: '#EF4444',
         borderColor: 'rgba(239, 68, 68, 0.6)',
         bgColor: 'rgba(239, 68, 68, 0.15)',
@@ -125,7 +125,7 @@ const GameCard = ({ game, style, showSection = true }) => {
         gradient: [colors.accentDark, colors.accent],
         shadowColor: colors.accent,
         borderColor: colors.accentGlow,
-        bgColor: 'rgba(58, 237, 118, 0.15)',
+        bgColor: 'rgba(0, 212, 255, 0.15)',
         icon: '🎮',
         name: 'GAME',
       },
@@ -229,7 +229,7 @@ const GameCard = ({ game, style, showSection = true }) => {
       style={[
         styles.cardWrapper,
         {
-          transform: [{ scale: scaleAnim }, { scale: pulseAnim }],
+          transform: [{ scale: scaleAnim }], // Remove pulseAnim to fix moving
           shadowColor: sectionConfig.shadowColor,
         },
         style,
@@ -257,7 +257,7 @@ const GameCard = ({ game, style, showSection = true }) => {
           },
         ]}
       >
-        {/* Left Section - Gaming Image */}
+        {/* Left Section - Gaming Image (Original Size) */}
         <View style={[styles.leftSection, { width: imageWidth }]}>
           <View style={styles.imageContainer}>
             {/* Image Glow Ring */}
@@ -331,7 +331,7 @@ const GameCard = ({ game, style, showSection = true }) => {
               </Text>
               <View style={styles.passSection}>
                 <LinearGradient
-                  colors={[colors.accentGlow, 'rgba(16, 185, 129, 0.1)']}
+                  colors={[colors.accentGlow, 'rgba(0, 212, 255, 0.1)']}
                   style={styles.passBadge}
                 >
                   <Text style={[styles.passIcon, { color: colors.accent }]}>🎮</Text>
@@ -489,25 +489,26 @@ const styles = StyleSheet.create({
     right: -4,
     bottom: -4,
     borderRadius: 28,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   container: {
     flexDirection: 'row',
     borderRadius: 24,
     borderWidth: 2,
     padding: 16,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
     position: 'relative',
     overflow: 'hidden',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)',
   },
 
-  // Left Section - Gaming Image
+  // Left Section - Gaming Image (Original Size)
   leftSection: {
     position: 'relative',
     aspectRatio: 1,
@@ -617,11 +618,11 @@ const styles = StyleSheet.create({
   gameTitle: {
     fontSize: 18,
     fontWeight: '900',
-    color: colors.accent,
+    color: '#FFFFFF', // Changed from colors.accent to pure white for better contrast
     letterSpacing: 0.8,
-    textShadowColor: colors.accentGlow,
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
+    textShadowColor: colors.accent,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   passSection: {
     alignSelf: 'flex-start',
@@ -657,8 +658,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'rgba(0, 212, 255, 0.08)',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 212, 255, 0.2)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   statItem: {
     flex: 1,
@@ -708,6 +717,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: colors.error,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
   },
   errorIcon: {
     fontSize: 14,
@@ -727,11 +737,11 @@ const styles = StyleSheet.create({
   buyNowButton: {
     borderRadius: 16,
     overflow: 'hidden',
-    elevation: 6,
+    elevation: 8,
     shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
   },
   buyNowGradient: {
     borderRadius: 16,

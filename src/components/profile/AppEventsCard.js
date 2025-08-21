@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useUser } from '../../context/UserContext';
+import { colors } from '../../screens/theme';
 
 // Component for each section header
 const SectionHeader = ({ title }) => (
@@ -71,7 +72,7 @@ const GiftCardGenerator = () => {
         onChangeText={setGiftAmount}
         keyboardType="number-pad"
         placeholder="Enter amount"
-        placeholderTextColor="#6B7280"
+        placeholderTextColor={colors.mutedText}
         editable={!isGenerating && !isProcessing}
       />
 
@@ -148,7 +149,7 @@ const GiftCodeClaimer = ({ addBalance }) => {
         value={claimCode}
         onChangeText={setClaimCode}
         placeholder="Enter gift code"
-        placeholderTextColor="#6B7280"
+        placeholderTextColor={colors.mutedText}
         autoCapitalize="characters"
         editable={!isClaiming && !isProcessing}
       />
@@ -206,98 +207,114 @@ const AppEventsCard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000000',
+    backgroundColor: 'transparent', // Fixed: transparent to show app gradient
     borderRadius: 20,
     padding: 20,
     margin: 16,
-    borderWidth: 2,
-    borderColor: '#3aed76',
-    shadowColor: '#3aed76',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 12,
-    elevation: 10,
+    borderWidth: 0, // No borders for consistency
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     textAlign: 'center',
     marginBottom: 10,
     letterSpacing: 1.2,
   },
   balance: {
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     fontSize: 18,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 20,
   },
   subtitle: {
-    color: '#6B7280',
+    color: colors.mutedText, // Changed to theme color
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 12,
   },
   sectionContainer: {
     marginBottom: 24,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     borderRadius: 14,
     padding: 16,
-    borderWidth: 1,
-    borderColor: '#3aed76',
+    borderWidth: 0, // No borders for consistency
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   input: {
-    backgroundColor: '#121212',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#3aed76',
-    color: '#ffffff',
+    borderWidth: 0, // No borders for consistency
+    color: colors.text, // Changed to theme color
     padding: 12,
     marginBottom: 14,
     fontSize: 16,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   actionButton: {
-    backgroundColor: '#3aed76',
+    backgroundColor: colors.accent, // Changed to theme color
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 10,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   buttonDisabled: {
-    backgroundColor: '#3aed76aa',
+    backgroundColor: colors.mutedText, // Changed to theme muted color
   },
   actionButtonText: {
-    color: '#000000',
+    color: colors.background, // Changed to theme background color for contrast
     fontWeight: 'bold',
     fontSize: 16,
   },
   divider: {
     height: 1,
-    backgroundColor: '#3aed76',
+    backgroundColor: colors.accent, // Changed to theme color
     marginVertical: 20,
     opacity: 0.4,
   },
   codeContainer: {
-    backgroundColor: '#121212',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     padding: 12,
     borderRadius: 8,
     marginTop: 14,
-    borderColor: '#3aed76',
-    borderWidth: 1,
+    borderWidth: 0, // No borders for consistency
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   codeText: {
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
     textAlign: 'center',
   },
   copyButton: {
-    backgroundColor: '#3aed76',
+    backgroundColor: colors.accent, // Changed to theme color
     borderRadius: 8,
     paddingVertical: 8,
     alignItems: 'center',
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   copyButtonText: {
     color: '#000000',
@@ -309,20 +326,28 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   successResult: {
-    backgroundColor: '#1e4023',
-    borderColor: '#3aed76',
-    borderWidth: 1,
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
+    borderWidth: 0, // No borders for consistency
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   failureResult: {
-    backgroundColor: '#401e1e',
-    borderColor: '#ff4c4c',
-    borderWidth: 1,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)', // Changed to theme error background
+    borderWidth: 0, // No borders for consistency
+    shadowColor: colors.error,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   resultText: {
     textAlign: 'center',
     fontSize: 18,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginTop: 10,
   },
 });

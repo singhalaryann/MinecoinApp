@@ -21,6 +21,7 @@ import { useUser } from '../../context/UserContext';
 import { savePurchaseHistory } from '../../config/firebase';
 import InsufficientBalance from '../games/InsufficientBalanceModal';
 import { Easing } from 'react-native';
+import { colors } from '../../screens/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BOX_SIZE = (SCREEN_WIDTH * 0.85 - 72) / 3;
@@ -474,7 +475,7 @@ const CalendarCard = () => {
                 <View style={styles.boxContent}>
                   {boxes[boxIdx].content.type === 'coins' ? (
                     <>
-                      <Coins size={20} color="#3aed76" />
+                      <Coins size={20} color={colors.accent} />
                       <Text style={styles.rewardText}>{boxes[boxIdx].content.value}</Text>
                     </>
                   ) : (
@@ -498,7 +499,7 @@ const CalendarCard = () => {
                 <View style={styles.boxContent}>
                   {boxes[boxIdx].content.type === 'coins' ? (
                     <>
-                      <Coins size={20} color="#3aed76" />
+                      <Coins size={20} color={colors.accent} />
                       <Text style={styles.rewardText}>{boxes[boxIdx].content.value}</Text>
                     </>
                   ) : (
@@ -519,7 +520,7 @@ const CalendarCard = () => {
                   )}
                 </View>
               ) : (
-                <Gift size={28} color={selectedBox === gridIdx ? '#3aed76' : '#6B7280'} />
+                <Gift size={28} color={selectedBox === gridIdx ? colors.accent : '#6B7280'} />
               )}
             </TouchableOpacity>
           </Animated.View>
@@ -527,7 +528,7 @@ const CalendarCard = () => {
       )}
       {isGettingReward && (
         <View style={styles.gettingRewardOverlay}>
-          <ActivityIndicator size="large" color="#3aed76" />
+          <ActivityIndicator size="large" color={colors.accent} />
           <Text style={styles.gettingRewardText}>Getting your reward...</Text>
         </View>
       )}
@@ -544,7 +545,7 @@ const CalendarCard = () => {
   if (loadingConfig) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#3aed76" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -553,7 +554,7 @@ const CalendarCard = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Gift size={24} color="#3aed76" />
+        <Gift size={24} color={colors.accent} />
         <Text style={styles.title}>Lucky Box Game</Text>
       </View>
       {/* Current Balance Display */}
@@ -584,7 +585,7 @@ const CalendarCard = () => {
               setError(null);
             }}
             placeholder="Enter coins (min 50, max 7000)"
-            placeholderTextColor="#6B7280"
+            placeholderTextColor={colors.mutedText}
             keyboardType="numeric"
           />
           <Image source={require('../../../assets/rupee.png')} style={styles.coinIcon} />
@@ -626,7 +627,7 @@ const CalendarCard = () => {
       {/* Probability Info */}
       <View style={styles.probabilityContainer}>
         <Text style={styles.probabilityTitle}>
-          Win Chance: <Text style={{ color: '#3aed76' }}>High!</Text>
+          Win Chance: <Text style={{ color: colors.accent }}>High!</Text>
         </Text>
         <Text style={styles.probabilityText}>Most players win 2x or more! Try your luck 🎉</Text>
         <Text style={styles.probabilityText}>
@@ -681,7 +682,7 @@ const CalendarCard = () => {
             {isShuffling && (
               <>
                 <View style={styles.shufflingButton}>
-                  <ActivityIndicator size="small" color="#3aed76" />
+                  <ActivityIndicator size="small" color={colors.accent} />
                   <Text style={styles.shufflingButtonText}>Shuffling...</Text>
                 </View>
                 {/* Audio only playback during shuffle */}
@@ -723,7 +724,7 @@ const CalendarCard = () => {
                 <View style={styles.rewardDisplay}>
                   {reward?.type === 'coins' ? (
                     <>
-                      <Coins size={48} color={reward.value === 0 ? '#6B7280' : '#3aed76'} />
+                      <Coins size={48} color={reward.value === 0 ? '#6B7280' : colors.accent} />
                       <Text style={[styles.rewardValue, reward.value === 0 && styles.zeroReward]}>
                         {reward.value.toLocaleString()} Coins
                       </Text>
@@ -766,7 +767,7 @@ const styles = StyleSheet.create({
   rewardIsThisText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -783,14 +784,15 @@ const styles = StyleSheet.create({
   },
   gettingRewardText: {
     marginTop: 12,
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     fontSize: 16,
     fontWeight: '600',
   },
   container: {
     padding: 16,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: 'transparent', // Changed to transparent to show gradient
     flex: 1,
+    
   },
   header: {
     flexDirection: 'row',
@@ -800,21 +802,26 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginLeft: 8,
   },
   balanceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     padding: 12,
     borderRadius: 8,
     marginBottom: 20,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   balanceLabel: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
   },
   balanceDisplay: {
     flexDirection: 'row',
@@ -824,7 +831,7 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
   },
   inputSection: {
     marginBottom: 20,
@@ -832,28 +839,32 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
     marginBottom: 16,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
-    borderWidth: 1,
-    borderColor: '#3aed76',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
+    borderWidth: 0, // No borders for consistency
     borderRadius: 12,
     paddingHorizontal: 16,
     marginBottom: 12,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   amountInput: {
     flex: 1,
     fontSize: 16,
-    color: '#3aed76',
+    color: colors.text, // Changed to theme color
     paddingVertical: 12,
   },
   coinIcon: {
@@ -862,31 +873,41 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: '#DC2626',
+    color: colors.error, // Changed to theme error color
     marginBottom: 12,
   },
   rewardPreview: {
-    backgroundColor: 'rgba(58, 237, 118, 0.05)',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   previewText: {
     fontSize: 14,
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginBottom: 4,
   },
   startButton: {
-    backgroundColor: '#3aed76',
+    backgroundColor: colors.accent, // Changed to theme color
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 14,
     borderRadius: 12,
     gap: 8,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   startButtonDisabled: {
-    backgroundColor: '#6B7280',
+    backgroundColor: colors.mutedText, // Changed to theme muted color
   },
   startButtonText: {
     fontSize: 16,
@@ -894,20 +915,25 @@ const styles = StyleSheet.create({
     color: '#0a0a0a',
   },
   probabilityContainer: {
-    backgroundColor: 'rgba(58, 237, 118, 0.05)',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     padding: 12,
     borderRadius: 8,
     marginBottom: 20,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   probabilityTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginBottom: 8,
   },
   probabilityText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
     marginBottom: 2,
   },
   assetsPreview: {
@@ -919,13 +945,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   assetPreviewCard: {
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
-    borderWidth: 1,
-    borderColor: '#3aed76',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
+    borderWidth: 0, // No borders for consistency
     borderRadius: 8,
     padding: 8,
     width: 80,
     alignItems: 'center',
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   assetPreviewImage: {
     width: 40,
@@ -935,27 +965,31 @@ const styles = StyleSheet.create({
   },
   assetPreviewTitle: {
     fontSize: 10,
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     textAlign: 'center',
     marginBottom: 2,
   },
   assetPreviewPrice: {
     fontSize: 9,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
   },
   noAssetsCard: {
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
-    borderWidth: 1,
-    borderColor: '#3aed76',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
+    borderWidth: 0, // No borders for consistency
     borderRadius: 8,
     padding: 12,
     width: 200,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   noAssetsText: {
     fontSize: 12,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
     textAlign: 'center',
   },
   modalOverlay: {
@@ -966,12 +1000,17 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   modalContent: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: 'rgba(26, 26, 46, 0.95)', // Changed to theme background
     borderRadius: 20,
     width: '95%',
     maxWidth: 400,
     padding: 20,
     maxHeight: '80%',
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -982,19 +1021,19 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     flex: 1,
   },
   modalSubtitle: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
     marginBottom: 20,
   },
   closeButton: {
     padding: 4,
   },
   readyButton: {
-    backgroundColor: '#3aed76',
+    backgroundColor: colors.accent, // Changed to theme color
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1002,6 +1041,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     gap: 8,
     marginBottom: 20,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   readyButtonText: {
     fontSize: 16,
@@ -1009,7 +1053,7 @@ const styles = StyleSheet.create({
     color: '#0a0a0a',
   },
   shufflingButton: {
-    backgroundColor: 'rgba(58, 237, 118, 0.2)',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1017,11 +1061,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     gap: 8,
     marginBottom: 20,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   shufflingButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
   },
   boxGrid: {
     flexDirection: 'row',
@@ -1033,16 +1082,24 @@ const styles = StyleSheet.create({
   box: {
     width: BOX_SIZE,
     height: BOX_SIZE,
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
-    borderWidth: 2,
-    borderColor: '#3aed76',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
+    borderWidth: 0, // No borders for consistency
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
   },
   selectedBox: {
-    backgroundColor: 'rgba(58, 237, 118, 0.2)',
-    borderColor: '#3aed76',
+    backgroundColor: 'rgba(0, 212, 255, 0.2)', // Changed to theme accent with opacity
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   disabledBox: {
     opacity: 0.7,
@@ -1055,13 +1112,13 @@ const styles = StyleSheet.create({
   rewardText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginTop: 4,
   },
   assetText: {
     fontSize: 8,
     fontWeight: '600',
-    color: '#FFD700',
+    color: colors.highlight, // Changed to theme highlight color
     marginTop: 4,
     textAlign: 'center',
   },
@@ -1073,21 +1130,26 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
     textAlign: 'center',
   },
   rewardModal: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: 'rgba(26, 26, 46, 0.95)', // Changed to theme background
     borderRadius: 20,
     padding: 30,
     alignItems: 'center',
     width: '80%',
     maxWidth: 300,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   congratsText: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -1098,22 +1160,22 @@ const styles = StyleSheet.create({
   rewardValue: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginTop: 12,
     textAlign: 'center',
   },
   zeroReward: {
-    color: '#6B7280',
+    color: colors.mutedText, // Changed to theme muted color
   },
   rewardMultiplier: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
     marginTop: 4,
     textAlign: 'center',
   },
   rewardDescription: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.mutedText, // Changed to theme color
     marginTop: 8,
     textAlign: 'center',
   },
@@ -1123,10 +1185,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   playAgainButton: {
-    backgroundColor: '#3aed76',
+    backgroundColor: colors.accent, // Changed to theme color
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 12,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   playAgainText: {
     fontSize: 16,

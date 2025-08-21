@@ -10,6 +10,7 @@ import {
   Animated,
 } from 'react-native';
 import { Copy, Check, X } from 'lucide-react-native';
+import { colors } from '../../screens/theme';
 
 const SERVER_INFO = {
   ip: 'play.xgaming.club',
@@ -73,7 +74,7 @@ const ServerInfo = ({ visible, onClose }) => {
           <View style={styles.header}>
             <Text style={styles.title}>Server Details</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <X size={24} color="#6B7280" />
+              <X size={24} color={colors.mutedText} />
             </TouchableOpacity>
           </View>
 
@@ -90,9 +91,9 @@ const ServerInfo = ({ visible, onClose }) => {
                   activeOpacity={0.7}
                 >
                   {copiedJava ? (
-                    <Check size={20} color="#10B981" />
+                    <Check size={20} color={colors.accent} />
                   ) : (
-                    <Copy size={20} color="#3aed76" />
+                    <Copy size={20} color={colors.accent} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -112,9 +113,9 @@ const ServerInfo = ({ visible, onClose }) => {
                   activeOpacity={0.7}
                 >
                   {copiedBedrock ? (
-                    <Check size={20} color="#10B981" />
+                    <Check size={20} color={colors.accent} />
                   ) : (
-                    <Copy size={20} color="#3aed76" />
+                    <Copy size={20} color={colors.accent} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -141,17 +142,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   container: {
-    backgroundColor: '#121212',
+    backgroundColor: 'rgba(26, 26, 46, 0.95)', // Changed to theme background
     borderRadius: 24,
     paddingVertical: 28,
     paddingHorizontal: 32,
     width: '100%',
     maxWidth: 400,
-    shadowColor: '#3aed76',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 12,
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
   },
   header: {
     flexDirection: 'row',
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
   },
   closeBtn: {
     padding: 8,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#3aed76',
+    color: colors.accent, // Changed to theme color
     marginBottom: 18,
   },
   infoRow: {
@@ -188,12 +189,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#A1A1AA',
+    color: colors.mutedText, // Changed to theme color
   },
   value: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#E0E0E0',
+    color: colors.text, // Changed to theme color
   },
   copyRow: {
     flexDirection: 'row',
@@ -205,8 +206,9 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#3aed76',
+    backgroundColor: colors.accent, // Changed to theme color
     marginVertical: 14,
+    opacity: 0.4,
   },
 });
 

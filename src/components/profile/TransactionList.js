@@ -4,6 +4,7 @@ import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../context/AuthContext';
 import { format } from 'date-fns';
 import { PlusCircle, MinusCircle } from 'lucide-react-native';
+import { colors } from '../../screens/theme';
 
 const TransactionList = () => {
   const { transactions } = useUser();
@@ -99,30 +100,35 @@ const TransactionList = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: 'transparent', // Changed to transparent to show gradient
   },
   heading: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#3aed76',
+    fontSize: 26,
+    fontWeight: '800',
+    color: colors.accent, // Changed to theme color
     marginBottom: 24,
     marginHorizontal: 16,
+    letterSpacing: 0.5,
+    textShadowColor: colors.accentGlow,
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   scrollContent: {
     paddingBottom: 24,
   },
   transactionCard: {
-    backgroundColor: '#121212',
+    backgroundColor: 'rgba(26, 26, 46, 0.9)', // Changed to theme background
     borderRadius: 16,
     marginHorizontal: 16,
     marginBottom: 16,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    shadowColor: '#3aed76',
-    shadowOffset: { width: 0, height: 6 },
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowRadius: 6,
+    elevation: 4,
+    borderWidth: 0, // No borders for consistency
   },
   transactionContent: {
     flexDirection: 'row',
@@ -134,12 +140,17 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: colors.accent,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   redIconBg: {
-    backgroundColor: '#FEE2E2',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)', // Changed to theme-consistent red
   },
   greenIconBg: {
-    backgroundColor: '#D1FAE5',
+    backgroundColor: 'rgba(16, 185, 129, 0.15)', // Changed to theme-consistent green
   },
   detailsContainer: {
     flex: 1,
@@ -148,12 +159,14 @@ const styles = StyleSheet.create({
   transactionTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#E0E0E0',
+    color: colors.text, // Changed to theme color
     marginBottom: 4,
+    letterSpacing: 0.3,
   },
   transactionDate: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: colors.mutedText, // Changed to theme color
+    fontWeight: '500',
   },
   amount: {
     fontSize: 17,
@@ -161,12 +174,13 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     minWidth: 90,
     textAlign: 'right',
+    letterSpacing: 0.3,
   },
   debitAmount: {
-    color: '#EF4444',
+    color: colors.error, // Changed to theme error color
   },
   creditAmount: {
-    color: '#10B981',
+    color: colors.accent, // Changed to theme accent color
   },
   emptyStateCard: {
     flex: 1,
@@ -176,8 +190,9 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.mutedText, // Changed to theme color
     textAlign: 'center',
+    fontWeight: '500',
   },
 });
 
