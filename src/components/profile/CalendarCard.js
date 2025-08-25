@@ -11,9 +11,10 @@ import {
   TextInput,
   ScrollView,
   Animated,
+  Alert,
 } from 'react-native';
 import Video from 'react-native-video';
-import { Gift, X, Star, Coins, Play, Shuffle } from 'lucide-react-native';
+import { Gift, X, Star, Coins, Play, Shuffle, CheckCircle, AlertCircle } from 'lucide-react-native';
 import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
@@ -21,6 +22,7 @@ import { useUser } from '../../context/UserContext';
 import { savePurchaseHistory } from '../../config/firebase';
 import InsufficientBalance from '../games/InsufficientBalanceModal';
 import { Easing } from 'react-native';
+import { colors as staticColors, useThemeColors } from '../../screens/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BOX_SIZE = (SCREEN_WIDTH * 0.85 - 72) / 3;
@@ -67,6 +69,10 @@ const CalendarCard = () => {
 
   const { isLoggedIn, user, hasMcVerification } = useAuth();
   const { balance, subtractBalance, addBalance, hasSufficientBalance } = useUser();
+
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
 
   // Config state fetched from Firebase
   const [chancesConfig, setChancesConfig] = useState({
@@ -459,8 +465,15 @@ const CalendarCard = () => {
                 position: 'absolute',
                 ...anims[boxIdx].getLayout(),
                 zIndex: selectedBox === gridIdx ? 2 : 1,
+                borderColor: colors.accent,
+                backgroundColor: colors.backgroundLight,
+                borderWidth: 2,
               },
-              selectedBox === gridIdx && styles.selectedBox,
+              selectedBox === gridIdx && [styles.selectedBox, { 
+                backgroundColor: colors.backgroundLight,
+                borderColor: colors.accent,
+                borderWidth: 2
+              }],
               showInitialItems || isShuffling || isGettingReward ? styles.disabledBox : null,
             ]}
           >
@@ -474,23 +487,16 @@ const CalendarCard = () => {
                 <View style={styles.boxContent}>
                   {boxes[boxIdx].content.type === 'coins' ? (
                     <>
-                      <Coins size={20} color="#3aed76" />
-                      <Text style={styles.rewardText}>{boxes[boxIdx].content.value}</Text>
+                      <Coins size={20} color={colors.accent} />
+                      <Text style={[styles.rewardText, { color: colors.accent }]}>{boxes[boxIdx].content.value}</Text>
                     </>
                   ) : (
                     <>
-                      {boxes[boxIdx].content.imageUrl ? (
-                        <Image
-                          source={{ uri: boxes[boxIdx].content.imageUrl }}
-                          style={styles.assetImage}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <Star size={20} color="#FFD700" />
-                      )}
-                      <Text style={styles.assetText} numberOfLines={2}>
-                        {boxes[boxIdx].content.value}
-                      </Text>
+                      <Image
+                        source={{ uri: boxes[boxIdx].content.imageUrl }}
+                        style={styles.assetImage}
+                        resizeMode="cover"
+                      />
                     </>
                   )}
                 </View>
@@ -498,37 +504,30 @@ const CalendarCard = () => {
                 <View style={styles.boxContent}>
                   {boxes[boxIdx].content.type === 'coins' ? (
                     <>
-                      <Coins size={20} color="#3aed76" />
-                      <Text style={styles.rewardText}>{boxes[boxIdx].content.value}</Text>
+                      <Coins size={20} color={colors.accent} />
+                      <Text style={[styles.rewardText, { color: colors.accent }]}>{boxes[boxIdx].content.value}</Text>
                     </>
                   ) : (
                     <>
-                      {boxes[boxIdx].content.imageUrl ? (
-                        <Image
-                          source={{ uri: boxes[boxIdx].content.imageUrl }}
-                          style={styles.assetImage}
-                          resizeMode="cover"
-                        />
-                      ) : (
-                        <Star size={20} color="#FFD700" />
-                      )}
-                      <Text style={styles.assetText} numberOfLines={2}>
-                        {boxes[boxIdx].content.value}
-                      </Text>
+                      <Image
+                        source={{ uri: boxes[boxIdx].content.imageUrl }}
+                        style={styles.assetImage}
+                        resizeMode="cover"
+                      />
                     </>
                   )}
                 </View>
               ) : (
-                <Gift size={28} color={selectedBox === gridIdx ? '#3aed76' : '#6B7280'} />
+                <Gift size={28} color={selectedBox === gridIdx ? colors.accent : colors.mutedText} />
               )}
             </TouchableOpacity>
           </Animated.View>
         ) : null
       )}
       {isGettingReward && (
-        <View style={styles.gettingRewardOverlay}>
-          <ActivityIndicator size="large" color="#3aed76" />
-          <Text style={styles.gettingRewardText}>Getting your reward...</Text>
+        <View style={[styles.gettingRewardOverlay, { backgroundColor: colors.backgroundDark }]}>
+          <ActivityIndicator size="large" color={colors.accent} />
+          <Text style={[styles.gettingRewardText, { color: colors.accent }]}>Getting your reward...</Text>
         </View>
       )}
     </View>
@@ -544,33 +543,50 @@ const CalendarCard = () => {
   if (loadingConfig) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#3aed76" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { 
+      backgroundColor: colors.background,
+      borderColor: colors.accent,
+      shadowColor: colors.accent,
+      borderWidth: 2,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.8,
+      shadowRadius: 12,
+      elevation: 10
+    }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Gift size={24} color="#3aed76" />
-        <Text style={styles.title}>Lucky Box Game</Text>
+        <Gift size={24} color={colors.accent} />
+        <Text style={[styles.title, { color: colors.accent }]}>Lucky Box Game</Text>
       </View>
       {/* Current Balance Display */}
-      <View style={styles.balanceContainer}>
-        <Text style={styles.balanceLabel}>Your Balance:</Text>
+      <View style={[styles.balanceContainer, { 
+        backgroundColor: colors.backgroundLight,
+        borderColor: colors.accent,
+        borderWidth: 1
+      }]}>
+        <Text style={[styles.balanceLabel, { color: colors.mutedText }]}>Your Balance:</Text>
         <View style={styles.balanceDisplay}>
-          <Text style={styles.balanceAmount}>{balance?.toLocaleString() || 0}</Text>
+          <Text style={[styles.balanceAmount, { color: colors.accent }]}>{balance?.toLocaleString() || 0}</Text>
           <Image source={require('../../../assets/rupee.png')} style={styles.coinIcon} />
         </View>
       </View>
       {/* Amount Input Section */}
       <View style={styles.inputSection}>
-        <Text style={styles.sectionTitle}>Enter Amount to Play</Text>
-        <Text style={styles.subtitle}>Win 0-5x your amount in coins or game assets!</Text>
-        <View style={styles.inputContainer}>
+        <Text style={[styles.sectionTitle, { color: colors.accent }]}>Enter Amount to Play</Text>
+        <Text style={[styles.subtitle, { color: colors.mutedText }]}>Win 0-5x your amount in coins or game assets!</Text>
+        <View style={[styles.inputContainer, { 
+          borderColor: colors.accent, 
+          backgroundColor: colors.card,
+          borderWidth: 1
+        }]}>
           <TextInput
-            style={styles.amountInput}
+            style={[styles.amountInput, { color: colors.accent }]}
             value={inputAmount}
             onChangeText={(text) => {
               // Only digits allowed, capped at 7000
@@ -584,22 +600,26 @@ const CalendarCard = () => {
               setError(null);
             }}
             placeholder="Enter coins (min 50, max 7000)"
-            placeholderTextColor="#6B7280"
+            placeholderTextColor={colors.mutedText}
             keyboardType="numeric"
           />
           <Image source={require('../../../assets/rupee.png')} style={styles.coinIcon} />
         </View>
-        {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>}
         {parsedAmount >= 50 && (
-          <View style={styles.rewardPreview}>
-            <Text style={styles.previewText}>
+          <View style={[styles.rewardPreview, { 
+            backgroundColor: colors.backgroundLight,
+            borderColor: colors.accent,
+            borderWidth: 1
+          }]}>
+            <Text style={[styles.previewText, { color: colors.accent }]}>
               Max Possible Reward: {(parsedAmount * (chancesConfig.maxRewardMultiplier ?? 5)).toLocaleString()} Coins
             </Text>
-            <Text style={styles.previewText}>
+            <Text style={[styles.previewText, { color: colors.accent }]}>
               Coin Range: 0 - {(parsedAmount * (chancesConfig.maxRewardMultiplier ?? 5)).toLocaleString()} Coins
             </Text>
             {filteredAssets.length > 0 && (
-              <Text style={styles.previewText}>
+              <Text style={[styles.previewText, { color: colors.accent }]}>
                 + Chance for {filteredAssets.length} game assets (within {chancesConfig.assetMaxPriceMultiplier ?? 3}x your amount)
               </Text>
             )}
@@ -609,6 +629,7 @@ const CalendarCard = () => {
           style={[
             styles.startButton,
             (parsedAmount < 50 || isStartingGame) && styles.startButtonDisabled,
+            { backgroundColor: colors.accent }
           ]}
           onPress={handleStartGame}
           disabled={parsedAmount < 50 || isStartingGame}
@@ -617,19 +638,23 @@ const CalendarCard = () => {
             <Text style={styles.startButtonText}>Starting Game...</Text>
           ) : (
             <>
-              <Play size={20} color="#0a0a0a" />
-              <Text style={styles.startButtonText}>Start Game</Text>
+              <Play size={20} color={colors.background} />
+              <Text style={[styles.startButtonText, { color: colors.background }]}>Start Game</Text>
             </>
           )}
         </TouchableOpacity>
       </View>
       {/* Probability Info */}
-      <View style={styles.probabilityContainer}>
-        <Text style={styles.probabilityTitle}>
-          Win Chance: <Text style={{ color: '#3aed76' }}>High!</Text>
+      <View style={[styles.probabilityContainer, { 
+        backgroundColor: colors.backgroundLight,
+        borderColor: colors.accent,
+        borderWidth: 1
+      }]}>
+        <Text style={[styles.probabilityTitle, { color: colors.accent }]}>
+          Win Chance: <Text style={{ color: colors.accent }}>High!</Text>
         </Text>
-        <Text style={styles.probabilityText}>Most players win 2x or more! Try your luck 🎉</Text>
-        <Text style={styles.probabilityText}>
+        <Text style={[styles.probabilityText, { color: colors.mutedText }]}>Most players win 2x or more! Try your luck 🎉</Text>
+        <Text style={[styles.probabilityText, { color: colors.mutedText }]}>
           • 0-{chancesConfig.maxRewardMultiplier ?? 5}x coins, {chancesConfig.assetCountRange?.[0] ?? 4}-
           {chancesConfig.assetCountRange?.[1] ?? 7} assets per game
         </Text>
@@ -637,20 +662,24 @@ const CalendarCard = () => {
       {/* Available Assets Preview */}
       {gameAssets.length > 0 && (
         <View style={styles.assetsPreview}>
-          <Text style={styles.sectionTitle}>All Game Assets ({gameAssets.length})</Text>
+          <Text style={[styles.sectionTitle, { color: colors.accent }]}>All Game Assets ({gameAssets.length})</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.assetsList}>
               {gameAssets.map((asset) => (
-                <View key={asset.id} style={styles.assetPreviewCard}>
+                <View key={asset.id} style={[styles.assetPreviewCard, { 
+                  borderColor: colors.accent, 
+                  backgroundColor: colors.backgroundLight,
+                  borderWidth: 1
+                }]}>
                   <Image
                     source={asset.imageUrl ? { uri: asset.imageUrl } : require('../../../assets/bat.png')}
                     style={styles.assetPreviewImage}
                     resizeMode="cover"
                   />
-                  <Text style={styles.assetPreviewTitle} numberOfLines={1}>
+                  <Text style={[styles.assetPreviewTitle, { color: colors.accent }]} numberOfLines={1}>
                     {asset.title}
                   </Text>
-                  <Text style={styles.assetPreviewPrice}>{asset.price} coins</Text>
+                  <Text style={[styles.assetPreviewPrice, { color: colors.mutedText }]}>{asset.price} coins</Text>
                 </View>
               ))}
             </View>
@@ -659,30 +688,34 @@ const CalendarCard = () => {
       )}
       {/* Box Selection Modal */}
       <Modal transparent visible={showBoxSelection} animationType="fade" onRequestClose={resetGame}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View style={[styles.modalOverlay, { backgroundColor: colors.backgroundDark }]}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Choose Your Lucky Box ({parsedAmount} Coins)</Text>
+              <Text style={[styles.modalTitle, { color: colors.accent }]}>Choose Your Lucky Box ({parsedAmount} Coins)</Text>
               <TouchableOpacity onPress={resetGame} style={styles.closeButton}>
-                <X size={24} color="#6B7280" />
+                <X size={24} color={colors.mutedText} />
               </TouchableOpacity>
             </View>
-            <Text style={styles.modalSubtitle}>
+            <Text style={[styles.modalSubtitle, { color: colors.mutedText }]}>
               Coin Range: 0 - {maxReward.toLocaleString()} Coins | {gameSessionAssets.length} Assets Available
             </Text>
             {/* Ready Button */}
             {showInitialItems && !readyToShuffle && !isShuffling && (
-              <TouchableOpacity style={styles.readyButton} onPress={handleReadyClick}>
-                <Shuffle size={20} color="#0a0a0a" />
-                <Text style={styles.readyButtonText}>Ready to Shuffle</Text>
+              <TouchableOpacity style={[styles.readyButton, { backgroundColor: colors.accent }]} onPress={handleReadyClick}>
+                <Shuffle size={20} color={colors.background} />
+                <Text style={[styles.readyButtonText, { color: colors.background }]}>Ready to Shuffle</Text>
               </TouchableOpacity>
             )}
             {/* Shuffling Button */}
             {isShuffling && (
               <>
-                <View style={styles.shufflingButton}>
-                  <ActivityIndicator size="small" color="#3aed76" />
-                  <Text style={styles.shufflingButtonText}>Shuffling...</Text>
+                <View style={[styles.shufflingButton, { 
+                  backgroundColor: colors.backgroundLight,
+                  borderColor: colors.accent,
+                  borderWidth: 1
+                }]}>
+                  <ActivityIndicator size="small" color={colors.accent} />
+                  <Text style={[styles.shufflingButtonText, { color: colors.accent }]}>Shuffling...</Text>
                 </View>
                 {/* Audio only playback during shuffle */}
                 <Video
@@ -702,43 +735,46 @@ const CalendarCard = () => {
             )}
             {renderBoxGrid()}
             {!showInitialItems && selectedBox === null && !isShuffling && !isGettingReward && (
-              <Text style={styles.instructionText}>Select a box to reveal your reward!</Text>
+              <Text style={[styles.instructionText, { color: colors.mutedText }]}>Select a box to reveal your reward!</Text>
             )}
             {showInitialItems && !readyToShuffle && !isShuffling && (
-              <Text style={styles.instructionText}>Study the items carefully, then click "Ready to Shuffle"!</Text>
+              <Text style={[styles.instructionText, { color: colors.mutedText }]}>Study the items carefully, then click "Ready to Shuffle"!</Text>
             )}
           </View>
         </View>
       </Modal>
       {/* Reward Modal */}
       <Modal transparent visible={showReward} animationType="fade" onRequestClose={resetGame}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.rewardModal}>
+        <View style={[styles.modalOverlay, { backgroundColor: colors.backgroundDark }]}>
+          <View style={[styles.rewardModal, { backgroundColor: colors.card }]}>
             {showRewardText ? (
               <>
-                <Text style={styles.congratsText}>
+                <Text style={[styles.congratsText, { color: colors.accent }]}>
                   {reward?.type === 'coins' && reward?.value === 0 ? 'Better Luck Next Time!' : 'Congratulations! 🎉'}
                 </Text>
-                <Text style={styles.rewardIsThisText}>Your reward is:</Text>
+                <Text style={[styles.rewardIsThisText, { color: colors.accent }]}>Your reward is:</Text>
                 <View style={styles.rewardDisplay}>
                   {reward?.type === 'coins' ? (
                     <>
-                      <Coins size={48} color={reward.value === 0 ? '#6B7280' : '#3aed76'} />
-                      <Text style={[styles.rewardValue, reward.value === 0 && styles.zeroReward]}>
+                      <Coins size={48} color={reward.value === 0 ? colors.mutedText : colors.accent} />
+                      <Text style={[
+                        styles.rewardValue, 
+                        reward.value === 0 && { color: colors.mutedText }
+                      ]}>
                         {reward.value.toLocaleString()} Coins
                       </Text>
-                      <Text style={styles.rewardMultiplier}>{getMultiplierText()}</Text>
+                      <Text style={[styles.rewardMultiplier, { color: colors.mutedText }]}>{getMultiplierText()}</Text>
                     </>
                   ) : (
                     <>
                       {reward?.imageUrl ? (
                         <Image source={{ uri: reward.imageUrl }} style={styles.rewardAssetImage} resizeMode="cover" />
                       ) : (
-                        <Star size={48} color="#FFD700" />
+                        <Star size={48} color={colors.highlight} />
                       )}
-                      <Text style={styles.rewardValue}>{reward?.value}</Text>
-                      <Text style={styles.rewardMultiplier}>Worth {reward?.originalPrice} coins!</Text>
-                      {reward?.achievementText && <Text style={styles.rewardDescription}>{reward.achievementText}</Text>}
+                      <Text style={[styles.rewardValue, { color: colors.accent }]}>{reward?.value}</Text>
+                      <Text style={[styles.rewardMultiplier, { color: colors.mutedText }]}>Worth {reward?.originalPrice} coins!</Text>
+                      {reward?.achievementText && <Text style={[styles.rewardDescription, { color: colors.mutedText }]}>{reward.achievementText}</Text>}
                     </>
                   )}
                 </View>
@@ -746,11 +782,11 @@ const CalendarCard = () => {
             ) : null}
             <Animated.View style={{ opacity: fadeAnim }}>
               <TouchableOpacity
-                style={[styles.playAgainButton, !rewardGiven && styles.startButtonDisabled]}
+                style={[styles.playAgainButton, !rewardGiven && styles.startButtonDisabled, { backgroundColor: colors.accent }]}
                 onPress={resetGame}
                 disabled={!rewardGiven}
               >
-                <Text style={styles.playAgainText}>Play Again</Text>
+                <Text style={[styles.playAgainText, { color: colors.background }]}>Play Again</Text>
               </TouchableOpacity>
             </Animated.View>
           </View>
@@ -766,7 +802,6 @@ const styles = StyleSheet.create({
   rewardIsThisText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3aed76',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -776,45 +811,45 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
   },
   gettingRewardText: {
     marginTop: 12,
-    color: '#3aed76',
     fontSize: 16,
     fontWeight: '600',
   },
   container: {
-    padding: 16,
-    backgroundColor: '#0a0a0a',
+    borderRadius: 20,
+    padding: 20,
+    margin: 16,
     flex: 1,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#3aed76',
+    fontSize: 26,
+    fontWeight: 'bold',
+    textAlign: 'center',
     marginLeft: 8,
+    marginBottom: 10,
+    letterSpacing: 1.2,
   },
   balanceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 24,
+    borderWidth: 1,
   },
   balanceLabel: {
     fontSize: 14,
-    color: '#9CA3AF',
   },
   balanceDisplay: {
     flexDirection: 'row',
@@ -824,37 +859,35 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3aed76',
   },
   inputSection: {
     marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#3aed76',
-    marginBottom: 8,
+    fontSize: 26,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+    letterSpacing: 1.2,
   },
   subtitle: {
     fontSize: 14,
-    color: '#9CA3AF',
-    marginBottom: 16,
+    textAlign: 'center',
+    marginBottom: 12,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
     borderWidth: 1,
-    borderColor: '#3aed76',
-    borderRadius: 12,
+    borderRadius: 10,
     paddingHorizontal: 16,
-    marginBottom: 12,
+    marginBottom: 14,
   },
   amountInput: {
     flex: 1,
     fontSize: 16,
-    color: '#3aed76',
     paddingVertical: 12,
+    padding: 12,
   },
   coinIcon: {
     width: 20,
@@ -862,52 +895,48 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: '#DC2626',
     marginBottom: 12,
   },
   rewardPreview: {
-    backgroundColor: 'rgba(58, 237, 118, 0.05)',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 24,
+    borderWidth: 1,
   },
   previewText: {
     fontSize: 14,
-    color: '#3aed76',
     marginBottom: 4,
   },
   startButton: {
-    backgroundColor: '#3aed76',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
     gap: 8,
+    marginBottom: 10,
   },
   startButtonDisabled: {
-    backgroundColor: '#6B7280',
+    // backgroundColor will be applied dynamically
   },
   startButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#0a0a0a',
+    fontWeight: 'bold',
   },
   probabilityContainer: {
-    backgroundColor: 'rgba(58, 237, 118, 0.05)',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 24,
+    borderWidth: 1,
   },
   probabilityTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3aed76',
     marginBottom: 8,
   },
   probabilityText: {
     fontSize: 12,
-    color: '#9CA3AF',
     marginBottom: 2,
   },
   assetsPreview: {
@@ -919,11 +948,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   assetPreviewCard: {
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
     borderWidth: 1,
-    borderColor: '#3aed76',
-    borderRadius: 8,
-    padding: 8,
+    borderRadius: 14,
+    padding: 16,
     width: 80,
     alignItems: 'center',
   },
@@ -935,18 +962,14 @@ const styles = StyleSheet.create({
   },
   assetPreviewTitle: {
     fontSize: 10,
-    color: '#3aed76',
     textAlign: 'center',
     marginBottom: 2,
   },
   assetPreviewPrice: {
     fontSize: 9,
-    color: '#9CA3AF',
   },
   noAssetsCard: {
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
     borderWidth: 1,
-    borderColor: '#3aed76',
     borderRadius: 8,
     padding: 12,
     width: 200,
@@ -955,23 +978,21 @@ const styles = StyleSheet.create({
   },
   noAssetsText: {
     fontSize: 12,
-    color: '#9CA3AF',
     textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
   },
   modalContent: {
-    backgroundColor: '#1a1a1a',
     borderRadius: 20,
     width: '95%',
     maxWidth: 400,
     padding: 20,
     maxHeight: '80%',
+    
   },
   modalHeader: {
     flexDirection: 'row',
@@ -982,46 +1003,41 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3aed76',
     flex: 1,
   },
   modalSubtitle: {
     fontSize: 14,
-    color: '#9CA3AF',
     marginBottom: 20,
   },
   closeButton: {
     padding: 4,
   },
   readyButton: {
-    backgroundColor: '#3aed76',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 10,
     gap: 8,
     marginBottom: 20,
   },
   readyButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#0a0a0a',
+    fontWeight: 'bold',
   },
   shufflingButton: {
-    backgroundColor: 'rgba(58, 237, 118, 0.2)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 14,
     gap: 8,
-    marginBottom: 20,
+    marginBottom: 24,
+    borderWidth: 1,
   },
   shufflingButtonText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#3aed76',
+    fontWeight: 'bold',
   },
   boxGrid: {
     flexDirection: 'row',
@@ -1033,16 +1049,13 @@ const styles = StyleSheet.create({
   box: {
     width: BOX_SIZE,
     height: BOX_SIZE,
-    backgroundColor: 'rgba(58, 237, 118, 0.1)',
     borderWidth: 2,
-    borderColor: '#3aed76',
-    borderRadius: 12,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
   },
   selectedBox: {
-    backgroundColor: 'rgba(58, 237, 118, 0.2)',
-    borderColor: '#3aed76',
+    // backgroundColor will be applied dynamically
   },
   disabledBox: {
     opacity: 0.7,
@@ -1055,13 +1068,11 @@ const styles = StyleSheet.create({
   rewardText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#3aed76',
     marginTop: 4,
   },
   assetText: {
     fontSize: 8,
     fontWeight: '600',
-    color: '#FFD700',
     marginTop: 4,
     textAlign: 'center',
   },
@@ -1073,21 +1084,19 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     fontSize: 14,
-    color: '#9CA3AF',
     textAlign: 'center',
   },
   rewardModal: {
-    backgroundColor: '#1a1a1a',
     borderRadius: 20,
     padding: 30,
     alignItems: 'center',
     width: '80%',
     maxWidth: 300,
+    
   },
   congratsText: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#3aed76',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -1098,22 +1107,19 @@ const styles = StyleSheet.create({
   rewardValue: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3aed76',
     marginTop: 12,
     textAlign: 'center',
   },
   zeroReward: {
-    color: '#6B7280',
+    // color will be applied dynamically
   },
   rewardMultiplier: {
     fontSize: 14,
-    color: '#9CA3AF',
     marginTop: 4,
     textAlign: 'center',
   },
   rewardDescription: {
     fontSize: 12,
-    color: '#6B7280',
     marginTop: 8,
     textAlign: 'center',
   },
@@ -1123,15 +1129,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   playAgainButton: {
-    backgroundColor: '#3aed76',
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 10,
   },
   playAgainText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#0a0a0a',
+    fontWeight: 'bold',
   },
 });
 

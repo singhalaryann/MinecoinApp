@@ -1,11 +1,22 @@
-import React from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator } from 'react-native';
-import { doc, onSnapshot } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
+import { colors as staticColors, useThemeColors } from '../../screens/theme';
+import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import Video from 'react-native-video';
 
 
 const MaintenanceCheck = ({ children }) => {
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
+  
   const [isInMaintenance, setIsInMaintenance] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [loading, setLoading] = React.useState(true);
@@ -34,10 +45,10 @@ const MaintenanceCheck = ({ children }) => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color="#3aed76" />
-          <Text style={styles.loadingText}>Loading app...</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.loadingBox, { backgroundColor: colors.card }]}>
+          <ActivityIndicator size="large" color={colors.accent} />
+          <Text style={[styles.loadingText, { color: colors.accent }]}>Loading app...</Text>
         </View>
       </View>
     );
@@ -45,7 +56,7 @@ const MaintenanceCheck = ({ children }) => {
 
   if (isInMaintenance) {
     return (
-      <View style={styles.videoContainer}>
+      <View style={[styles.videoContainer, { backgroundColor: colors.background }]}>
         <Video
                   source={require('../../../assets/maintaince.mp4')}
                   repeat
@@ -57,15 +68,15 @@ const MaintenanceCheck = ({ children }) => {
                   ignoreSilentSwitch="obey"
                 />
         <View style={styles.overlay}>
-          <Text style={styles.title}>Maintenance Mode</Text>
-          <Text style={styles.message}>{message}</Text>
+          <Text style={[styles.title, { color: colors.accent }]}>Maintenance Mode</Text>
+          <Text style={[styles.message, { color: colors.accent }]}>{message}</Text>
         </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, { backgroundColor: colors.background }]}>
       {typeof children === 'string' ? <Text>{children}</Text> : children}
     </View>
     );
@@ -74,13 +85,11 @@ const MaintenanceCheck = ({ children }) => {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#0a0a0a'
   },
   videoContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'black',
     overflow: 'hidden'
   },
   overlay: {
@@ -91,53 +100,33 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    zIndex: 2
-  },
-
-  container: {
-    flex: 1,
-    backgroundColor: '#0a0a0a',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20
-  },
-  loadingBox: {
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#3aed76',
-    marginTop: 8
-  },
-  messageBox: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 12,
-    width: '90%',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#3aed76',
-    marginBottom: 12
+    marginBottom: 16,
+    textAlign: 'center',
   },
   message: {
     fontSize: 16,
-    color: '#3aed76',
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingBox: {
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+  },
 });
 
 export default MaintenanceCheck;

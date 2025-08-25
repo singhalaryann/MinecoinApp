@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +15,7 @@ import { adapty } from 'react-native-adapty';
 import { createPaywallView } from '@adapty/react-native-ui';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Crown, Coins, Check, X, AlertCircle } from 'lucide-react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import Animated, {
@@ -22,12 +24,17 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { colors as staticColors, useThemeColors } from './theme';
 
 const PLACEMENT_ID = '2233';
 
 const Toast = ({ message, visible, onHide, onComplete }) => {
   const translateY = useSharedValue(-100);
   const opacity = useSharedValue(0);
+
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
 
   useEffect(() => {
     if (visible) {
@@ -53,8 +60,15 @@ const Toast = ({ message, visible, onHide, onComplete }) => {
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.toastContainer, animatedStyle]}>
-      <Text style={styles.toastText}>{message}</Text>
+    <Animated.View style={[
+      styles.toastContainer,
+      {
+        backgroundColor: colors.accent,
+        shadowColor: colors.shadow
+      },
+      animatedStyle
+    ]}>
+      <Text style={[styles.toastText, { color: colors.background }]}>{message}</Text>
     </Animated.View>
   );
 };
@@ -70,6 +84,10 @@ const CoinBundleScreen = () => {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [transactionCompleted, setTransactionCompleted] = useState(false);
+
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
 
   useEffect(() => {
     if (!isUpdating && error) {
@@ -198,18 +216,18 @@ const CoinBundleScreen = () => {
   const isButtonDisabled = loading || isUpdating || transactionCompleted;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Toast
         message={toastMessage}
         visible={toastVisible}
         onHide={() => setToastVisible(false)}
         onComplete={() => navigation.navigate('Main')}
       />
-      <View style={styles.header}>
+      <View style={[styles.header, { borderBottomColor: colors.accent }]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeft size={24} color="#3aed76" />
+          <ArrowLeft size={24} color={colors.accent} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Get Coins</Text>
+        <Text style={[styles.headerTitle, { color: colors.accent }]}>Get Coins</Text>
       </View>
 
       <ScrollView
@@ -217,35 +235,54 @@ const CoinBundleScreen = () => {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.cardContainer}>
-          <Text style={styles.subtitle}>Select a coin bundle to purchase</Text>
+        <View style={[
+          styles.cardContainer,
+          {
+            backgroundColor: colors.card,
+            shadowColor: colors.accent
+          }
+        ]}>
+          <Text style={[styles.subtitle, { color: colors.accent }]}>Select a coin bundle to purchase</Text>
 
           {loading ? (
-            <ActivityIndicator size="large" color="#3aed76" style={styles.loader} />
+            <ActivityIndicator size="large" color={colors.accent} style={styles.loader} />
           ) : (
             <TouchableOpacity
-              style={[styles.bundleButton, isButtonDisabled && styles.disabledButton]}
+              style={[
+                styles.bundleButton,
+                {
+                  backgroundColor: colors.accent,
+                  shadowColor: colors.accent
+                },
+                isButtonDisabled && styles.disabledButton
+              ]}
               onPress={handlePurchase}
               disabled={isButtonDisabled}
               activeOpacity={0.8}
             >
               {isUpdating ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color={colors.text} />
               ) : (
-                <Text style={styles.bundleButtonText}>
+                <Text style={[styles.bundleButtonText, { color: colors.background }]}>
                   {transactionCompleted ? 'Purchase Complete' : 'View Coin Bundles'}
                 </Text>
               )}
             </TouchableOpacity>
           )}
 
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>• Purchases will be added to your account immediately</Text>
-            <Text style={styles.infoText}>• All purchases are final and non-refundable</Text>
-            <Text style={styles.infoText}>• For any issues, please contact support</Text>
+          <View style={[
+            styles.infoContainer,
+            {
+              backgroundColor: colors.card,
+              shadowColor: colors.accent
+            }
+          ]}>
+            <Text style={[styles.infoText, { color: colors.mutedText }]}>• Purchases will be added to your account immediately</Text>
+            <Text style={[styles.infoText, { color: colors.mutedText }]}>• All purchases are final and non-refundable</Text>
+            <Text style={[styles.infoText, { color: colors.mutedText }]}>• For any issues, please contact support</Text>
           </View>
 
-          {error && <Text style={styles.errorText}>{error}</Text>}
+          {error && <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -255,7 +292,6 @@ const CoinBundleScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
   },
   header: {
     flexDirection: 'row',
@@ -263,15 +299,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#3aed76',
   },
   backButton: {
     marginRight: 16,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
-    color: '#3aed76',
+    marginLeft: 16,
   },
   scrollView: {
     flex: 1,
@@ -282,8 +317,6 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     borderRadius: 20,
-    backgroundColor: '#121212',
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -294,18 +327,15 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#3aed76',
     marginBottom: 28,
     textAlign: 'center',
   },
   bundleButton: {
-    backgroundColor: '#3aed76',
     paddingVertical: 18,
     paddingHorizontal: 36,
     borderRadius: 14,
     marginBottom: 36,
     alignItems: 'center',
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
@@ -317,16 +347,13 @@ const styles = StyleSheet.create({
   bundleButtonText: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0a0a0a',
   },
   loader: {
-    marginVertical: 24,
+    marginTop: 20,
   },
   infoContainer: {
-    backgroundColor: '#121212',
     padding: 24,
     borderRadius: 14,
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -334,37 +361,30 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 15,
-    color: '#A1A1AA',
     marginBottom: 16,
     lineHeight: 22,
   },
   errorText: {
-    color: '#EF4444',
     fontSize: 15,
     marginTop: 24,
     textAlign: 'center',
   },
   toastContainer: {
     position: 'absolute',
-    top: 60,
-    left: '5%',
-    right: '5%',
-    backgroundColor: '#3aed76',
-    borderRadius: 14,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    shadowColor: '#000',
+    top: 100,
+    left: 20,
+    right: 20,
+    borderRadius: 12,
+    padding: 16,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 10,
+    shadowRadius: 8,
+    elevation: 6,
     zIndex: 1000,
   },
   toastText: {
-    color: '#0a0a0a',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
     textAlign: 'center',
   },
 });

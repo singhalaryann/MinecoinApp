@@ -15,7 +15,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useUser } from '../../context/UserContext';
 import InsufficientBalance from './InsufficientBalanceModal';
 import { updateUserBalance, savePurchaseHistory } from '../../config/firebase';
-import { colors } from '../../screens/theme'; // Import your theme colors
+import { colors as staticColors, useThemeColors } from '../../screens/theme'; // Import your theme colors
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -23,6 +23,11 @@ const GameCard = ({ game, style, showSection = true }) => {
   const navigation = useNavigation();
   const { hasSufficientBalance, processPurchase, hasMcVerified } = useUser();
   const { isLoggedIn, user } = useAuth();
+  
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
+  
   const [showBuyButton, setShowBuyButton] = useState(false);
   const [showInsufficientBalance, setShowInsufficientBalance] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
@@ -77,15 +82,15 @@ const GameCard = ({ game, style, showSection = true }) => {
         gradient: [colors.accentDark, colors.accent],
         shadowColor: colors.accent,
         borderColor: colors.accentGlow,
-        bgColor: 'rgba(16, 185, 129, 0.15)',
+        bgColor: colors.accentGlow,
         icon: '🌲',
         name: 'SURVIVAL',
       },
       lifesteal: {
-        gradient: ['#EF4444', '#DC2626'], // You can add these to theme if desired
-        shadowColor: '#EF4444',
-        borderColor: 'rgba(239, 68, 68, 0.6)',
-        bgColor: 'rgba(239, 68, 68, 0.15)',
+        gradient: colors.dangerGradient,
+        shadowColor: colors.error,
+        borderColor: colors.error,
+        bgColor: colors.dangerGradient[0],
         icon: '⚔️',
         name: 'LIFESTEAL',
       },
@@ -98,26 +103,26 @@ const GameCard = ({ game, style, showSection = true }) => {
         name: 'CREATIVE',
       },
       pvp: {
-        gradient: ['#F59E0B', '#D97706'],
-        shadowColor: '#F59E0B',
-        borderColor: 'rgba(245, 158, 11, 0.6)',
-        bgColor: 'rgba(245, 158, 11, 0.15)',
+        gradient: [colors.highlight, colors.highlightGlow],
+        shadowColor: colors.highlight,
+        borderColor: colors.highlightGlow,
+        bgColor: colors.highlightGlow,
         icon: '⚡',
         name: 'PVP',
       },
       skyblock: {
-        gradient: ['#8B5CF6', '#7C3AED'],
-        shadowColor: '#8B5CF6',
-        borderColor: 'rgba(139, 92, 246, 0.6)',
-        bgColor: 'rgba(139, 92, 246, 0.15)',
+        gradient: [colors.primary, colors.primaryLight],
+        shadowColor: colors.primary,
+        borderColor: colors.primaryFaded,
+        bgColor: colors.primaryFaded,
         icon: '☁️',
         name: 'SKYBLOCK',
       },
       prison: {
-        gradient: [colors.mutedText, '#4B5563'],
+        gradient: [colors.mutedText, colors.border],
         shadowColor: colors.mutedText,
-        borderColor: 'rgba(107, 114, 128, 0.6)',
-        bgColor: 'rgba(107, 114, 128, 0.15)',
+        borderColor: colors.border,
+        bgColor: colors.border,
         icon: '🔒',
         name: 'PRISON',
       },
@@ -125,7 +130,7 @@ const GameCard = ({ game, style, showSection = true }) => {
         gradient: [colors.accentDark, colors.accent],
         shadowColor: colors.accent,
         borderColor: colors.accentGlow,
-        bgColor: 'rgba(58, 237, 118, 0.15)',
+        bgColor: colors.accentGlow,
         icon: '🎮',
         name: 'GAME',
       },
@@ -268,13 +273,13 @@ const GameCard = ({ game, style, showSection = true }) => {
 
             <Image
               source={game.imageUrl ? { uri: game.imageUrl } : require('../../../assets/bat.png')}
-              style={styles.image}
+              style={[styles.image, { backgroundColor: colors.card }]}
               resizeMode="cover"
             />
 
             {/* Gaming Overlay */}
             <LinearGradient
-              colors={['transparent', 'rgba(0, 0, 0, 0.7)']}
+              colors={['transparent', colors.primaryFaded]}
               style={styles.imageOverlay}
             />
           </View>
@@ -292,19 +297,19 @@ const GameCard = ({ game, style, showSection = true }) => {
                   },
                 ]}
               >
-                <Text style={styles.sectionIcon}>{sectionConfig.icon}</Text>
-                <Text style={styles.sectionTagText}>{sectionConfig.name}</Text>
+                <Text style={[styles.sectionIcon, { color: colors.text }]}>{sectionConfig.icon}</Text>
+                <Text style={[styles.sectionTagText, { color: colors.text }]}>{sectionConfig.name}</Text>
               </LinearGradient>
             )}
 
             {/* Discount Tag */}
             {game.discount > 0 && (
               <LinearGradient
-                colors={['#EF4444', '#DC2626']}
-                style={[styles.tag, styles.discountTag]}
+                colors={colors.dangerGradient}
+                style={[styles.tag, styles.discountTag, { shadowColor: colors.error }]}
               >
-                <Text style={styles.tagIcon}>🔥</Text>
-                <Text style={styles.tagText}>-{game.discount}%</Text>
+                <Text style={[styles.tagIcon, { color: colors.text }]}>🔥</Text>
+                <Text style={[styles.tagText, { color: colors.text }]}>-{game.discount}%</Text>
               </LinearGradient>
             )}
 
@@ -312,10 +317,10 @@ const GameCard = ({ game, style, showSection = true }) => {
             {game.isNew && (
               <LinearGradient
                 colors={sectionConfig.gradient}
-                style={[styles.tag, styles.newTag]}
+                style={[styles.tag, styles.newTag, { shadowColor: colors.accent }]}
               >
-                <Text style={styles.tagIcon}>✨</Text>
-                <Text style={styles.tagText}>NEW</Text>
+                <Text style={[styles.tagIcon, { color: colors.text }]}>✨</Text>
+                <Text style={[styles.tagText, { color: colors.text }]}>NEW</Text>
               </LinearGradient>
             )}
           </View>
@@ -331,7 +336,7 @@ const GameCard = ({ game, style, showSection = true }) => {
               </Text>
               <View style={styles.passSection}>
                 <LinearGradient
-                  colors={[colors.accentGlow, 'rgba(16, 185, 129, 0.1)']}
+                  colors={[colors.accentGlow, colors.accentFaded]}
                   style={styles.passBadge}
                 >
                   <Text style={[styles.passIcon, { color: colors.accent }]}>🎮</Text>
@@ -366,7 +371,7 @@ const GameCard = ({ game, style, showSection = true }) => {
           {error && (
             <LinearGradient
               colors={colors.dangerGradient}
-              style={styles.errorContainer}
+              style={[styles.errorContainer, { borderColor: colors.error }]}
             >
               <Text style={styles.errorIcon}>⚠️</Text>
               <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
@@ -377,7 +382,7 @@ const GameCard = ({ game, style, showSection = true }) => {
           <View style={styles.actionSection}>
             {!showBuyButton ? (
               <TouchableOpacity
-                style={styles.buyNowButton}
+                style={[styles.buyNowButton, { shadowColor: colors.accent }]}
                 onPress={handleCoinPress}
                 disabled={purchasing}
                 activeOpacity={0.8}
@@ -387,9 +392,9 @@ const GameCard = ({ game, style, showSection = true }) => {
                   style={styles.buyNowGradient}
                 >
                   <View style={styles.buyNowContent}>
-                    <Text style={styles.buyNowText}>BUY NOW</Text>
-                    <View style={styles.buyNowPrice}>
-                      <Text style={styles.buyNowPriceText}>{game.price}</Text>
+                    <Text style={[styles.buyNowText, { color: colors.text }]}>BUY NOW</Text>
+                    <View style={[styles.buyNowPrice, { backgroundColor: colors.border }]}>
+                      <Text style={[styles.buyNowPriceText, { color: colors.text }]}>{game.price}</Text>
                       <Image source={require('../../../assets/rupee.png')} style={styles.buyNowIcon} />
                     </View>
                   </View>
@@ -411,7 +416,7 @@ const GameCard = ({ game, style, showSection = true }) => {
                         colors={[colors.accentDark, colors.accent]}
                         style={styles.quantityButtonGradient}
                       >
-                        <Text style={styles.quantityButtonText}>−</Text>
+                        <Text style={[styles.quantityButtonText, { color: colors.text }]}>−</Text>
                       </LinearGradient>
                     </TouchableOpacity>
 
@@ -429,7 +434,7 @@ const GameCard = ({ game, style, showSection = true }) => {
                         colors={[colors.accentDark, colors.accent]}
                         style={styles.quantityButtonGradient}
                       >
-                        <Text style={styles.quantityButtonText}>+</Text>
+                        <Text style={[styles.quantityButtonText, { color: colors.text }]}>+</Text>
                       </LinearGradient>
                     </TouchableOpacity>
                   </View>
@@ -452,9 +457,9 @@ const GameCard = ({ game, style, showSection = true }) => {
                       style={styles.confirmButtonGradient}
                     >
                       {purchasing ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" />
+                        <ActivityIndicator size="small" color={colors.text} />
                       ) : (
-                        <Text style={styles.confirmButtonText}>CONFIRM</Text>
+                        <Text style={[styles.confirmButtonText, { color: colors.white }]}>CONFIRM</Text>
                       )}
                     </LinearGradient>
                   </TouchableOpacity>
@@ -534,7 +539,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#2a2a2a',
     borderRadius: 20,
     zIndex: 1,
   },
@@ -570,7 +574,6 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   sectionTagText: {
-    color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '900',
     letterSpacing: 0.5,
@@ -587,17 +590,16 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   discountTag: {
-    shadowColor: '#EF4444',
+    // shadowColor will be applied dynamically
   },
   newTag: {
-    shadowColor: colors.accent,
+    // shadowColor will be applied dynamically
   },
   tagIcon: {
     fontSize: 10,
     marginRight: 4,
   },
   tagText: {
-    color: '#FFFFFF',
     fontSize: 9,
     fontWeight: '800',
     letterSpacing: 0.3,
@@ -617,9 +619,7 @@ const styles = StyleSheet.create({
   gameTitle: {
     fontSize: 18,
     fontWeight: '900',
-    color: colors.accent,
     letterSpacing: 0.8,
-    textShadowColor: colors.accentGlow,
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
@@ -632,23 +632,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.accentGlow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   passIcon: {
-    fontSize: 10,
-    marginRight: 4,
-    color: colors.accent,
+    fontSize: 12,
+    marginRight: 6,
   },
   passText: {
     fontSize: 10,
     fontWeight: '800',
-    color: colors.accent,
     letterSpacing: 0.5,
   },
   gameDescription: {
     fontSize: 13,
-    color: colors.lightText,
     lineHeight: 18,
     marginBottom: 12,
     fontWeight: '500',
@@ -666,7 +665,6 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 10,
-    color: colors.mutedText,
     fontWeight: '700',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -679,7 +677,6 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 16,
     fontWeight: '900',
-    color: colors.accent,
     letterSpacing: 0.3,
   },
   priceIcon: {
@@ -689,13 +686,11 @@ const styles = StyleSheet.create({
   statDivider: {
     width: 1,
     height: 24,
-    backgroundColor: colors.accentGlow,
     marginHorizontal: 12,
   },
   statValueText: {
     fontSize: 12,
     fontWeight: '800',
-    color: colors.text,
     letterSpacing: 0.5,
   },
 
@@ -707,7 +702,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: colors.error,
   },
   errorIcon: {
     fontSize: 14,
@@ -715,7 +709,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: colors.error,
     fontWeight: '600',
     flex: 1,
   },
@@ -728,7 +721,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     elevation: 6,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
@@ -744,7 +736,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   buyNowText: {
-    color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '900',
     letterSpacing: 1,
@@ -753,13 +744,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 10,
   },
   buyNowPriceText: {
-    color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
   },
@@ -778,7 +767,6 @@ const styles = StyleSheet.create({
   quantityLabel: {
     fontSize: 12,
     fontWeight: '800',
-    color: colors.mutedText,
     letterSpacing: 0.5,
   },
   quantityControls: {
@@ -797,7 +785,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   quantityButtonText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '900',
     lineHeight: 16,
@@ -809,7 +796,6 @@ const styles = StyleSheet.create({
   quantityText: {
     fontSize: 16,
     fontWeight: '900',
-    color: colors.accent,
     letterSpacing: 0.3,
   },
   confirmSection: {
@@ -822,7 +808,6 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 11,
-    color: colors.mutedText,
     fontWeight: '700',
     letterSpacing: 0.5,
     marginBottom: 2,
@@ -830,7 +815,6 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 16,
     fontWeight: '900',
-    color: colors.accent,
     letterSpacing: 0.3,
   },
   confirmButton: {
@@ -845,7 +829,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   confirmButtonText: {
-    color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0.8,

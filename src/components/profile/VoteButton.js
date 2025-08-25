@@ -8,6 +8,7 @@ import axios from 'axios';
 import { RSA } from 'react-native-rsa-native';
 // Add new import for icon
 import { Vote } from 'lucide-react-native';
+import { colors as staticColors, useThemeColors } from '../../screens/theme';
 
 global.Buffer = Buffer;
 
@@ -128,6 +129,10 @@ const VoteSuccessModal = ({ visible, onClose }) => {
 };
 
 const VoteButton = ({ username, ip }) => {
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
+  
   const [cooldown, setCooldown] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -216,7 +221,7 @@ const VoteButton = ({ username, ip }) => {
         activeOpacity={0.8}
       >
         {/* Add Vote icon */}
-        <Vote size={20} color="#FFFFFF" style={styles.icon} />
+        <Vote size={20} color={colors.text} style={styles.icon} />
         <Text style={styles.voteText}>{getButtonText()}</Text>
       </TouchableOpacity>
 
@@ -230,18 +235,19 @@ const VoteButton = ({ username, ip }) => {
 
 const styles = StyleSheet.create({
   voteButton: {
-    backgroundColor: '#10B981',
+    backgroundColor: colors.accent,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    flexDirection: 'row', // Add this to align icon and text
   },
   voteButtonDisabled: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.mutedText,
   },
   voteText: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.3,
@@ -254,53 +260,42 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.card,
     borderRadius: 20,
     padding: 24,
-    width: '100%',
-    maxWidth: 320,
+    width: '90%',
+    maxWidth: 400,
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#3aed76',
-    marginBottom: 8,
+    fontSize: 24,
+    fontWeight: '700',
+    color: colors.accent,
+    marginBottom: 16,
     textAlign: 'center',
   },
   modalMessage: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.mutedText,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 24,
   },
   modalButton: {
-    backgroundColor: '#3aed76',
-    width: '100%',
+    backgroundColor: colors.accent,
     paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 12,
-    alignItems: 'center',
+    marginHorizontal: 8,
   },
   modalButtonText: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   // Add new style for icon
   icon: {
     marginRight: 8,
-  },
-  
-  // Update voteButton to include row layout
-  voteButton: {
-    backgroundColor: '#10B981',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    flexDirection: 'row', // Add this to align icon and text
   },
 });
 

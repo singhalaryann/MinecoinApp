@@ -11,10 +11,15 @@ import { useAuth } from '../../context/AuthContext';
 import CalendarCard from './CalendarCard';
 import AppEventsCard from './AppEventsCard';
 import { LogOut } from 'lucide-react-native';
+import { colors as staticColors, useThemeColors } from '../../screens/theme';
 
 const UserDetailsForm = () => {
   const navigation = useNavigation();
   const { signOut } = useAuth();
+
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
 
   const handleLogout = async () => {
     try {
@@ -30,28 +35,36 @@ const UserDetailsForm = () => {
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
     >
       {/* Calendar Section */}
-      <View style={styles.cardContainer}>
+      <View style={[styles.cardContainer, { 
+        backgroundColor: colors.card, 
+        shadowColor: colors.accent,
+        borderColor: colors.border 
+      }]}>
         <CalendarCard />
       </View>
 
       {/* Daily Questions Section */}
-      <View style={styles.cardContainer}>
+      <View style={[styles.cardContainer, { 
+        backgroundColor: colors.card, 
+        shadowColor: colors.accent,
+        borderColor: colors.border 
+      }]}>
         <AppEventsCard />
       </View>
 
       {/* Logout Button */}
       <TouchableOpacity
-        style={styles.logoutButton}
+        style={[styles.logoutButton, { backgroundColor: colors.error }]}
         onPress={handleLogout}
         activeOpacity={0.7}
       >
-        <LogOut size={22} color="#fff" style={styles.logoutIcon} />
-        <Text style={styles.logoutText}>Logout</Text>
+        <LogOut size={22} color={colors.text} style={styles.logoutIcon} />
+        <Text style={[styles.logoutText, { color: colors.text }]}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -60,7 +73,6 @@ const UserDetailsForm = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
   },
   contentContainer: {
     padding: 20,
@@ -69,8 +81,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     marginBottom: 20,
     borderRadius: 20,
-    backgroundColor: '#121212',
-    shadowColor: '#3aed76',
+    borderWidth: 1,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -78,14 +89,12 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   logoutButton: {
-    backgroundColor: '#EF4444',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 16,
     borderRadius: 16,
     marginTop: 10,
-    shadowColor: '#EF4444',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 10,
@@ -95,9 +104,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   logoutText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 

@@ -7,16 +7,21 @@
    TouchableOpacity,
    ScrollView,
  } from 'react-native';
+ import { colors as staticColors, useThemeColors } from './theme';
 
  const GameSectionFilter = ({ sections, selectedSection, onSectionChange }) => {
+   // NOVA THEME - Get live colors from dashboard
+   const themeColors = useThemeColors();
+   const colors = themeColors || staticColors;
+
    const sectionColors = {
-     'all': '#3aed76',
-     'survival': '#10B981',
-     'lifesteal': '#EF4444',
-     'creative': '#3B82F6',
-     'pvp': '#F59E0B',
-     'skyblock': '#8B5CF6',
-     'prison': '#6B7280',
+     'all': colors.accentBright,
+     'survival': colors.success,
+     'lifesteal': colors.error,
+     'creative': colors.primary,
+     'pvp': colors.warning,
+     'skyblock': colors.textPrimary,
+     'prison': colors.mutedText,
    };
 
    return (
@@ -30,13 +35,17 @@
            style={[
              styles.sectionButton,
              selectedSection === 'all' && styles.selectedButton,
-             { backgroundColor: selectedSection === 'all' ? sectionColors.all : 'transparent' }
+             { 
+               backgroundColor: selectedSection === 'all' ? sectionColors.all : 'transparent',
+               borderColor: colors.accentBright
+             }
            ]}
            onPress={() => onSectionChange('all')}
          >
            <Text style={[
              styles.sectionText,
-             selectedSection === 'all' && styles.selectedText
+             selectedSection === 'all' && [styles.selectedText, { color: '#0A0A0A' }],
+             { color: colors.accentBright }
            ]}>
              All Games
            </Text>
@@ -50,15 +59,17 @@
                selectedSection === section && styles.selectedButton,
                {
                  backgroundColor: selectedSection === section
-                   ? sectionColors[section.toLowerCase()] || '#3aed76'
-                   : 'transparent'
+                   ? sectionColors[section.toLowerCase()] || colors.accentBright
+                   : 'transparent',
+                 borderColor: colors.accentBright
                }
              ]}
              onPress={() => onSectionChange(section)}
            >
              <Text style={[
                styles.sectionText,
-               selectedSection === section && styles.selectedText
+               selectedSection === section && [styles.selectedText, { color: '#0A0A0A' }],
+               { color: colors.accentBright }
              ]}>
                {section.charAt(0).toUpperCase() + section.slice(1)}
              </Text>
@@ -83,7 +94,6 @@
      borderRadius: 25,
      marginHorizontal: 6,
      borderWidth: 1,
-     borderColor: '#3aed76',
      minWidth: 80,
      alignItems: 'center',
    },
@@ -93,11 +103,9 @@
    sectionText: {
      fontSize: 14,
      fontWeight: '600',
-     color: '#3aed76',
    },
    selectedText: {
-     color: '#0a0a0a',
-     fontWeight: '700',
+     // color will be applied dynamically
    },
  });
 

@@ -1,18 +1,30 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from "react-native";
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../../context/UserContext";
 import { useAuth } from "../../context/AuthContext";
-import { Server } from "lucide-react-native";
+import { Server, ArrowRight, Crown, Coins } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import ServerInfo from "./ServerInfo";
-import { colors } from "../../screens/theme";
+import { colors as staticColors, useThemeColors } from "../../screens/theme";
 
 const Header = () => {
   const navigation = useNavigation();
   const { balance, isUpdating } = useUser();
   const { user, isLoggedIn } = useAuth();
   const [showServerInfo, setShowServerInfo] = useState(false);
+
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
 
   const getInitials = () => {
     if (user?.displayName) {
@@ -43,16 +55,26 @@ const Header = () => {
         >
           <LinearGradient
             colors={[colors.accentDark, colors.accent]}
-            style={styles.profileGlow}
+            style={[styles.profileGlow, { 
+              shadowColor: colors.accent,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 8,
+              elevation: 6,
+              borderColor: colors.accent
+            }]}
           >
             {isLoggedIn && user?.photoURL ? (
               <Image
                 source={{ uri: user.photoURL }}
-                style={styles.profileImage}
+                style={[styles.profileImage, { borderColor: colors.accent }]}
               />
             ) : (
-              <View style={styles.initialsContainer}>
-                <Text style={styles.initialsText}>{getInitials()}</Text>
+              <View style={[styles.initialsContainer, { 
+                backgroundColor: colors.background,
+                borderColor: colors.accent
+              }]}>
+                <Text style={[styles.initialsText, { color: colors.accent }]}>{getInitials()}</Text>
               </View>
             )}
           </LinearGradient>
@@ -72,7 +94,10 @@ const Header = () => {
         >
           <LinearGradient
             colors={[colors.accentGlow, 'rgba(16,185,129,0.08)']}
-            style={styles.balancePill}
+            style={[styles.balancePill, { 
+              borderColor: colors.accentGlow,
+              shadowColor: colors.accent
+            }]}
           >
             <Image
               source={require("../../../assets/rupee.png")}
@@ -83,12 +108,15 @@ const Header = () => {
                 <ActivityIndicator size="small" color={colors.accent} />
               </View>
             ) : (
-              <Text style={styles.balanceText}>
+              <Text style={[styles.balanceText, { color: colors.accent }]}>
                 {balance?.toLocaleString() || "0"}
               </Text>
             )}
-            <View style={styles.addButton}>
-              <Text style={styles.addButtonText}>+</Text>
+            <View style={[styles.addButton, { 
+              backgroundColor: colors.accent,
+              shadowColor: colors.accent
+            }]}>
+              <Text style={[styles.addButtonText, { color: colors.background }]}>+</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -101,7 +129,10 @@ const Header = () => {
         >
           <LinearGradient
             colors={[colors.accentGlow, 'rgba(16,185,129,0.08)']}
-            style={styles.serverButtonInner}
+            style={[styles.serverButtonInner, { 
+              borderColor: colors.accentGlow,
+              shadowColor: colors.accent
+            }]}
           >
             <Server size={20} color={colors.accent} />
           </LinearGradient>
@@ -119,58 +150,42 @@ const Header = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     paddingTop: 8,
-    paddingBottom: 2,
-    borderBottomLeftRadius: 18,
-    borderBottomRightRadius: 18,
-    overflow: "hidden",
+    paddingBottom: 12,
+    paddingHorizontal: 20,
   },
   container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 17,
-    paddingBottom: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   profileContainer: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    overflow: "visible",
-    marginRight: 8,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   profileGlow: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: colors.accent,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 6,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
   },
   profileImage: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    borderWidth: 2,
-    borderColor: colors.accent,
   },
   initialsContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: colors.accent,
   },
   initialsText: {
     fontSize: 18,
     fontWeight: "700",
-    color: colors.accent,
     letterSpacing: 1,
   },
   balanceContainer: {
@@ -186,8 +201,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: colors.accentGlow,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
@@ -207,25 +220,21 @@ const styles = StyleSheet.create({
   balanceText: {
     fontSize: 17,
     fontWeight: "800",
-    color: colors.accent,
     letterSpacing: 0.5,
   },
   addButton: {
-    backgroundColor: colors.accent,
     width: 22,
     height: 22,
     borderRadius: 11,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 2,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.18,
     shadowRadius: 3,
     elevation: 2,
   },
   addButtonText: {
-    color: colors.background,
     fontSize: 16,
     fontWeight: "900",
     lineHeight: 22,
@@ -244,8 +253,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
-    borderColor: colors.accentGlow,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 6,

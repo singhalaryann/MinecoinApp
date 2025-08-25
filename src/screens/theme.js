@@ -188,6 +188,17 @@ export const useThemeColors = () => {
     isFullyLoaded: loaded && novaTheme && Object.values(novaTheme).some(val => typeof val === 'string' && val.startsWith('#'))
   });
 
+  // NEW: Detailed theme key-value logging
+  if (novaTheme) {
+    console.log("🔍 DETAILED NOVA THEME KEY-VALUE PAIRS:");
+    Object.entries(novaTheme).forEach(([key, value]) => {
+      const valueType = typeof value;
+      const valuePreview = valueType === 'string' ? value : valueType === 'array' ? `[${Array.isArray(value) ? value.length : 'invalid'} items]` : valueType;
+      console.log(`  📍 ${key}: ${valuePreview} (${valueType})`);
+    });
+    console.log("🔍 END OF NOVA THEME DETAILS");
+  }
+
   // Cache status logging - FIXED
   console.log("💾 Cache status:", {
     hasCachedTheme: !!cachedTheme,
@@ -261,6 +272,9 @@ export const useThemeColors = () => {
     borderStrong: activeTheme?.borderStrong || '#3B82F6',
     glow: activeTheme?.glow || 'rgba(59, 130, 246, 0.4)',
     
+    // ADDED: Primary glow for main UI elements
+    primaryGlow: activeTheme?.primaryGlow || 'rgba(59, 130, 246, 0.25)',
+    
     // FIXED: Array colors with safety check to prevent .map errors
     inactiveButton: Array.isArray(activeTheme?.inactiveButton) 
       ? activeTheme.inactiveButton 
@@ -269,6 +283,11 @@ export const useThemeColors = () => {
     activeGradient: Array.isArray(activeTheme?.activeGradient)
       ? activeTheme.activeGradient
       : ['#10B981', '#10B981'],
+    
+    // ADDED: Primary gradient for main UI elements
+    primaryGradient: Array.isArray(activeTheme?.primaryGradient)
+      ? activeTheme.primaryGradient
+      : ['#3B82F6', '#1E3A8A'],
     
     dangerGradient: Array.isArray(activeTheme?.dangerGradient)
       ? activeTheme.dangerGradient
@@ -286,9 +305,62 @@ export const useThemeColors = () => {
     shadow: activeTheme?.shadow || '#1E3A8A',
     fabShadow: activeTheme?.fabShadow || '#10B981',
     
+    // ADDED: Primary shadow for main UI elements
+    primaryShadow: activeTheme?.primaryShadow || '#1E3A8A',
+    
     // Misc
     sectionUnderline: activeTheme?.sectionUnderline || '#93C5FD',
-    error: activeTheme?.error || '#EF4444'
+    error: activeTheme?.error || '#EF4444',
+    
+    // ADDED: Missing colors used throughout the codebase
+    // Bright green accent (used extensively)
+    accentBright: activeTheme?.accentBright || '#3aed76',
+    
+    // Section-specific colors
+    keysColor: activeTheme?.keysColor || '#F59E0B',      // Orange for keys section
+    companionColor: activeTheme?.companionColor || '#8B5CF6', // Purple for companions
+    lifestealColor: activeTheme?.lifestealColor || '#EF4444', // Red for lifesteal
+    pvpColor: activeTheme?.pvpColor || '#F59E0B',        // Orange for PVP
+    skyblockColor: activeTheme?.skyblockColor || '#8B5CF6',   // Purple for skyblock
+    prisonColor: activeTheme?.prisonColor || '#6B7280',       // Gray for prison
+    
+    // Additional background colors
+    backgroundDark: activeTheme?.backgroundDark || '#121212',
+    backgroundGray: activeTheme?.backgroundGray || '#A1A1AA',
+    
+    // White color
+    white: activeTheme?.white || '#FFFFFF',
+    
+    // Additional accent colors
+    accentFaded: activeTheme?.accentFaded || 'rgba(58, 237, 118, 0.1)',
+    
+    // Success and warning colors
+    success: activeTheme?.success || '#10B981',
+    warning: activeTheme?.warning || '#F59E0B',
+    
+    // Additional border colors
+    borderAccent: activeTheme?.borderAccent || 'rgba(58, 237, 118, 0.6)',
+    borderError: activeTheme?.borderError || 'rgba(239, 68, 68, 0.6)',
+    borderWarning: activeTheme?.borderWarning || 'rgba(245, 158, 11, 0.6)',
+    borderPrimary: activeTheme?.borderPrimary || 'rgba(139, 92, 246, 0.6)',
+    
+    // Additional background variations
+    backgroundAccent: activeTheme?.backgroundAccent || 'rgba(58, 237, 118, 0.1)',
+    backgroundError: activeTheme?.backgroundError || 'rgba(239, 68, 68, 0.15)',
+    backgroundWarning: activeTheme?.backgroundWarning || 'rgba(245, 158, 11, 0.15)',
+    backgroundPrimary: activeTheme?.backgroundPrimary || 'rgba(139, 92, 246, 0.15)',
+    
+    // Additional text colors
+    textAccent: activeTheme?.textAccent || '#3aed76',
+    textError: activeTheme?.textError || '#EF4444',
+    textWarning: activeTheme?.textWarning || '#F59E0B',
+    textPrimary: activeTheme?.textPrimary || '#8B5CF6',
+    
+    // Additional shadow colors
+    shadowAccent: activeTheme?.shadowAccent || '#3aed76',
+    shadowError: activeTheme?.shadowError || '#EF4444',
+    shadowWarning: activeTheme?.shadowWarning || '#F59E0B',
+    shadowPrimary: activeTheme?.shadowPrimary || '#8B5CF6'
   };
 };
 
@@ -324,9 +396,16 @@ export const colors = {
   borderStrong: '#3B82F6',
   glow: 'rgba(59, 130, 246, 0.4)',
   
+  // ADDED: Primary glow for main UI elements
+  primaryGlow: 'rgba(59, 130, 246, 0.25)',
+  
   // Buttons - Arrays for gradients
   inactiveButton: ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
   activeGradient: ['#10B981', '#10B981'],
+  
+  // ADDED: Primary gradient for main UI elements
+  primaryGradient: ['#3B82F6', '#1E3A8A'],
+  
   dangerGradient: ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
   loadingGradient: ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
   
@@ -334,8 +413,61 @@ export const colors = {
   shadow: '#1E3A8A',
   fabShadow: '#10B981',
   
+  // ADDED: Primary shadow for main UI elements
+  primaryShadow: '#1E3A8A',
+  
   // Misc
   gradientDark: ['#0A0A0A', '#111827', '#0A0A0A'],
   sectionUnderline: '#93C5FD',
-  error: '#EF4444'
+  error: '#EF4444',
+  
+  // ADDED: Missing colors used throughout the codebase
+  // Bright green accent (used extensively)
+  accentBright: '#3aed76',
+  
+  // Section-specific colors
+  keysColor: '#F59E0B',      // Orange for keys section
+  companionColor: '#8B5CF6', // Purple for companions
+  lifestealColor: '#EF4444', // Red for lifesteal
+  pvpColor: '#F59E0B',        // Orange for PVP
+  skyblockColor: '#8B5CF6',   // Purple for skyblock
+  prisonColor: '#6B7280',       // Gray for prison
+  
+  // Additional background colors
+  backgroundDark: '#121212',
+  backgroundGray: '#A1A1AA',
+  
+  // White color
+  white: '#FFFFFF',
+  
+  // Additional accent colors
+  accentFaded: 'rgba(58, 237, 118, 0.1)',
+  
+  // Success and warning colors
+  success: '#10B981',
+  warning: '#F59E0B',
+  
+  // Additional border colors
+  borderAccent: 'rgba(58, 237, 118, 0.6)',
+  borderError: 'rgba(239, 68, 68, 0.6)',
+  borderWarning: 'rgba(245, 158, 11, 0.6)',
+  borderPrimary: 'rgba(139, 92, 246, 0.6)',
+  
+  // Additional background variations
+  backgroundAccent: 'rgba(58, 237, 118, 0.1)',
+  backgroundError: 'rgba(239, 68, 68, 0.15)',
+  backgroundWarning: 'rgba(245, 158, 11, 0.15)',
+  backgroundPrimary: 'rgba(139, 92, 246, 0.15)',
+  
+  // Additional text colors
+  textAccent: '#3aed76',
+  textError: '#EF4444',
+  textWarning: '#F59E0B',
+  textPrimary: '#8B5CF6',
+  
+  // Additional shadow colors
+  shadowAccent: '#3aed76',
+  shadowError: '#EF4444',
+  shadowWarning: '#F59E0B',
+  shadowPrimary: '#8B5CF6'
 };

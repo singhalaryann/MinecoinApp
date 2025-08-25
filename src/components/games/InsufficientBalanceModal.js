@@ -2,6 +2,8 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ActivityIndicator, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { colors as staticColors, useThemeColors } from '../../screens/theme';
+import { Coins, ArrowRight } from 'lucide-react-native';
 
 const InsufficientBalance = ({ visible, onClose }) => {
   const navigation = useNavigation();
@@ -40,6 +42,10 @@ const InsufficientBalance = ({ visible, onClose }) => {
     }
   };
 
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
+
   return (
     <Modal
       visible={visible}
@@ -51,39 +57,42 @@ const InsufficientBalance = ({ visible, onClose }) => {
         <Animated.View 
           style={[
             styles.modalContainer,
-            { transform: [{ scale: scaleAnim }] }
+            { backgroundColor: colors.card, shadowColor: colors.accent }
           ]}
         >
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: colors.backgroundLight }]}>
             <Text style={styles.icon}>💰</Text>
           </View>
           
-          <Text style={styles.title}>Insufficient Balance</Text>
+          <Text style={[styles.title, { color: colors.accent }]}>Insufficient Balance</Text>
           
-          <Text style={styles.message}>
+          <Text style={[styles.message, { color: colors.mutedText }]}>
             You don't have enough coins to purchase this item.
           </Text>
 
           <TouchableOpacity
-            style={[styles.getCoinsButton, loading && styles.buttonDisabled]}
+            style={[styles.getCoinsButton, loading && styles.buttonDisabled, { 
+              backgroundColor: colors.accent,
+              shadowColor: colors.accent
+            }]}
             onPress={handleGetCoins}
             disabled={loading}
             activeOpacity={0.8}
           >
             {loading ? (
-              <ActivityIndicator size="small" color="#FFFFFF" />
+              <ActivityIndicator size="small" color={colors.text} />
             ) : (
-              <Text style={styles.getCoinsText}>Get More Coins</Text>
+              <Text style={[styles.getCoinsText, { color: colors.background }]}>Get More Coins</Text>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.cancelButton}
+            style={[styles.cancelButton, { backgroundColor: colors.backgroundLight }]}
             onPress={onClose}
             disabled={loading}
             activeOpacity={0.6}
           >
-            <Text style={styles.cancelText}>Cancel</Text>
+            <Text style={[styles.cancelText, { color: colors.mutedText }]}>Cancel</Text>
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>
@@ -99,13 +108,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 24,
     width: '85%',
     maxWidth: 340,
     alignItems: 'center',
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 24,
@@ -115,7 +122,6 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
@@ -126,25 +132,21 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#3aed76',
     marginBottom: 8,
   },
   message: {
     fontSize: 16,
-    color: '#6B7280',
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 24,
   },
   getCoinsButton: {
-    backgroundColor: '#3aed76',
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 16,
     width: '100%',
     alignItems: 'center',
     marginBottom: 12,
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -154,7 +156,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   getCoinsText: {
-    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
   },
@@ -162,12 +163,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 16,
-    backgroundColor: '#F3F4F6',
     width: '100%',
     alignItems: 'center',
   },
   cancelText: {
-    color: '#4B5563',
     fontSize: 16,
     fontWeight: '600',
   },

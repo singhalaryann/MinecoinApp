@@ -93,6 +93,11 @@
                     "description": "Primary glow effect",
                     "default": "rgba(59, 130, 246, 0.4)"
                 },
+                "primaryGlow": {
+                    "type": "string",
+                    "description": "Glow effect for primary UI elements",
+                    "default": "rgba(59, 130, 246, 0.25)"
+                },
                 "inactiveButton": {
                     "type": "array",
                     "description": "Gradient for inactive buttons",
@@ -102,6 +107,11 @@
                     "type": "array",
                     "description": "Gradient for active buttons",
                     "default": ["#10B981", "#10B981"]
+                },
+                "primaryGradient": {
+                    "type": "array",
+                    "description": "Gradient for primary UI elements",
+                    "default": ["#3B82F6", "#1E3A8A"]
                 },
                 "dangerGradient": {
                     "type": "array",
@@ -116,6 +126,11 @@
                 "shadow": {
                     "type": "string",
                     "description": "Primary shadow color",
+                    "default": "#1E3A8A"
+                },
+                "primaryShadow": {
+                    "type": "string",
+                    "description": "Shadow color for primary UI elements",
                     "default": "#1E3A8A"
                 },
                 "fabShadow": {
@@ -137,6 +152,151 @@
                     "type": "string",
                     "description": "Error/red color",
                     "default": "#EF4444"
+                },
+                "accentBright": {
+                    "type": "string",
+                    "description": "Bright green accent color used extensively",
+                    "default": "#3aed76"
+                },
+                "keysColor": {
+                    "type": "string",
+                    "description": "Orange color for keys section",
+                    "default": "#F59E0B"
+                },
+                "companionColor": {
+                    "type": "string",
+                    "description": "Purple color for companions section",
+                    "default": "#8B5CF6"
+                },
+                "lifestealColor": {
+                    "type": "string",
+                    "description": "Red color for lifesteal section",
+                    "default": "#EF4444"
+                },
+                "pvpColor": {
+                    "type": "string",
+                    "description": "Orange color for PVP section",
+                    "default": "#F59E0B"
+                },
+                "skyblockColor": {
+                    "type": "string",
+                    "description": "Purple color for skyblock section",
+                    "default": "#8B5CF6"
+                },
+                "prisonColor": {
+                    "type": "string",
+                    "description": "Gray color for prison section",
+                    "default": "#6B7280"
+                },
+                "backgroundDark": {
+                    "type": "string",
+                    "description": "Dark background color",
+                    "default": "#121212"
+                },
+                "backgroundGray": {
+                    "type": "string",
+                    "description": "Gray background color",
+                    "default": "#A1A1AA"
+                },
+                "white": {
+                    "type": "string",
+                    "description": "White color",
+                    "default": "#FFFFFF"
+                },
+                "accentFaded": {
+                    "type": "string",
+                    "description": "Faded accent color",
+                    "default": "rgba(58, 237, 118, 0.1)"
+                },
+                "success": {
+                    "type": "string",
+                    "description": "Success color",
+                    "default": "#10B981"
+                },
+                "warning": {
+                    "type": "string",
+                    "description": "Warning color",
+                    "default": "#F59E0B"
+                },
+                "borderAccent": {
+                    "type": "string",
+                    "description": "Accent border color",
+                    "default": "rgba(58, 237, 118, 0.6)"
+                },
+                "borderError": {
+                    "type": "string",
+                    "description": "Error border color",
+                    "default": "rgba(239, 68, 68, 0.6)"
+                },
+                "borderWarning": {
+                    "type": "string",
+                    "description": "Warning border color",
+                    "default": "rgba(245, 158, 11, 0.6)"
+                },
+                "borderPrimary": {
+                    "type": "string",
+                    "description": "Primary border color",
+                    "default": "rgba(139, 92, 246, 0.6)"
+                },
+                "backgroundAccent": {
+                    "type": "string",
+                    "description": "Accent background color",
+                    "default": "rgba(58, 237, 118, 0.1)"
+                },
+                "backgroundError": {
+                    "type": "string",
+                    "description": "Error background color",
+                    "default": "rgba(239, 68, 68, 0.15)"
+                },
+                "backgroundWarning": {
+                    "type": "string",
+                    "description": "Warning background color",
+                    "default": "rgba(245, 158, 11, 0.15)"
+                },
+                "backgroundPrimary": {
+                    "type": "string",
+                    "description": "Primary background color",
+                    "default": "rgba(139, 92, 246, 0.15)"
+                },
+                "textAccent": {
+                    "type": "string",
+                    "description": "Accent text color",
+                    "default": "#3aed76"
+                },
+                "textError": {
+                    "type": "string",
+                    "description": "Error text color",
+                    "default": "#EF4444"
+                },
+                "textWarning": {
+                    "type": "string",
+                    "description": "Warning text color",
+                    "default": "#F59E0B"
+                },
+                "textPrimary": {
+                    "type": "string",
+                    "description": "Primary text color",
+                    "default": "#8B5CF6"
+                },
+                "shadowAccent": {
+                    "type": "string",
+                    "description": "Accent shadow color",
+                    "default": "#3aed76"
+                },
+                "shadowError": {
+                    "type": "string",
+                    "description": "Error shadow color",
+                    "default": "#EF4444"
+                },
+                "shadowWarning": {
+                    "type": "string",
+                    "description": "Warning shadow color",
+                    "default": "#F59E0B"
+                },
+                "shadowPrimary": {
+                    "type": "string",
+                    "description": "Primary shadow color",
+                    "default": "#8B5CF6"
                 }
             }
         },
@@ -231,3 +391,4 @@
         }
     }
 }
+

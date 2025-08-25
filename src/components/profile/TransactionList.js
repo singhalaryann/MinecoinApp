@@ -1,19 +1,33 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../context/AuthContext';
 import { format } from 'date-fns';
-import { PlusCircle, MinusCircle } from 'lucide-react-native';
+import { PlusCircle, MinusCircle, Calendar, Clock } from 'lucide-react-native';
+import { colors as staticColors, useThemeColors } from '../../screens/theme';
+import { collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { db } from '../../config/firebase';
 
-const TransactionList = () => {
+const TransactionList = ({ userId }) => {
+  // NOVA THEME - Get live colors from dashboard
+  const themeColors = useThemeColors();
+  const colors = themeColors || staticColors;
+
   const { transactions } = useUser();
   const { isLoggedIn } = useAuth();
 
   if (!isLoggedIn) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.emptyStateCard}>
-          <Text style={styles.emptyStateText}>
+          <Text style={[styles.emptyStateText, { color: colors.mutedText }]}>
             Please sign in to view your transactions
           </Text>
         </View>
@@ -23,9 +37,9 @@ const TransactionList = () => {
 
   if (!transactions || transactions.length === 0) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.emptyStateCard}>
-          <Text style={styles.emptyStateText}>No transactions yet</Text>
+          <Text style={[styles.emptyStateText, { color: colors.mutedText }]}>No transactions yet</Text>
         </View>
       </View>
     );
@@ -53,42 +67,48 @@ const TransactionList = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Transaction History</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.heading, { color: colors.accent }]}>Transaction History</Text>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {[...transactions].reverse().map((transaction, index) => {
           const { title, amount, date, type } = formatTransaction(transaction);
           return (
-            <Animated.View key={transaction.id || index} style={styles.transactionCard}>
+            <View key={transaction.id || index} style={[
+              styles.transactionCard,
+              {
+                backgroundColor: colors.card,
+                shadowColor: colors.accent
+              }
+            ]}>
               <View style={styles.transactionContent}>
                 <View
                   style={[
                     styles.iconContainer,
-                    type === 'purchase' ? styles.redIconBg : styles.greenIconBg,
+                    type === 'purchase' ? [styles.redIconBg, { backgroundColor: colors.dangerGradient[0] }] : [styles.greenIconBg, { backgroundColor: colors.accentGlow }],
                   ]}
                 >
                   {type === 'purchase' ? (
-                    <MinusCircle size={24} color="#EF4444" />
+                    <MinusCircle size={24} color={colors.error} />
                   ) : (
-                    <PlusCircle size={24} color="#10B981" />
+                    <PlusCircle size={24} color={colors.accent} />
                   )}
                 </View>
                 <View style={styles.detailsContainer}>
-                  <Text style={styles.transactionTitle} numberOfLines={1} ellipsizeMode="tail">
+                  <Text style={[styles.transactionTitle, { color: colors.lightText }]} numberOfLines={1} ellipsizeMode="tail">
                     {title}
                   </Text>
-                  <Text style={styles.transactionDate}>{date}</Text>
+                  <Text style={[styles.transactionDate, { color: colors.mutedText }]}>{date}</Text>
                 </View>
                 <Text
                   style={[
                     styles.amount,
-                    type === 'purchase' ? styles.debitAmount : styles.creditAmount,
+                    type === 'purchase' ? [styles.debitAmount, { color: colors.error }] : [styles.creditAmount, { color: colors.accent }],
                   ]}
                 >
                   {amount} coins
                 </Text>
               </View>
-            </Animated.View>
+            </View>
           );
         })}
       </ScrollView>
@@ -99,12 +119,10 @@ const TransactionList = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
   },
   heading: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#3aed76',
     marginBottom: 24,
     marginHorizontal: 16,
   },
@@ -112,13 +130,11 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   transactionCard: {
-    backgroundColor: '#121212',
     borderRadius: 16,
     marginHorizontal: 16,
     marginBottom: 16,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -136,10 +152,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   redIconBg: {
-    backgroundColor: '#FEE2E2',
+    // backgroundColor will be applied dynamically
   },
   greenIconBg: {
-    backgroundColor: '#D1FAE5',
+    // backgroundColor will be applied dynamically
   },
   detailsContainer: {
     flex: 1,
@@ -148,12 +164,10 @@ const styles = StyleSheet.create({
   transactionTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#E0E0E0',
     marginBottom: 4,
   },
   transactionDate: {
     fontSize: 14,
-    color: '#9CA3AF',
   },
   amount: {
     fontSize: 17,
@@ -163,10 +177,10 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   debitAmount: {
-    color: '#EF4444',
+    // color will be applied dynamically
   },
   creditAmount: {
-    color: '#10B981',
+    // color will be applied dynamically
   },
   emptyStateCard: {
     flex: 1,
@@ -176,7 +190,6 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#6B7280',
     textAlign: 'center',
   },
 });

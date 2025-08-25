@@ -67,10 +67,7 @@ const App = () => {
 
   return (
     <>
-      <PermissionsDialog
-        visible={showPermissionsDialog}
-        onRequestPermissions={handleRequestPermissions}
-      />
+      
       <NovaProvider
         config={{
           organisationId: "5ec53949-64a3-4ad5-8358-67528a1a9be8", 
@@ -83,6 +80,10 @@ const App = () => {
         <NovaLoader>
           <AuthProvider>
             <UserProvider>
+            <PermissionsDialog
+        visible={showPermissionsDialog}
+        onRequestPermissions={handleRequestPermissions}
+      />
               <MaintenanceCheck>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                   <SafeAreaProvider>
