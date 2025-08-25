@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,9 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  Animated,
+  Dimensions,
+  Easing,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -16,8 +19,6 @@ import UserDetailsForm from "../components/profile/UserDetailsForm";
 import GoogleSignInButton from "../components/common/GoogleSignInButton";
 import { ArrowLeft } from "lucide-react-native";
 import { useThemeColors } from "./theme";
-
-// Import LinearGradient from expo-linear-gradient or react-native-linear-gradient
 import { LinearGradient } from "expo-linear-gradient";
 
 const ProfileScreen = () => {
@@ -25,12 +26,30 @@ const ProfileScreen = () => {
   const { isLoggedIn, signInWithGoogle, user } = useAuth();
   const colors = useThemeColors();
   const [activeTab, setActiveTab] = useState("MC Verification");
-
+  
   const tabs = [
     { id: "MC Verification", component: <MCVerificationForm /> },
     { id: "Transactions", component: <TransactionList /> },
     { id: "Events", component: <UserDetailsForm /> },
   ];
+
+  const screenWidth = Dimensions.get('window').width;
+  const tabIndicatorAnim = useRef(new Animated.Value(0)).current;
+
+  const handleTabPress = (tabId) => {
+    const newIndex = tabs.findIndex(tab => tab.id === tabId);
+    const tabWidth = (screenWidth - 40) / tabs.length;
+    
+    setActiveTab(tabId);
+    
+    // Animate tab indicator sliding with smooth easing
+    Animated.timing(tabIndicatorAnim, {
+      toValue: newIndex * tabWidth,
+      duration: 600,
+      easing: Easing.inOut(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  };
 
   if (!isLoggedIn) {
     return (
@@ -53,9 +72,11 @@ const ProfileScreen = () => {
     );
   }
 
+  const tabWidth = (screenWidth - 40) / tabs.length;
+
   return (
     <LinearGradient
-      colors={[colors.card, colors.background]} // Replace with your gradient colors
+      colors={[colors.card, colors.background]}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
@@ -93,21 +114,32 @@ const ProfileScreen = () => {
           </View>
 
           <View style={[styles.tabContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            {/* Sliding indicator */}
+            <Animated.View
+              style={[
+                styles.tabIndicator,
+                {
+                  backgroundColor: colors.accent,
+                  width: tabWidth - 8,
+                  transform: [{ translateX: tabIndicatorAnim }],
+                }
+              ]}
+            />
+            
+            {/* Tab buttons */}
             {tabs.map((tab) => (
               <TouchableOpacity
                 key={tab.id}
-                style={[
-                  styles.tab, 
-                  activeTab === tab.id && { backgroundColor: colors.accent }
-                ]}
-                onPress={() => setActiveTab(tab.id)}
+                style={[styles.tab, { width: tabWidth }]}
+                onPress={() => handleTabPress(tab.id)}
                 activeOpacity={0.8}
               >
                 <Text
                   style={[
-                    styles.tabText, 
-                    { color: colors.accent },
-                    activeTab === tab.id && { color: colors.white }
+                    styles.tabText,
+                    activeTab === tab.id 
+                      ? { color: colors.white, fontWeight: "700" }
+                      : { color: colors.text }
                   ]}
                 >
                   {tab.id}
@@ -135,7 +167,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "transparent", // Important to keep transparent to show gradient
+    backgroundColor: "transparent",
   },
   scrollView: {
     flex: 1,
@@ -219,24 +251,29 @@ const styles = StyleSheet.create({
     padding: 4,
     marginBottom: 20,
     borderWidth: 1,
+    position: 'relative',
+    height: 56,
+  },
+  tabIndicator: {
+    position: 'absolute',
+    top: 4,
+    left: 4,
+    height: 46,
+    borderRadius: 12,
+    zIndex: 0,
   },
   tab: {
-    flex: 1,
     paddingVertical: 14,
     paddingHorizontal: 10,
     borderRadius: 12,
     alignItems: "center",
-  },
-  activeTab: {
-    // Will be set dynamically
+    justifyContent: "center",
+    zIndex: 1,
   },
   tabText: {
     fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
-  },
-  activeTabText: {
-    fontWeight: "700",
   },
   content: {
     flex: 1,
