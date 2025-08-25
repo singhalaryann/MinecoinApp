@@ -3,9 +3,10 @@ import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator } from 'react-n
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../config/firebase';
 import Video from 'react-native-video';
-
+import { useThemeColors } from '../../screens/theme';
 
 const MaintenanceCheck = ({ children }) => {
+  const colors = useThemeColors();
   const [isInMaintenance, setIsInMaintenance] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [loading, setLoading] = React.useState(true);
@@ -34,10 +35,10 @@ const MaintenanceCheck = ({ children }) => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color="#3aed76" />
-          <Text style={styles.loadingText}>Loading app...</Text>
+          <ActivityIndicator size="large" color={colors.accent} />
+          <Text style={[styles.loadingText, { color: colors.accent }]}>Loading app...</Text>
         </View>
       </View>
     );
@@ -57,15 +58,15 @@ const MaintenanceCheck = ({ children }) => {
                   ignoreSilentSwitch="obey"
                 />
         <View style={styles.overlay}>
-          <Text style={styles.title}>Maintenance Mode</Text>
-          <Text style={styles.message}>{message}</Text>
+          <Text style={[styles.title, { color: colors.accent }]}>Maintenance Mode</Text>
+          <Text style={[styles.message, { color: colors.accent }]}>{message}</Text>
         </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[styles.wrapper, { backgroundColor: colors.background }]}>
       {typeof children === 'string' ? <Text>{children}</Text> : children}
     </View>
     );
@@ -74,7 +75,6 @@ const MaintenanceCheck = ({ children }) => {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#0a0a0a'
   },
   videoContainer: {
     flex: 1,
@@ -98,7 +98,6 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20
@@ -109,7 +108,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    color: '#3aed76',
     marginTop: 8
   },
   messageBox: {
@@ -118,7 +116,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: '90%',
     alignItems: 'center',
-    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2
@@ -130,12 +127,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#3aed76',
     marginBottom: 12
   },
   message: {
     fontSize: 16,
-    color: '#3aed76',
     textAlign: 'center'
   }
 });

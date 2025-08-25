@@ -12,6 +12,7 @@ import MaintenanceCheck from './src/components/common/MaintenanceCheck';
 import { adapty } from 'react-native-adapty';
 import { NovaProvider } from 'nova-react-sdk';
 import NovaRegistry from './src/nova-objects.json';
+import { useThemeColors } from './src/screens/theme';
 
 adapty.activate('public_live_a2ZpIYeH.UBLMWSv1MLfHElcx8N9j');
 
@@ -21,7 +22,8 @@ const NovaLoader = ({ children }) => {
   return children;
 };
 
-const App = () => {
+const AppContent = () => {
+  const colors = useThemeColors();
   const [showPermissionsDialog, setShowPermissionsDialog] = useState(false);
 
   useEffect(() => {
@@ -71,37 +73,43 @@ const App = () => {
         visible={showPermissionsDialog}
         onRequestPermissions={handleRequestPermissions}
       />
-      <NovaProvider
-        config={{
-          organisationId: "5ec53949-64a3-4ad5-8358-67528a1a9be8", 
-          appId: "24fdd990-5a29-4234-ba76-210c3f027131", 
-          apiEndpoint: "https://nova-manager-475016739432.us-central1.run.app", 
-          apiKey: "key123",
-          registry: NovaRegistry,
-        }}
-      >
-        <NovaLoader>
-          <AuthProvider>
-            <UserProvider>
-              <MaintenanceCheck>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <SafeAreaProvider>
-                    <StatusBar
-                      barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
-                      backgroundColor="#0a0a0a"
-                      translucent
-                    />
-                    <NavigationContainer>
-                      <AppNavigator />
-                    </NavigationContainer>
-                  </SafeAreaProvider>
-                </GestureHandlerRootView>
-              </MaintenanceCheck>
-            </UserProvider>
-          </AuthProvider>
-        </NovaLoader>
-      </NovaProvider>
+      <MaintenanceCheck>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <SafeAreaProvider>
+            <StatusBar
+              barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
+              backgroundColor={colors.background}
+              translucent
+            />
+            <NavigationContainer>
+              <AppNavigator />
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </GestureHandlerRootView>
+      </MaintenanceCheck>
     </>
+  );
+};
+
+const App = () => {
+  return (
+    <NovaProvider
+      config={{
+        organisationId: "5ec53949-64a3-4ad5-8358-67528a1a9be8", 
+        appId: "24fdd990-5a29-4234-ba76-210c3f027131", 
+        apiEndpoint: "https://nova-manager-475016739432.us-central1.run.app", 
+        apiKey: "key123",
+        registry: NovaRegistry,
+      }}
+    >
+      <NovaLoader>
+        <AuthProvider>
+          <UserProvider>
+            <AppContent />
+          </UserProvider>
+        </AuthProvider>
+      </NovaLoader>
+    </NovaProvider>
   );
 };
 

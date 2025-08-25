@@ -22,10 +22,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { useThemeColors } from './theme';
 
 const PLACEMENT_ID = '2233';
 
-const Toast = ({ message, visible, onHide, onComplete }) => {
+const Toast = ({ message, visible, onHide, onComplete, colors }) => {
   const translateY = useSharedValue(-100);
   const opacity = useSharedValue(0);
 
@@ -53,8 +54,8 @@ const Toast = ({ message, visible, onHide, onComplete }) => {
   if (!visible) return null;
 
   return (
-    <Animated.View style={[styles.toastContainer, animatedStyle]}>
-      <Text style={styles.toastText}>{message}</Text>
+    <Animated.View style={[styles.toastContainer, { backgroundColor: colors.accent, shadowColor: colors.shadow }, animatedStyle]}>
+      <Text style={[styles.toastText, { color: colors.white }]}>{message}</Text>
     </Animated.View>
   );
 };
@@ -63,6 +64,7 @@ const CoinBundleScreen = () => {
   const navigation = useNavigation();
   const { isLoggedIn } = useAuth();
   const { hasMcVerified, addCoins, isUpdating } = useUser();
+  const colors = useThemeColors();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [coinBundles, setCoinBundles] = useState([]);
@@ -198,18 +200,25 @@ const CoinBundleScreen = () => {
   const isButtonDisabled = loading || isUpdating || transactionCompleted;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Toast
         message={toastMessage}
         visible={toastVisible}
         onHide={() => setToastVisible(false)}
         onComplete={() => navigation.navigate('Main')}
+        colors={colors}
       />
-      <View style={styles.header}>
+      
+      {/* Header with proper border */}
+      <View style={[styles.header, { 
+        borderBottomColor: colors.border,
+        borderBottomWidth: 1,
+        backgroundColor: colors.background
+      }]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeft size={24} color="#3aed76" />
+          <ArrowLeft size={24} color={colors.accent} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Get Coins</Text>
+        <Text style={[styles.headerTitle, { color: colors.accent }]}>Get Coins</Text>
       </View>
 
       <ScrollView
@@ -217,35 +226,61 @@ const CoinBundleScreen = () => {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.cardContainer}>
-          <Text style={styles.subtitle}>Select a coin bundle to purchase</Text>
+        {/* Main Card Container */}
+        <View style={[styles.cardContainer, { 
+          backgroundColor: colors.card, 
+          shadowColor: colors.shadow,
+          borderColor: colors.border,
+          borderWidth: 1
+        }]}>
+          <Text style={[styles.subtitle, { color: colors.text }]}>
+            Select a coin bundle to purchase
+          </Text>
 
           {loading ? (
-            <ActivityIndicator size="large" color="#3aed76" style={styles.loader} />
+            <ActivityIndicator size="large" color={colors.accent} style={styles.loader} />
           ) : (
             <TouchableOpacity
-              style={[styles.bundleButton, isButtonDisabled && styles.disabledButton]}
+              style={[styles.bundleButton, { 
+                backgroundColor: colors.accent, 
+                shadowColor: colors.shadow 
+              }, isButtonDisabled && { opacity: 0.5 }]}
               onPress={handlePurchase}
               disabled={isButtonDisabled}
               activeOpacity={0.8}
             >
               {isUpdating ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color={colors.white} />
               ) : (
-                <Text style={styles.bundleButtonText}>
+                <Text style={[styles.bundleButtonText, { color: colors.white }]}>
                   {transactionCompleted ? 'Purchase Complete' : 'View Coin Bundles'}
                 </Text>
               )}
             </TouchableOpacity>
           )}
 
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoText}>• Purchases will be added to your account immediately</Text>
-            <Text style={styles.infoText}>• All purchases are final and non-refundable</Text>
-            <Text style={styles.infoText}>• For any issues, please contact support</Text>
+          {/* Info Container with proper styling */}
+          <View style={[styles.infoContainer, { 
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderWidth: 1
+          }]}>
+            <Text style={[styles.infoText, { color: colors.text }]}>
+              • Purchases will be added to your account immediately
+            </Text>
+            <Text style={[styles.infoText, { color: colors.text }]}>
+              • All purchases are final and non-refundable
+            </Text>
+            <Text style={[styles.infoText, { color: colors.text }]}>
+              • For any issues, please contact support
+            </Text>
           </View>
 
-          {error && <Text style={styles.errorText}>{error}</Text>}
+          {error && (
+            <Text style={[styles.errorText, { color: colors.error }]}>
+              {error}
+            </Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -255,23 +290,21 @@ const CoinBundleScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#3aed76',
   },
   backButton: {
     marginRight: 16,
+    padding: 8,
+    borderRadius: 8,
   },
   headerTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#3aed76',
   },
   scrollView: {
     flex: 1,
@@ -282,8 +315,6 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     borderRadius: 20,
-    backgroundColor: '#121212',
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -294,67 +325,56 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#3aed76',
     marginBottom: 28,
     textAlign: 'center',
   },
   bundleButton: {
-    backgroundColor: '#3aed76',
     paddingVertical: 18,
     paddingHorizontal: 36,
     borderRadius: 14,
     marginBottom: 36,
     alignItems: 'center',
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
     elevation: 8,
   },
-  disabledButton: {
-    opacity: 0.5,
-  },
   bundleButtonText: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0a0a0a',
   },
   loader: {
     marginVertical: 24,
   },
   infoContainer: {
-    backgroundColor: '#121212',
-    padding: 24,
+    padding: 20,
     borderRadius: 14,
-    shadowColor: '#3aed76',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 8,
+    marginTop: 16,
   },
   infoText: {
     fontSize: 15,
-    color: '#A1A1AA',
     marginBottom: 16,
     lineHeight: 22,
   },
   errorText: {
-    color: '#EF4444',
     fontSize: 15,
     marginTop: 24,
     textAlign: 'center',
+    padding: 16,
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
   },
   toastContainer: {
     position: 'absolute',
     top: 60,
     left: '5%',
     right: '5%',
-    backgroundColor: '#3aed76',
     borderRadius: 14,
     paddingVertical: 16,
     paddingHorizontal: 24,
     alignItems: 'center',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
@@ -362,7 +382,6 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   toastText: {
-    color: '#0a0a0a',
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',

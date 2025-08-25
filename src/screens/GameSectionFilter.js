@@ -7,16 +7,19 @@
    TouchableOpacity,
    ScrollView,
  } from 'react-native';
+ import { useThemeColors } from './theme';
 
  const GameSectionFilter = ({ sections, selectedSection, onSectionChange }) => {
+   const colors = useThemeColors();
+   
    const sectionColors = {
-     'all': '#3aed76',
-     'survival': '#10B981',
-     'lifesteal': '#EF4444',
-     'creative': '#3B82F6',
-     'pvp': '#F59E0B',
-     'skyblock': '#8B5CF6',
-     'prison': '#6B7280',
+     'all': colors.accent,
+     'survival': colors.success,
+     'lifesteal': colors.error,
+     'creative': colors.primary,
+     'pvp': colors.warning,
+     'skyblock': colors.primary,
+     'prison': colors.border,
    };
 
    return (
@@ -29,14 +32,15 @@
          <TouchableOpacity
            style={[
              styles.sectionButton,
-             selectedSection === 'all' && styles.selectedButton,
-             { backgroundColor: selectedSection === 'all' ? sectionColors.all : 'transparent' }
+             { borderColor: colors.border },
+             selectedSection === 'all' && [styles.selectedButton, { backgroundColor: sectionColors.all }]
            ]}
            onPress={() => onSectionChange('all')}
          >
            <Text style={[
              styles.sectionText,
-             selectedSection === 'all' && styles.selectedText
+             { color: colors.accent },
+             selectedSection === 'all' && [styles.selectedText, { color: colors.background }]
            ]}>
              All Games
            </Text>
@@ -47,18 +51,15 @@
              key={section}
              style={[
                styles.sectionButton,
-               selectedSection === section && styles.selectedButton,
-               {
-                 backgroundColor: selectedSection === section
-                   ? sectionColors[section.toLowerCase()] || '#3aed76'
-                   : 'transparent'
-               }
+               { borderColor: colors.border },
+               selectedSection === section && [styles.selectedButton, { backgroundColor: sectionColors[section.toLowerCase()] || colors.accent }]
              ]}
              onPress={() => onSectionChange(section)}
            >
              <Text style={[
                styles.sectionText,
-               selectedSection === section && styles.selectedText
+               { color: colors.accent },
+               selectedSection === section && [styles.selectedText, { color: colors.background }]
              ]}>
                {section.charAt(0).toUpperCase() + section.slice(1)}
              </Text>
@@ -83,7 +84,6 @@
      borderRadius: 25,
      marginHorizontal: 6,
      borderWidth: 1,
-     borderColor: '#3aed76',
      minWidth: 80,
      alignItems: 'center',
    },
@@ -93,10 +93,8 @@
    sectionText: {
      fontSize: 14,
      fontWeight: '600',
-     color: '#3aed76',
    },
    selectedText: {
-     color: '#0a0a0a',
      fontWeight: '700',
    },
  });

@@ -8,135 +8,55 @@
                     "description": "Primary blue color for main UI elements",
                     "default": "#3B82F6"
                 },
-                "primaryDark": {
-                    "type": "string",
-                    "description": "Deep blue for depth and contrast",
-                    "default": "#1E3A8A"
-                },
-                "primaryLight": {
-                    "type": "string",
-                    "description": "Soft blue for highlights and accents",
-                    "default": "#93C5FD"
-                },
-                "primaryFaded": {
-                    "type": "string",
-                    "description": "Transparent primary blue for subtle backgrounds",
-                    "default": "rgba(59, 130, 246, 0.1)"
-                },
                 "accent": {
                     "type": "string",
                     "description": "Main emerald green accent color",
                     "default": "#10B981"
-                },
-                "accentDark": {
-                    "type": "string",
-                    "description": "Dark emerald for depth",
-                    "default": "#059669"
-                },
-                "accentGlow": {
-                    "type": "string",
-                    "description": "Glowing emerald effect",
-                    "default": "rgba(16, 185, 129, 0.25)"
-                },
-                "highlight": {
-                    "type": "string",
-                    "description": "Magenta/pink highlight for gamer energy",
-                    "default": "#EC4899"
-                },
-                "highlightGlow": {
-                    "type": "string",
-                    "description": "Glowing magenta effect",
-                    "default": "rgba(236, 72, 153, 0.2)"
                 },
                 "background": {
                     "type": "string",
                     "description": "Main dark background color",
                     "default": "#0A0A0A"
                 },
-                "backgroundLight": {
-                    "type": "string",
-                    "description": "Lighter dark background for cards",
-                    "default": "#111827"
-                },
                 "card": {
                     "type": "string",
-                    "description": "Semi-transparent card background",
-                    "default": "rgba(17, 24, 39, 0.95)"
+                    "description": "Card background color",
+                    "default": "#111827"
                 },
                 "text": {
                     "type": "string",
                     "description": "Primary text color",
                     "default": "#F3F4F6"
                 },
-                "lightText": {
-                    "type": "string",
-                    "description": "Secondary text color",
-                    "default": "#D1D5DB"
-                },
-                "mutedText": {
-                    "type": "string",
-                    "description": "Muted text for less important content",
-                    "default": "#6B7280"
-                },
                 "border": {
                     "type": "string",
-                    "description": "Subtle border color",
-                    "default": "rgba(59, 130, 246, 0.2)"
-                },
-                "borderStrong": {
-                    "type": "string",
-                    "description": "Strong border color",
-                    "default": "#3B82F6"
-                },
-                "glow": {
-                    "type": "string",
-                    "description": "Primary glow effect",
-                    "default": "rgba(59, 130, 246, 0.4)"
-                },
-                "inactiveButton": {
-                    "type": "array",
-                    "description": "Gradient for inactive buttons",
-                    "default": ["rgba(255, 255, 255, 0.04)", "rgba(255, 255, 255, 0.02)"]
-                },
-                "activeGradient": {
-                    "type": "array",
-                    "description": "Gradient for active buttons",
-                    "default": ["#10B981", "#10B981"]
-                },
-                "dangerGradient": {
-                    "type": "array",
-                    "description": "Gradient for danger/error states",
-                    "default": ["rgba(239, 68, 68, 0.15)", "rgba(239, 68, 68, 0.05)"]
-                },
-                "loadingGradient": {
-                    "type": "array",
-                    "description": "Gradient for loading states",
-                    "default": ["rgba(59, 130, 246, 0.1)", "rgba(59, 130, 246, 0.05)"]
+                    "description": "Border color",
+                    "default": "#374151"
                 },
                 "shadow": {
                     "type": "string",
-                    "description": "Primary shadow color",
+                    "description": "Shadow color",
                     "default": "#1E3A8A"
-                },
-                "fabShadow": {
-                    "type": "string",
-                    "description": "Shadow for floating action buttons",
-                    "default": "#10B981"
-                },
-                "gradientDark": {
-                    "type": "array",
-                    "description": "Dark gradient for backgrounds",
-                    "default": ["#0A0A0A", "#111827", "#0A0A0A"]
-                },
-                "sectionUnderline": {
-                    "type": "string",
-                    "description": "Underline color for sections",
-                    "default": "#93C5FD"
                 },
                 "error": {
                     "type": "string",
                     "description": "Error/red color",
                     "default": "#EF4444"
+                },
+                "success": {
+                    "type": "string",
+                    "description": "Success/green color",
+                    "default": "#10B981"
+                },
+                "warning": {
+                    "type": "string",
+                    "description": "Warning/orange color",
+                    "default": "#F59E0B"
+                },
+                "white": {
+                    "type": "string",
+                    "description": "White color",
+                    "default": "#FFFFFF"
                 }
             }
         },

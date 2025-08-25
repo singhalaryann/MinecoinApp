@@ -18,39 +18,40 @@ import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../config/firebase";
+import { useThemeColors } from "../../screens/theme";
 
 const DISCORD_URL = "https://discord.gg/a3KmcgCqDP";
 
-const SuccessModal = ({ visible, onClose, isUpdating = false }) => (
+const SuccessModal = ({ visible, onClose, isUpdating = false, colors }) => (
   <Modal transparent visible={visible} animationType="fade">
     <View style={styles.modalOverlay}>
-      <View style={styles.modalContent}>
-        <View style={styles.successIcon}>
-          <Check size={28} color="#FFFFFF" />
+      <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+        <View style={[styles.successIcon, { backgroundColor: colors.accent }]}>
+          <Check size={28} color={colors.white} />
         </View>
-        <Text style={styles.modalTitle}>
+        <Text style={[styles.modalTitle, { color: colors.accent }]}>
           {isUpdating ? "Update Successful!" : "Verification Successful!"}
         </Text>
-        <Text style={styles.modalDescription}>
+        <Text style={[styles.modalDescription, { color: colors.text }]}>
           {isUpdating
             ? "Your Minecraft account has been successfully updated"
             : "Your Minecraft account has been successfully verified"}
         </Text>
-        <TouchableOpacity style={styles.modalButton} onPress={onClose}>
-          <Text style={styles.modalButtonText}>Continue</Text>
+        <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.accent }]} onPress={onClose}>
+          <Text style={[styles.modalButtonText, { color: colors.white }]}>Continue</Text>
         </TouchableOpacity>
       </View>
     </View>
   </Modal>
 );
 
-const ValidationMessage = ({ message, type }) => (
+const ValidationMessage = ({ message, type, colors }) => (
   <View style={styles.validationContainer}>
-    <AlertCircle size={16} color={type === "error" ? "#EF4444" : "#10B981"} />
+    <AlertCircle size={16} color={type === "error" ? colors.error : colors.accent} />
     <Text
       style={[
         styles.validationText,
-        type === "error" ? styles.errorText : styles.successText,
+        { color: type === "error" ? colors.error : colors.accent },
       ]}
     >
       {message}
@@ -62,6 +63,7 @@ const MCVerificationForm = () => {
   const navigation = useNavigation();
   const { user } = useAuth();
   const { updateMcCredentials, loadFirestoreData } = useUser();
+  const colors = useThemeColors();
   const [isLoading, setIsLoading] = useState(true);
   const [formState, setFormState] = useState({
     credentials: {
@@ -231,47 +233,47 @@ const MCVerificationForm = () => {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color="#3aed76" />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
 
   if (formState.uiState.verificationComplete && !formState.uiState.isEditing) {
     return (
-      <View style={styles.container}>
-        <View style={styles.verifiedCard}>
-          <View style={styles.verifiedIcon}>
-            <Check size={28} color="#FFFFFF" />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.verifiedCard, { backgroundColor: colors.card, borderColor: colors.accent, shadowColor: colors.shadow }]}>
+          <View style={[styles.verifiedIcon, { backgroundColor: colors.accent }]}>
+            <Check size={28} color={colors.white} />
           </View>
-          <Text style={styles.verifiedTitle}>Account Verified</Text>
-          <Text style={styles.verifiedUsername}>
+          <Text style={[styles.verifiedTitle, { color: colors.accent }]}>Account Verified</Text>
+          <Text style={[styles.verifiedUsername, { color: colors.text }]}>
             {formState.credentials.username}
           </Text>
-          <Text style={styles.verifiedDescription}>
+          <Text style={[styles.verifiedDescription, { color: colors.text }]}>
             Your Minecraft account has been verified and is ready to use
           </Text>
-          <View style={styles.rewardsContainer}>
+          <View style={[styles.rewardsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={styles.rewardsHeader}>
-              <Text style={styles.rewardsTitle}>✨ Daily Rewards Activated</Text>
+              <Text style={[styles.rewardsTitle, { color: colors.accent }]}>✨ Daily Rewards Activated</Text>
             </View>
             <View style={styles.rewardsInfo}>
-              <Text style={styles.rewardsBenefit}>
+              <Text style={[styles.rewardsBenefit, { color: colors.accent }]}>
                 🎁 Get 20 free coins daily
               </Text>
-              <Text style={styles.rewardsDescription}>
+              <Text style={[styles.rewardsDescription, { color: colors.text }]}>
                 Simply open the app once every 24 hours to claim your reward
                 automatically
               </Text>
             </View>
           </View>
           <TouchableOpacity
-            style={styles.discordButton}
+            style={[styles.discordButton, { backgroundColor: colors.accent }]}
             onPress={handleDiscordPress}
           >
-            <Text style={styles.discordButtonText}>Join Our Discord</Text>
+            <Text style={[styles.discordButtonText, { color: colors.white }]}>Join Our Discord</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.editButton}
+            style={[styles.editButton, { borderColor: colors.accent }]}
             onPress={() =>
               setFormState((prev) => ({
                 ...prev,
@@ -279,7 +281,7 @@ const MCVerificationForm = () => {
               }))
             }
           >
-            <Text style={styles.editButtonText}>Edit Account Details</Text>
+            <Text style={[styles.editButtonText, { color: colors.accent }]}>Edit Account Details</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -291,17 +293,18 @@ const MCVerificationForm = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
       <SuccessModal
         visible={formState.uiState.showSuccess}
         onClose={handleModalClose}
         isUpdating={formState.uiState.isEditing}
+        colors={colors}
       />
 
       <View style={styles.formContent}>
-        <Text style={styles.title}>Minecraft Account</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, { color: colors.accent }]}>Minecraft Account</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]}>
           {formState.uiState.isEditing
             ? "Update your account details"
             : "Enter your account details"}
@@ -311,15 +314,16 @@ const MCVerificationForm = () => {
           <View
             style={[
               styles.inputWrapper,
-              formState.validation.errors.username && styles.inputError,
+              { backgroundColor: colors.card, borderColor: colors.border },
+              formState.validation.errors.username && { borderColor: colors.error },
             ]}
           >
             <View style={styles.inputContent}>
-              <User size={20} color="#3aed76" />
+              <User size={20} color={colors.accent} />
               <TextInput
-                style={styles.input}
+                style={[styles.input, { color: colors.text }]}
                 placeholder="Enter your Minecraft gamertag"
-                placeholderTextColor="#6B7280"
+                placeholderTextColor={colors.text}
                 value={formState.credentials.username}
                 onChangeText={(text) =>
                   setFormState((prev) => ({
@@ -335,7 +339,7 @@ const MCVerificationForm = () => {
                 autoCapitalize="none"
               />
               {!editableUsername && (
-                <Lock size={20} color="#9CA3AF" style={styles.lockIcon} />
+                <Lock size={20} color={colors.text} style={styles.lockIcon} />
               )}
             </View>
           </View>
@@ -344,21 +348,23 @@ const MCVerificationForm = () => {
             <ValidationMessage
               message={formState.validation.errors.username}
               type="error"
+              colors={colors}
             />
           )}
 
           <View
             style={[
               styles.inputWrapper,
-              formState.validation.errors.password && styles.inputError,
+              { backgroundColor: colors.card, borderColor: colors.border },
+              formState.validation.errors.password && { borderColor: colors.error },
             ]}
           >
             <View style={styles.inputContent}>
-              <Lock size={20} color="#3aed76" />
+              <Lock size={20} color={colors.accent} />
               <TextInput
-                style={styles.input}
+                style={[styles.input, { color: colors.text }]}
                 placeholder="Password used with /register"
-                placeholderTextColor="#6B7280"
+                placeholderTextColor={colors.text}
                 secureTextEntry={formState.uiState.secureTextEntry}
                 value={formState.credentials.password}
                 onChangeText={(text) =>
@@ -384,7 +390,7 @@ const MCVerificationForm = () => {
                 }
                 style={styles.showButton}
               >
-                <Text style={styles.showButtonText}>
+                <Text style={[styles.showButtonText, { color: colors.accent }]}>
                   {formState.uiState.secureTextEntry ? "Show" : "Hide"}
                 </Text>
               </TouchableOpacity>
@@ -395,6 +401,7 @@ const MCVerificationForm = () => {
             <ValidationMessage
               message={formState.validation.errors.password}
               type="error"
+              colors={colors}
             />
           )}
         </View>
@@ -403,18 +410,20 @@ const MCVerificationForm = () => {
           <ValidationMessage
             message={formState.validation.errors.submit}
             type="error"
+            colors={colors}
           />
         )}
 
         <TouchableOpacity
           style={[
             styles.submitButton,
+            { backgroundColor: colors.accent },
             formState.uiState.isSubmitting && styles.submitButtonDisabled,
           ]}
           onPress={handleSubmit}
           disabled={formState.uiState.isSubmitting}
         >
-          <Text style={styles.submitButtonText}>
+          <Text style={[styles.submitButtonText, { color: colors.white }]}>
             {formState.uiState.isSubmitting
               ? "Processing..."
               : formState.uiState.isEditing
@@ -430,7 +439,6 @@ const MCVerificationForm = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0a0a0a",
   },
   formContent: {
     padding: 24,
@@ -438,12 +446,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#3aed76",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 17,
-    color: "#A1A1AA",
     marginBottom: 32,
   },
   formGroup: {
@@ -451,10 +457,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputWrapper: {
-    backgroundColor: "#121212",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#3aed76",
     overflow: "hidden",
   },
   inputContent: {
@@ -466,19 +470,16 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: "#3aed76",
     padding: 0,
   },
   showButton: {
     paddingHorizontal: 8,
   },
   showButtonText: {
-    color: "#3aed76",
     fontSize: 15,
     fontWeight: "600",
   },
   submitButton: {
-    backgroundColor: "#3aed76",
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
@@ -487,22 +488,18 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   submitButtonText: {
-    color: "#0a0a0a",
     fontSize: 17,
     fontWeight: "700",
   },
   inputError: {
-    borderColor: "#EF4444",
+    // Border color will be set dynamically
   },
   verifiedCard: {
     margin: 24,
     padding: 32,
     borderRadius: 20,
     alignItems: "center",
-    backgroundColor: "#121212",
     borderWidth: 1,
-    borderColor: "#3aed76",
-    shadowColor: "#3aed76",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 14,
@@ -512,7 +509,6 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#3aed76",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
@@ -520,42 +516,35 @@ const styles = StyleSheet.create({
   verifiedTitle: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#3aed76",
     marginBottom: 8,
   },
   verifiedUsername: {
     fontSize: 18,
-    color: "#A1A1AA",
     marginBottom: 16,
   },
   verifiedDescription: {
     fontSize: 16,
-    color: "#A1A1AA",
     textAlign: "center",
     marginBottom: 32,
     lineHeight: 24,
   },
   discordButton: {
-    backgroundColor: "#3aed76",
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
     marginBottom: 16,
   },
   discordButtonText: {
-    color: "#0a0a0a",
     fontSize: 17,
     fontWeight: "700",
   },
   editButton: {
     borderWidth: 1,
-    borderColor: "#3aed76",
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
   },
   editButtonText: {
-    color: "#3aed76",
     fontSize: 17,
     fontWeight: "700",
   },
@@ -567,7 +556,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   modalContent: {
-    backgroundColor: "#121212",
     borderRadius: 20,
     padding: 24,
     width: "100%",
@@ -578,7 +566,6 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#3aed76",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
@@ -586,25 +573,21 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#3aed76",
     marginBottom: 8,
     textAlign: "center",
   },
   modalDescription: {
     fontSize: 16,
-    color: "#A1A1AA",
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 24,
   },
   modalButton: {
-    backgroundColor: "#3aed76",
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
   },
   modalButtonText: {
-    color: "#0a0a0a",
     fontSize: 17,
     fontWeight: "700",
   },
@@ -616,22 +599,13 @@ const styles = StyleSheet.create({
   },
   validationText: {
     fontSize: 14,
-    color: "#A1A1AA",
-  },
-  errorText: {
-    color: "#EF4444",
-  },
-  successText: {
-    color: "#10B981",
   },
   rewardsContainer: {
-    backgroundColor: "#121212",
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
     width: "100%",
     borderWidth: 1,
-    borderColor: "#3aed76",
   },
   rewardsHeader: {
     marginBottom: 8,
@@ -640,7 +614,6 @@ const styles = StyleSheet.create({
   rewardsTitle: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#3aed76",
     textAlign: "center",
   },
   rewardsInfo: {
@@ -648,13 +621,11 @@ const styles = StyleSheet.create({
   },
   rewardsBenefit: {
     fontSize: 16,
-    color: "#3aed76",
     fontWeight: "600",
     marginBottom: 4,
   },
   rewardsDescription: {
     fontSize: 15,
-    color: "#A1A1AA",
     textAlign: "center",
     lineHeight: 22,
   },

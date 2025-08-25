@@ -6,13 +6,21 @@ import { useAuth } from "../../context/AuthContext";
 import { Server } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import ServerInfo from "./ServerInfo";
-import { colors } from "../../screens/theme";
+import { useThemeColors } from "../../screens/theme"; // Import the hook instead of static colors
 
-const Header = () => {
+const Header = ({ onProfilePress, onBackPress, title, showBack = false, showProfile = true }) => {
+  const { user } = useAuth();
+  const { userData } = useUser();
   const navigation = useNavigation();
-  const { balance, isUpdating } = useUser();
-  const { user, isLoggedIn } = useAuth();
   const [showServerInfo, setShowServerInfo] = useState(false);
+  
+  // Get live theme colors from Nova dashboard
+  const colors = useThemeColors();
+  
+  // Safety check - ensure colors are loaded before rendering
+  if (!colors) {
+    return null; // Don't render until colors are ready
+  }
 
   const getInitials = () => {
     if (user?.displayName) {
@@ -22,16 +30,20 @@ const Header = () => {
   };
 
   const handleServerPress = () => {
-    if (!isLoggedIn) {
+    if (!user) {
       navigation.navigate("Profile");
     } else {
       setShowServerInfo(true);
     }
   };
 
+  const isLoggedIn = !!user;
+  const balance = userData?.balance || 0;
+  const isUpdating = false; // You can add logic for this if needed
+
   return (
     <LinearGradient
-      colors={[colors.backgroundLight, colors.background]}
+      colors={[colors.card, colors.background]}
       style={styles.mainContainer}
     >
       <View style={styles.container}>
@@ -42,17 +54,20 @@ const Header = () => {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={[colors.accentDark, colors.accent]}
-            style={styles.profileGlow}
+            colors={[colors.primary, colors.accent]}
+            style={[styles.profileGlow, { shadowColor: colors.shadow }]}
           >
             {isLoggedIn && user?.photoURL ? (
               <Image
                 source={{ uri: user.photoURL }}
-                style={styles.profileImage}
+                style={[styles.profileImage, { borderColor: colors.accent }]}
               />
             ) : (
-              <View style={styles.initialsContainer}>
-                <Text style={styles.initialsText}>{getInitials()}</Text>
+              <View style={[styles.initialsContainer, { 
+                backgroundColor: colors.background,
+                borderColor: colors.accent
+              }]}>
+                <Text style={[styles.initialsText, { color: colors.accent }]}>{getInitials()}</Text>
               </View>
             )}
           </LinearGradient>
@@ -71,8 +86,11 @@ const Header = () => {
           activeOpacity={0.9}
         >
           <LinearGradient
-            colors={[colors.accentGlow, 'rgba(16,185,129,0.08)']}
-            style={styles.balancePill}
+            colors={[colors.card, colors.background]}
+            style={[styles.balancePill, { 
+              borderColor: colors.border,
+              shadowColor: colors.shadow
+            }]}
           >
             <Image
               source={require("../../../assets/rupee.png")}
@@ -83,12 +101,15 @@ const Header = () => {
                 <ActivityIndicator size="small" color={colors.accent} />
               </View>
             ) : (
-              <Text style={styles.balanceText}>
+              <Text style={[styles.balanceText, { color: colors.accent }]}>
                 {balance?.toLocaleString() || "0"}
               </Text>
             )}
-            <View style={styles.addButton}>
-              <Text style={styles.addButtonText}>+</Text>
+            <View style={[styles.addButton, { 
+              backgroundColor: colors.accent,
+              shadowColor: colors.shadow
+            }]}>
+              <Text style={[styles.addButtonText, { color: colors.white }]}>+</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -100,8 +121,11 @@ const Header = () => {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={[colors.accentGlow, 'rgba(16,185,129,0.08)']}
-            style={styles.serverButtonInner}
+            colors={[colors.card, colors.background]}
+            style={[styles.serverButtonInner, { 
+              borderColor: colors.border,
+              shadowColor: colors.shadow
+            }]}
           >
             <Server size={20} color={colors.accent} />
           </LinearGradient>
@@ -118,25 +142,20 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    paddingTop: 8,
-    paddingBottom: 2,
-    borderBottomLeftRadius: 18,
-    borderBottomRightRadius: 18,
-    overflow: "hidden",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   container: {
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 17,
-    paddingBottom: 2,
   },
   profileContainer: {
-    width: 42,
-    height: 42,
     borderRadius: 21,
-    overflow: "visible",
-    marginRight: 8,
+    overflow: "hidden",
   },
   profileGlow: {
     width: 42,
@@ -144,7 +163,6 @@ const styles = StyleSheet.create({
     borderRadius: 21,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -155,22 +173,18 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     borderWidth: 2,
-    borderColor: colors.accent,
   },
   initialsContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.background,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: colors.accent,
   },
   initialsText: {
     fontSize: 18,
     fontWeight: "700",
-    color: colors.accent,
     letterSpacing: 1,
   },
   balanceContainer: {
@@ -186,8 +200,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1.5,
-    borderColor: colors.accentGlow,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
@@ -207,25 +219,21 @@ const styles = StyleSheet.create({
   balanceText: {
     fontSize: 17,
     fontWeight: "800",
-    color: colors.accent,
     letterSpacing: 0.5,
   },
   addButton: {
-    backgroundColor: colors.accent,
     width: 22,
     height: 22,
     borderRadius: 11,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 2,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.18,
     shadowRadius: 3,
     elevation: 2,
   },
   addButtonText: {
-    color: colors.background,
     fontSize: 16,
     fontWeight: "900",
     lineHeight: 22,
@@ -244,8 +252,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
-    borderColor: colors.accentGlow,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 6,

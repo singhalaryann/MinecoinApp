@@ -9,13 +9,14 @@ import {
   Alert,
 } from 'react-native';
 import { useUser } from '../../context/UserContext';
+import { useThemeColors } from '../../screens/theme';
 
 // Component for each section header
-const SectionHeader = ({ title }) => (
-  <Text style={styles.title}>{title}</Text>
+const SectionHeader = ({ title, colors }) => (
+  <Text style={[styles.title, { color: colors.accent }]}>{title}</Text>
 );
 
-const GiftCardGenerator = () => {
+const GiftCardGenerator = ({ colors }) => {
   const { balance, generateGiftCard, subtractBalance } = useUser();
 
   const [giftAmount, setGiftAmount] = useState('');
@@ -59,45 +60,45 @@ const GiftCardGenerator = () => {
   };
 
   return (
-    <View style={styles.sectionContainer}>
-      <SectionHeader title="🎁 Generate Gift Card" />
-      <Text style={styles.subtitle}>
+    <View style={[styles.sectionContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <SectionHeader title="🎁 Generate Gift Card" colors={colors} />
+      <Text style={[styles.subtitle, { color: colors.text }]}>
         Create gift code (5% tax deducted). Example: 100 → 95
       </Text>
 
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
         value={giftAmount}
         onChangeText={setGiftAmount}
         keyboardType="number-pad"
         placeholder="Enter amount"
-        placeholderTextColor="#6B7280"
+        placeholderTextColor={colors.text}
         editable={!isGenerating && !isProcessing}
       />
 
       <TouchableOpacity
-        style={[styles.actionButton, (isGenerating || isProcessing) && styles.buttonDisabled]}
+        style={[styles.actionButton, { backgroundColor: colors.accent }, (isGenerating || isProcessing) && { opacity: 0.7 }]}
         onPress={handleGenerate}
         disabled={isGenerating || isProcessing || !giftAmount}
       >
-        <Text style={styles.actionButtonText}>
+        <Text style={[styles.actionButtonText, { color: colors.white }]}>
           {isGenerating ? 'Generating...' : 'Generate Gift Code'}
         </Text>
       </TouchableOpacity>
 
       {generatedCode && (
-        <View style={styles.codeContainer}>
-          <Text style={styles.codeText}>
+        <View style={[styles.codeContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
+          <Text style={[styles.codeText, { color: colors.accent }]}>
             Gift Code: {generatedCode.code} (Amount: {generatedCode.netAmount})
           </Text>
           <TouchableOpacity
-            style={styles.copyButton}
+            style={[styles.copyButton, { backgroundColor: colors.accent }]}
             onPress={() => {
               Clipboard.setString(generatedCode.code);
               Alert.alert('Success', 'Copied to clipboard!');
             }}
           >
-            <Text style={styles.copyButtonText}>Copy</Text>
+            <Text style={[styles.copyButtonText, { color: colors.white }]}>Copy</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -105,7 +106,7 @@ const GiftCardGenerator = () => {
   );
 };
 
-const GiftCodeClaimer = ({ addBalance }) => {
+const GiftCodeClaimer = ({ addBalance, colors }) => {
   const [claimCode, setClaimCode] = useState('');
   const [isClaiming, setIsClaiming] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -139,26 +140,26 @@ const GiftCodeClaimer = ({ addBalance }) => {
   };
 
   return (
-    <View style={styles.sectionContainer}>
-      <SectionHeader title="🎟️ Claim Gift Code" />
-      <Text style={styles.subtitle}>Redeem a gift code to add balance</Text>
+    <View style={[styles.sectionContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <SectionHeader title="🎟️ Claim Gift Code" colors={colors} />
+      <Text style={[styles.subtitle, { color: colors.text }]}>Redeem a gift code to add balance</Text>
 
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.background, borderColor: colors.border, color: colors.text }]}
         value={claimCode}
         onChangeText={setClaimCode}
         placeholder="Enter gift code"
-        placeholderTextColor="#6B7280"
+        placeholderTextColor={colors.text}
         autoCapitalize="characters"
         editable={!isClaiming && !isProcessing}
       />
 
       <TouchableOpacity
-        style={[styles.actionButton, (isClaiming || isProcessing) && styles.buttonDisabled]}
+        style={[styles.actionButton, { backgroundColor: colors.accent }, (isClaiming || isProcessing) && { opacity: 0.7 }]}
         onPress={handleClaim}
         disabled={isClaiming || isProcessing || !claimCode.trim()}
       >
-        <Text style={styles.actionButtonText}>
+        <Text style={[styles.actionButtonText, { color: colors.white }]}>
           {isClaiming ? 'Claiming...' : 'Claim Gift Code'}
         </Text>
       </TouchableOpacity>
@@ -167,10 +168,12 @@ const GiftCodeClaimer = ({ addBalance }) => {
         <View
           style={[
             styles.resultContainer,
-            claimResult.success ? styles.successResult : styles.failureResult,
+            claimResult.success 
+              ? { backgroundColor: colors.success, borderColor: colors.success } 
+              : { backgroundColor: colors.error, borderColor: colors.error },
           ]}
         >
-          <Text style={styles.resultText}>
+          <Text style={[styles.resultText, { color: colors.white }]}>
             {claimResult.success
               ? `🎉 Success! ${claimResult.amount} added.`
               : `❌ Failed: ${claimResult.message}`}
@@ -183,22 +186,29 @@ const GiftCodeClaimer = ({ addBalance }) => {
 
 const AppEventsCard = () => {
   const { balance, subtractBalance, addBalance, user = {} } = useUser();
+  const colors = useThemeColors();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.balance}>Balance: {balance}</Text>
+    <View style={[styles.container, { 
+      backgroundColor: colors.card, 
+      borderColor: colors.border, 
+      shadowColor: colors.shadow 
+    }]}>
+      <Text style={[styles.balance, { color: colors.accent }]}>Balance: {balance}</Text>
 
       <GiftCardGenerator
         balance={balance}
         subtractBalance={subtractBalance}
         user={user}
+        colors={colors}
       />
 
-      <View style={styles.divider} />
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
       <GiftCodeClaimer
         addBalance={addBalance}
         user={user}
+        colors={colors}
       />
     </View>
   );
@@ -206,13 +216,10 @@ const AppEventsCard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000000',
     borderRadius: 20,
     padding: 20,
     margin: 16,
     borderWidth: 2,
-    borderColor: '#3aed76',
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 12,
@@ -221,108 +228,79 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#3aed76',
     textAlign: 'center',
     marginBottom: 10,
     letterSpacing: 1.2,
   },
   balance: {
-    color: '#3aed76',
     fontSize: 18,
     fontWeight: '700',
     textAlign: 'center',
     marginBottom: 20,
   },
   subtitle: {
-    color: '#6B7280',
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 12,
   },
   sectionContainer: {
     marginBottom: 24,
-    backgroundColor: '#0a0a0a',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#3aed76',
   },
   input: {
-    backgroundColor: '#121212',
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#3aed76',
-    color: '#ffffff',
     padding: 12,
     marginBottom: 14,
     fontSize: 16,
   },
   actionButton: {
-    backgroundColor: '#3aed76',
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 10,
   },
-  buttonDisabled: {
-    backgroundColor: '#3aed76aa',
-  },
   actionButtonText: {
-    color: '#000000',
     fontWeight: 'bold',
     fontSize: 16,
   },
   divider: {
     height: 1,
-    backgroundColor: '#3aed76',
     marginVertical: 20,
     opacity: 0.4,
   },
   codeContainer: {
-    backgroundColor: '#121212',
     padding: 12,
     borderRadius: 8,
     marginTop: 14,
-    borderColor: '#3aed76',
     borderWidth: 1,
   },
   codeText: {
-    color: '#3aed76',
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
     textAlign: 'center',
   },
   copyButton: {
-    backgroundColor: '#3aed76',
     borderRadius: 8,
     paddingVertical: 8,
     alignItems: 'center',
   },
   copyButtonText: {
-    color: '#000000',
     fontWeight: 'bold',
   },
   resultContainer: {
     padding: 12,
     borderRadius: 8,
     marginTop: 10,
-  },
-  successResult: {
-    backgroundColor: '#1e4023',
-    borderColor: '#3aed76',
-    borderWidth: 1,
-  },
-  failureResult: {
-    backgroundColor: '#401e1e',
-    borderColor: '#ff4c4c',
     borderWidth: 1,
   },
   resultText: {
     textAlign: 'center',
     fontSize: 18,
     fontWeight: '600',
-    color: '#3aed76',
     marginTop: 10,
   },
 });

@@ -10,8 +10,10 @@ import {
   orderBy,
   limit
 } from 'firebase/firestore';
+import { useThemeColors } from '../../screens/theme';
 
 const NotificationBanner = () => {
+  const colors = useThemeColors();
   // Store the notification message
   const [notification, setNotification] = useState(null);
   // Create animation value for fade effect (0 = invisible, 1 = visible)
@@ -83,10 +85,10 @@ const NotificationBanner = () => {
 
   // Render the notification banner
   return (
-    <Animated.View style={[styles.container, { opacity }]}>
+    <Animated.View style={[styles.container, { backgroundColor: colors.accent, shadowColor: colors.shadow }, { opacity }]}>
       <View style={styles.contentWrapper}>
         <Text
-          style={styles.text}
+          style={[styles.text, { color: colors.white }]}
           numberOfLines={1}        // Limit to single line
           ellipsizeMode="tail"    // Add ... if text too long
         >
@@ -100,10 +102,8 @@ const NotificationBanner = () => {
 // Styles for the banner
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#3aed76',  // Purple background color
     width: '100%',
     // Add subtle shadow effect
-    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',      // Arrange items in a row
   },
   text: {
-    color: 'white',
     textAlign: 'center',
     fontSize: 14,
     fontWeight: '500',

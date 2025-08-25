@@ -56,7 +56,7 @@ const getCachedNovaTheme = async (userId) => {
   }
 };
 
-// Custom hook to get theme colors from Nova SDK - FIXED
+// Custom hook to get theme colors from Nova SDK - CLEANED UP
 export const useThemeColors = () => {
   const { objects, loaded, error } = useNovaExperience("theme");
   const novaTheme = objects?.["ui-theme"];
@@ -96,7 +96,7 @@ export const useThemeColors = () => {
     checkCache();
   }, []);
 
-  // FIXED: Cache theme when Nova loads successfully and check for changes
+  // Cache theme when Nova loads successfully and check for changes
   useEffect(() => {
     const cacheTheme = async () => {
       if (loaded && novaTheme) {
@@ -110,7 +110,7 @@ export const useThemeColors = () => {
             novaThemeLoaded: !!novaTheme
           });
           
-          // FIXED: Check if theme actually changed before caching
+          // Check if theme actually changed before caching
           if (cachedTheme && JSON.stringify(cachedTheme) !== JSON.stringify(novaTheme)) {
             console.log("🔄 Theme changed, updating cache for user:", userId);
             await cacheNovaTheme(novaTheme, userId);
@@ -119,11 +119,11 @@ export const useThemeColors = () => {
             setIsUsingCache(false);
             isUsingCacheRef.current = false;
             
-            // 🚀 FORCE REFRESH: Make app re-render with new theme
+            // Force refresh: Make app re-render with new theme
             setThemeKey(prev => prev + 1);
             console.log("🔄 Forcing app refresh with new theme!");
             
-            // 🚀 IMMEDIATE UPDATE: Force immediate theme change
+            // Immediate update: Force immediate theme change
             console.log("🎨 Theme updated - app should show new colors immediately!");
           } else if (!cachedTheme) {
             // First time loading, cache the theme
@@ -145,7 +145,7 @@ export const useThemeColors = () => {
     cacheTheme();
   }, [loaded, novaTheme, cachedTheme]);
 
-  // Determine which theme to use - FIXED: Use cache when available
+  // Determine which theme to use - Use cache when available
   const activeTheme = isUsingCacheRef.current ? currentThemeRef.current : novaTheme;
   const isFromCache = isUsingCacheRef.current;
 
@@ -188,7 +188,7 @@ export const useThemeColors = () => {
     isFullyLoaded: loaded && novaTheme && Object.values(novaTheme).some(val => typeof val === 'string' && val.startsWith('#'))
   });
 
-  // Cache status logging - FIXED
+  // Cache status logging
   console.log("💾 Cache status:", {
     hasCachedTheme: !!cachedTheme,
     isUsingCache: isUsingCacheRef.current,
@@ -201,11 +201,11 @@ export const useThemeColors = () => {
     cacheInfo: "No TTL - cache stays until theme changes"
   });
   
-  // FIXED: More robust check - ensure theme has actual color values
+  // More robust check - ensure theme has actual color values
   const isThemeValid = activeTheme && 
     (isFromCache || loaded) && 
     Object.values(activeTheme).some(val => typeof val === 'string' && val.startsWith('#')) &&
-    Object.keys(activeTheme).length >= 0; // At least 5 theme properties should be loaded
+    Object.keys(activeTheme).length >= 5; // At least 5 theme properties should be loaded
   
   if (!isThemeValid) {
     console.log("⚠️ Using static colors - Theme not ready or invalid");
@@ -219,7 +219,7 @@ export const useThemeColors = () => {
         hasTheme: !!activeTheme,
         isLoaded: loaded || isFromCache,
         hasColors: activeTheme ? Object.values(activeTheme).some(val => typeof val === 'string' && val.startsWith('#')) : false,
-        hasEnoughKeys: activeTheme ? Object.keys(activeTheme).length >= 0 : false
+        hasEnoughKeys: activeTheme ? Object.keys(activeTheme).length >= 5 : false
       }
     });
     return colors;
@@ -229,113 +229,35 @@ export const useThemeColors = () => {
   console.log(`🎉 Using ${themeSource} colors:`, activeTheme);
   console.log("✅ Theme validation passed - Theme is ready!");
   
-  // Return colors object with active theme values or fallbacks
+  // Return colors object with active theme values or fallbacks - CLEANED UP
   return {
-    // Core Gamer Aesthetic - Blue + Emerald + Magenta Accent
+    // Core colors from Nova - SIMPLIFIED AND CLEAN
     primary: activeTheme?.primary || '#3B82F6',
-    primaryDark: activeTheme?.primaryDark || '#1E3A8A',
-    primaryLight: activeTheme?.primaryLight || '#93C5FD',
-    primaryFaded: activeTheme?.primaryFaded || 'rgba(59, 130, 246, 0.1)',
-    
-    // Accent - Emerald Green
     accent: activeTheme?.accent || '#10B981',
-    accentDark: activeTheme?.accentDark || '#059669',
-    accentGlow: activeTheme?.accentGlow || 'rgba(16, 185, 129, 0.25)',
-    
-    // Secondary Accent - Gamer Pink
-    highlight: activeTheme?.highlight || '#EC4899',
-    highlightGlow: activeTheme?.highlightGlow || 'rgba(236, 72, 153, 0.2)',
-    
-    // Backgrounds
     background: activeTheme?.background || '#0A0A0A',
-    backgroundLight: activeTheme?.backgroundLight || '#111827',
-    card: activeTheme?.card || 'rgba(17, 24, 39, 0.95)',
-    
-    // Text
+    card: activeTheme?.card || '#111827',
     text: activeTheme?.text || '#F3F4F6',
-    lightText: activeTheme?.lightText || '#D1D5DB',
-    mutedText: activeTheme?.mutedText || '#6B7280',
-    
-    // Borders & Glow
-    border: activeTheme?.border || 'rgba(59, 130, 246, 0.2)',
-    borderStrong: activeTheme?.borderStrong || '#3B82F6',
-    glow: activeTheme?.glow || 'rgba(59, 130, 246, 0.4)',
-    
-    // FIXED: Array colors with safety check to prevent .map errors
-    inactiveButton: Array.isArray(activeTheme?.inactiveButton) 
-      ? activeTheme.inactiveButton 
-      : ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
-    
-    activeGradient: Array.isArray(activeTheme?.activeGradient)
-      ? activeTheme.activeGradient
-      : ['#10B981', '#10B981'],
-    
-    dangerGradient: Array.isArray(activeTheme?.dangerGradient)
-      ? activeTheme.dangerGradient
-      : ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
-    
-    loadingGradient: Array.isArray(activeTheme?.loadingGradient)
-      ? activeTheme.loadingGradient
-      : ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
-    
-    gradientDark: Array.isArray(activeTheme?.gradientDark)
-      ? activeTheme.gradientDark
-      : ['#0A0A0A', '#111827', '#0A0A0A'],
-    
-    // Shadows
+    border: activeTheme?.border || '#374151',
     shadow: activeTheme?.shadow || '#1E3A8A',
-    fabShadow: activeTheme?.fabShadow || '#10B981',
-    
-    // Misc
-    sectionUnderline: activeTheme?.sectionUnderline || '#93C5FD',
-    error: activeTheme?.error || '#EF4444'
+    error: activeTheme?.error || '#EF4444',
+    success: activeTheme?.success || '#10B981',
+    warning: activeTheme?.warning || '#F59E0B',
+    white: activeTheme?.white || '#FFFFFF'
   };
 };
 
-// Static colors export (fallback/default theme)
+// Static colors export (fallback/default theme) - CLEANED UP
 export const colors = {
-  // Core Gamer Aesthetic - Blue + Emerald + Magenta Accent
+  // Core colors - SIMPLIFIED AND CLEAN
   primary: '#3B82F6',
-  primaryDark: '#1E3A8A',
-  primaryLight: '#93C5FD',
-  primaryFaded: 'rgba(59, 130, 246, 0.1)',
-  
-  // Accent - Emerald Green
   accent: '#10B981',
-  accentDark: '#059669',
-  accentGlow: 'rgba(16, 185, 129, 0.25)',
-  
-  // Secondary Accent - Gamer Pink
-  highlight: '#EC4899',
-  highlightGlow: 'rgba(236, 72, 153, 0.2)',
-  
-  // Backgrounds
   background: '#0A0A0A',
-  backgroundLight: '#111827',
-  card: 'rgba(17, 24, 39, 0.95)',
-  
-  // Text
+  card: '#111827',
   text: '#F3F4F6',
-  lightText: '#D1D5DB',
-  mutedText: '#6B7280',
-  
-  // Borders & Glow
-  border: 'rgba(59, 130, 246, 0.2)',
-  borderStrong: '#3B82F6',
-  glow: 'rgba(59, 130, 246, 0.4)',
-  
-  // Buttons - Arrays for gradients
-  inactiveButton: ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
-  activeGradient: ['#10B981', '#10B981'],
-  dangerGradient: ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
-  loadingGradient: ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
-  
-  // Shadows
+  border: '#374151',
   shadow: '#1E3A8A',
-  fabShadow: '#10B981',
-  
-  // Misc
-  gradientDark: ['#0A0A0A', '#111827', '#0A0A0A'],
-  sectionUnderline: '#93C5FD',
-  error: '#EF4444'
+  error: '#EF4444',
+  success: '#10B981',
+  warning: '#F59E0B',
+  white: '#FFFFFF'
 };

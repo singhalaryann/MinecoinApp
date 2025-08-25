@@ -4,16 +4,18 @@ import { useUser } from '../../context/UserContext';
 import { useAuth } from '../../context/AuthContext';
 import { format } from 'date-fns';
 import { PlusCircle, MinusCircle } from 'lucide-react-native';
+import { useThemeColors } from '../../screens/theme';
 
 const TransactionList = () => {
   const { transactions } = useUser();
   const { isLoggedIn } = useAuth();
+  const colors = useThemeColors();
 
   if (!isLoggedIn) {
     return (
-      <View style={styles.container}>
-        <View style={styles.emptyStateCard}>
-          <Text style={styles.emptyStateText}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.emptyStateCard, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
+          <Text style={[styles.emptyStateText, { color: colors.text }]}>
             Please sign in to view your transactions
           </Text>
         </View>
@@ -23,9 +25,9 @@ const TransactionList = () => {
 
   if (!transactions || transactions.length === 0) {
     return (
-      <View style={styles.container}>
-        <View style={styles.emptyStateCard}>
-          <Text style={styles.emptyStateText}>No transactions yet</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={[styles.emptyStateCard, { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1 }]}>
+          <Text style={[styles.emptyStateText, { color: colors.text }]}>No transactions yet</Text>
         </View>
       </View>
     );
@@ -53,36 +55,43 @@ const TransactionList = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Transaction History</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.heading, { color: colors.accent }]}>Transaction History</Text>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {[...transactions].reverse().map((transaction, index) => {
           const { title, amount, date, type } = formatTransaction(transaction);
           return (
-            <Animated.View key={transaction.id || index} style={styles.transactionCard}>
+            <Animated.View key={transaction.id || index} style={[styles.transactionCard, { 
+              backgroundColor: colors.card, 
+              shadowColor: colors.shadow,
+              borderColor: colors.border,
+              borderWidth: 1
+            }]}>
               <View style={styles.transactionContent}>
                 <View
                   style={[
                     styles.iconContainer,
-                    type === 'purchase' ? styles.redIconBg : styles.greenIconBg,
+                    type === 'purchase' 
+                      ? { backgroundColor: colors.error } 
+                      : { backgroundColor: colors.success },
                   ]}
                 >
                   {type === 'purchase' ? (
-                    <MinusCircle size={24} color="#EF4444" />
+                    <MinusCircle size={24} color={colors.white} />
                   ) : (
-                    <PlusCircle size={24} color="#10B981" />
+                    <PlusCircle size={24} color={colors.white} />
                   )}
                 </View>
                 <View style={styles.detailsContainer}>
-                  <Text style={styles.transactionTitle} numberOfLines={1} ellipsizeMode="tail">
+                  <Text style={[styles.transactionTitle, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">
                     {title}
                   </Text>
-                  <Text style={styles.transactionDate}>{date}</Text>
+                  <Text style={[styles.transactionDate, { color: colors.text }]}>{date}</Text>
                 </View>
                 <Text
                   style={[
                     styles.amount,
-                    type === 'purchase' ? styles.debitAmount : styles.creditAmount,
+                    type === 'purchase' ? { color: colors.error } : { color: colors.accent },
                   ]}
                 >
                   {amount} coins
@@ -99,12 +108,10 @@ const TransactionList = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
   },
   heading: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#3aed76',
     marginBottom: 24,
     marginHorizontal: 16,
   },
@@ -112,13 +119,11 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   transactionCard: {
-    backgroundColor: '#121212',
     borderRadius: 16,
     marginHorizontal: 16,
     marginBottom: 16,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
@@ -135,12 +140,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  redIconBg: {
-    backgroundColor: '#FEE2E2',
-  },
-  greenIconBg: {
-    backgroundColor: '#D1FAE5',
-  },
   detailsContainer: {
     flex: 1,
     marginLeft: 16,
@@ -148,12 +147,10 @@ const styles = StyleSheet.create({
   transactionTitle: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#E0E0E0',
     marginBottom: 4,
   },
   transactionDate: {
     fontSize: 14,
-    color: '#9CA3AF',
   },
   amount: {
     fontSize: 17,
@@ -162,21 +159,16 @@ const styles = StyleSheet.create({
     minWidth: 90,
     textAlign: 'right',
   },
-  debitAmount: {
-    color: '#EF4444',
-  },
-  creditAmount: {
-    color: '#10B981',
-  },
   emptyStateCard: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
+    paddingVertical: 32,
+    borderRadius: 16,
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#6B7280',
     textAlign: 'center',
   },
 });

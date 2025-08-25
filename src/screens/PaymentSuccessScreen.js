@@ -3,9 +3,11 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Check } from 'lucide-react-native';
+import { useThemeColors } from './theme';
 
 const PaymentSuccessScreen = () => {
   const navigation = useNavigation();
+  const colors = useThemeColors();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -15,12 +17,12 @@ const PaymentSuccessScreen = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.successIcon}>
-        <Check size={32} color="#FFFFFF" />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.successIcon, { backgroundColor: colors.success }]}>
+        <Check size={32} color={colors.white} />
       </View>
-      <Text style={styles.successText}>Payment Successful!</Text>
-      <Text style={styles.redirectText}>Redirecting to home...</Text>
+      <Text style={[styles.successText, { color: colors.success }]}>Payment Successful!</Text>
+      <Text style={[styles.redirectText, { color: colors.text }]}>Redirecting to home...</Text>
     </View>
   );
 };
@@ -30,13 +32,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0a0a0a',
   },
   successIcon: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: '#22C55E',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -44,13 +44,11 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#22C55E',
     marginBottom: 8,
     letterSpacing: 0.5,
   },
   redirectText: {
     fontSize: 16,
-    color: '#6B7280',
     letterSpacing: 0.25,
   },
 });

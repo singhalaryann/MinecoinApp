@@ -79,10 +79,10 @@ const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedTag, 
 
   return (
     <View style={[styles.heroContainer]}>
-      <Text style={[styles.heroTitle, { color: colors.accent, textShadowColor: colors.accentGlow }]}>
+      <Text style={[styles.heroTitle, { color: colors.accent, textShadowColor: colors.accent }]}>
         GAME ASSETS
       </Text>
-      <Text style={[styles.heroSubtitle, { color: colors.lightText }]}>
+      <Text style={[styles.heroSubtitle, { color: colors.text }]}>
         {selectedSection === 'all' && selectedTag === 'all'
           ? `Explore ${gameCount} premium assets`
           : `Showing ${filteredCount} ${getFilterText()}assets`
@@ -99,15 +99,15 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
   
   const tagConfigs = {
     all: { emoji: '🎮', name: 'All', color: colors.accent },
-    rank: { emoji: '👑', name: 'Ranks', color: colors.highlight },
-    keys: { emoji: '🔑', name: 'Keys', color: '#F59E0B' },
-    companion: { emoji: '🐾', name: 'Companions', color: '#8B5CF6' },
+    rank: { emoji: '👑', name: 'Ranks', color: colors.accent },
+    keys: { emoji: '🔑', name: 'Keys', color: colors.warning },
+    companion: { emoji: '🐾', name: 'Companions', color: colors.primary },
     asset: { emoji: '💎', name: 'Asset', color: colors.primary },
   };
 
   return (
     <View style={[styles.tagsContainer, { borderBottomColor: colors.border }]}>
-      <Text style={[styles.tagsLabel, { color: colors.mutedText }]}>FILTER BY TYPE:</Text>
+      <Text style={[styles.tagsLabel, { color: colors.text }]}>FILTER BY TYPE:</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -137,8 +137,8 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
             >
               <Text style={[
                 styles.tagButtonText,
-                { color: colors.lightText },
-                isActive && { color: '#FFFFFF' }
+                { color: colors.text },
+                isActive && { color: colors.white }
               ]}>
                 {config.emoji} {config.name}
               </Text>
@@ -175,7 +175,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
             selectedSection === 'all' && [styles.filterButtonActive, { 
               backgroundColor: colors.accent, 
               borderColor: colors.accent,
-              shadowColor: colors.accentGlow 
+              shadowColor: colors.accent 
             }],
           ]}
           onPress={() => onSectionChange('all')}
@@ -183,8 +183,8 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
         >
           <Text style={[
             styles.filterButtonText, 
-            { color: colors.lightText },
-            selectedSection === 'all' && [styles.filterButtonTextActive, { color: colors.text }]
+            { color: colors.text },
+            selectedSection === 'all' && [styles.filterButtonTextActive, { color: colors.white }]
           ]}>
             🎮 All Games
           </Text>
@@ -204,7 +204,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
                 isActive && [styles.filterButtonActive, { 
                   backgroundColor: colors.accent, 
                   borderColor: colors.accent,
-                  shadowColor: colors.accentGlow 
+                  shadowColor: colors.accent 
                 }],
               ]}
               onPress={() => onSectionChange(section)}
@@ -212,8 +212,8 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
             >
               <Text style={[
                 styles.filterButtonText,
-                { color: colors.lightText },
-                isActive && [styles.filterButtonTextActive, { color: colors.text }]
+                { color: colors.text },
+                isActive && [styles.filterButtonTextActive, { color: colors.white }]
               ]}>
                 {config.emoji} {config.name}
               </Text>
@@ -222,47 +222,6 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
         })}
       </ScrollView>
     </View>
-  );
-});
-
-// Animated Game Card
-const AnimatedGameCard = React.memo(({ game, index }) => {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        delay: index * 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 400,
-        delay: index * 50,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
-
-  return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-        marginBottom: 16,
-        width: CARD_WIDTH,
-        alignSelf: 'center',
-      }}
-    >
-      <GameCard
-        game={game}
-        style={styles.gameCard}
-        showSection={true}
-      />
-    </Animated.View>
   );
 });
 
@@ -275,14 +234,14 @@ const SimpleSectionHeader = React.memo(({ title, count, colors, isNova = false }
           {title.toUpperCase()}
         </Text>
         {isNova && (
-          <View style={[styles.novaBadge, { backgroundColor: colors.highlight }]}>
-            <Text style={styles.novaBadgeText}>NOVA</Text>
-          </View>
+                  <View style={[styles.novaBadge, { backgroundColor: colors.accent }]}>
+          <Text style={[styles.novaBadgeText, { color: colors.white }]}>NOVA</Text>
+        </View>
         )}
       </View>
-      <Text style={[styles.sectionCount, { color: colors.mutedText }]}>
-        {count} Assets
-      </Text>
+              <Text style={[styles.sectionCount, { color: colors.text }]}>
+          {count} Assets
+        </Text>
     </View>
   );
 });
@@ -291,7 +250,7 @@ const SimpleSectionHeader = React.memo(({ title, count, colors, isNova = false }
 const SimpleLoadingState = React.memo(({ colors }) => (
   <View style={styles.centeredContainer}>
     <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={[styles.loadingText, { color: colors.lightText }]}>
+    <Text style={[styles.loadingText, { color: colors.text }]}>
       Loading Assets...
     </Text>
   </View>
@@ -301,7 +260,7 @@ const SimpleLoadingState = React.memo(({ colors }) => (
 const NovaLoadingState = React.memo(({ colors }) => (
   <View style={styles.centeredContainer}>
     <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={[styles.loadingText, { color: colors.lightText }]}>
+    <Text style={[styles.loadingText, { color: colors.text }]}>
       Loading Nova Dashboard...
     </Text>
   </View>
@@ -317,9 +276,9 @@ const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
       style={[styles.retryButton, { backgroundColor: colors.primary, shadowColor: colors.shadow }]} 
       onPress={onRetry}
     >
-      <Text style={[styles.retryButtonText, { color: colors.text }]}>
-        Retry
-      </Text>
+              <Text style={[styles.retryButtonText, { color: colors.white }]}>
+          Retry
+        </Text>
     </TouchableOpacity>
   </View>
 ));
@@ -341,7 +300,7 @@ const SimpleEmptyState = React.memo(({ selectedSection, selectedTag, colors }) =
 
   return (
     <View style={styles.centeredContainer}>
-      <Text style={[styles.emptyText, { color: colors.mutedText }]}>
+      <Text style={[styles.emptyText, { color: colors.text }]}>
         {getEmptyMessage()}
       </Text>
     </View>
@@ -351,15 +310,64 @@ const SimpleEmptyState = React.memo(({ selectedSection, selectedTag, colors }) =
 // ==================== MAIN COMPONENT ====================
 
 const MainScreen = () => {
-  // NOVA THEME - Get live colors from dashboard
+  // Get live theme colors from Nova dashboard
   const themeColors = useThemeColors();
-  const colors = themeColors || staticColors;
+  
+  // Safety check - ensure colors are loaded before rendering
+  if (!themeColors) {
+    return null; // Don't render until colors are ready
+  }
+  
+  // Use theme colors for all styling
+  const colors = themeColors;
   
   // Get Nova ready state from AuthContext
   const { isNovaReady } = useAuth();
   
   // NEW: Get Nova experience data for dashboard assets
   const { objects, loaded: novaLoaded, error: novaError } = useNovaExperience(isNovaReady ? "home" : null);
+
+  // Animated Game Card - MOVED INSIDE to access colors
+  const AnimatedGameCard = React.memo(({ game, index }) => {
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(20)).current;
+
+    useEffect(() => {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 400,
+          delay: index * 50,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 400,
+          delay: index * 50,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, []);
+
+    return (
+      <Animated.View
+        style={{
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+          marginBottom: 16,
+          width: CARD_WIDTH,
+          alignSelf: 'center',
+        }}
+      >
+        <GameCard
+          game={game}
+          style={styles.gameCard}
+          showSection={true}
+          colors={colors}
+        />
+      </Animated.View>
+    );
+  });
   
   // Clear Nova assets when user logs out - IMMEDIATE CLEAR
   useEffect(() => {
@@ -768,8 +776,8 @@ const MainScreen = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: staticColors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={staticColors.background} />
-        <LinearGradient colors={staticColors.gradientDark} style={StyleSheet.absoluteFill} />
-        <Header balance={balance} />
+        <LinearGradient colors={[staticColors.background, staticColors.card]} style={StyleSheet.absoluteFill} />
+        <Header balance={balance} colors={staticColors} />
         <NotificationBanner />
         <NovaLoadingState colors={staticColors} />
       </SafeAreaView>
@@ -780,8 +788,8 @@ const MainScreen = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
-        <Header balance={balance} />
+        <LinearGradient colors={[colors.background, colors.card]} style={StyleSheet.absoluteFill} />
+        <Header balance={balance} colors={colors} />
         <NotificationBanner />
         <SimpleLoadingState colors={colors} />
       </SafeAreaView>
@@ -793,7 +801,7 @@ const MainScreen = () => {
       <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
         <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
-        <Header balance={balance} />
+        <Header balance={balance} colors={colors} />
         <NotificationBanner />
         <SimpleErrorState error={error} onRetry={loadGameAssets} colors={colors} />
       </SafeAreaView>
@@ -801,12 +809,12 @@ const MainScreen = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-      <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+          <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.background} />
+        <LinearGradient colors={[colors.background, colors.card]} style={StyleSheet.absoluteFill} />
 
-      <Header balance={balance} />
-      <NotificationBanner />
+        <Header balance={balance} colors={colors} />
+        <NotificationBanner />
 
       <ScrollView
         style={styles.scrollView}
@@ -842,17 +850,17 @@ const MainScreen = () => {
       </ScrollView>
 
       {/* Support FAB */}
-      <TouchableOpacity
-        style={[styles.fab, { shadowColor: colors.fabShadow }]}
-        activeOpacity={0.8}
-        onPress={() => Linking.openURL('https://t.me/xgamingclub')}
-      >
-        <LinearGradient colors={colors.activeGradient} style={styles.fabGradient}>
-          <Text style={[styles.fabText, { color: colors.background }]}>
-            SUPPORT
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
+              <TouchableOpacity
+          style={[styles.fab, { shadowColor: colors.shadow }]}
+          activeOpacity={0.8}
+          onPress={() => Linking.openURL('https://t.me/xgamingclub')}
+        >
+          <LinearGradient colors={[colors.accent, colors.accent]} style={styles.fabGradient}>
+            <Text style={[styles.fabText, { color: colors.white }]}>
+              SUPPORT
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -1028,7 +1036,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   novaBadgeText: {
-    color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.5,

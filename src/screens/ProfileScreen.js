@@ -15,7 +15,7 @@ import TransactionList from "../components/profile/TransactionList";
 import UserDetailsForm from "../components/profile/UserDetailsForm";
 import GoogleSignInButton from "../components/common/GoogleSignInButton";
 import { ArrowLeft } from "lucide-react-native";
-import { colors } from "./theme";
+import { useThemeColors } from "./theme";
 
 // Import LinearGradient from expo-linear-gradient or react-native-linear-gradient
 import { LinearGradient } from "expo-linear-gradient";
@@ -23,6 +23,7 @@ import { LinearGradient } from "expo-linear-gradient";
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const { isLoggedIn, signInWithGoogle, user } = useAuth();
+  const colors = useThemeColors();
   const [activeTab, setActiveTab] = useState("MC Verification");
 
   const tabs = [
@@ -34,18 +35,18 @@ const ProfileScreen = () => {
   if (!isLoggedIn) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
             <ArrowLeft size={24} color={colors.accent} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: colors.accent }]}>Profile</Text>
         </View>
 
         <View style={styles.signInContainer}>
-          <Text style={styles.message}>Please sign in to continue</Text>
+          <Text style={[styles.message, { color: colors.text }]}>Please sign in to continue</Text>
           <GoogleSignInButton onPress={signInWithGoogle} />
         </View>
       </SafeAreaView>
@@ -54,53 +55,60 @@ const ProfileScreen = () => {
 
   return (
     <LinearGradient
-      colors={[colors.backgroundLight, colors.background]} // Replace with your gradient colors
+      colors={[colors.card, colors.background]} // Replace with your gradient colors
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
             <ArrowLeft size={24} color={colors.accent} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: colors.accent }]}>Profile</Text>
         </View>
 
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={styles.userInfoCard}>
+          <View style={[styles.userInfoCard, { backgroundColor: colors.card, shadowColor: colors.shadow, borderColor: colors.border }]}>
             <View style={styles.userInfoContent}>
               <View style={styles.avatarContainer}>
                 {user?.photoURL ? (
-                  <Image source={{ uri: user.photoURL }} style={styles.avatar} />
+                  <Image source={{ uri: user.photoURL }} style={[styles.avatar, { borderColor: colors.accent }]} />
                 ) : (
-                  <View style={styles.avatarPlaceholder}>
-                    <Text style={styles.avatarText}>
+                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.accent }]}>
+                    <Text style={[styles.avatarText, { color: colors.white }]}>
                       {user?.displayName?.charAt(0) || "U"}
                     </Text>
                   </View>
                 )}
               </View>
               <View style={styles.userTextInfo}>
-                <Text style={styles.welcomeText}>
+                <Text style={[styles.welcomeText, { color: colors.accent }]}>
                   Welcome, {user?.displayName || "User"}
                 </Text>
-                {user?.email && <Text style={styles.emailText}>{user.email}</Text>}
+                {user?.email && <Text style={[styles.emailText, { color: colors.text }]}>{user.email}</Text>}
               </View>
             </View>
           </View>
 
-          <View style={styles.tabContainer}>
+          <View style={[styles.tabContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
             {tabs.map((tab) => (
               <TouchableOpacity
                 key={tab.id}
-                style={[styles.tab, activeTab === tab.id && styles.activeTab]}
+                style={[
+                  styles.tab, 
+                  activeTab === tab.id && { backgroundColor: colors.accent }
+                ]}
                 onPress={() => setActiveTab(tab.id)}
                 activeOpacity={0.8}
               >
                 <Text
-                  style={[styles.tabText, activeTab === tab.id && styles.activeTabText]}
+                  style={[
+                    styles.tabText, 
+                    { color: colors.accent },
+                    activeTab === tab.id && { color: colors.white }
+                  ]}
                 >
                   {tab.id}
                 </Text>
@@ -138,7 +146,6 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "transparent",
     borderBottomWidth: 1,
-    borderBottomColor: colors.accent,
   },
   backButton: {
     padding: 8,
@@ -148,19 +155,15 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "700",
-    color: colors.accent,
   },
   userInfoCard: {
     margin: 16,
-    backgroundColor: colors.backgroundLight,
     borderRadius: 20,
-    shadowColor: colors.accent,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.2,
     shadowRadius: 14,
     elevation: 6,
     borderWidth: 1,
-    borderColor: colors.accent,
   },
   userInfoContent: {
     flexDirection: "row",
@@ -175,20 +178,17 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     borderWidth: 2,
-    borderColor: colors.accent,
   },
   avatarPlaceholder: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.accentGlow,
     justifyContent: "center",
     alignItems: "center",
   },
   avatarText: {
     fontSize: 24,
     fontWeight: "700",
-    color: colors.accent,
   },
   userTextInfo: {
     flex: 1,
@@ -196,12 +196,10 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 20,
     fontWeight: "700",
-    color: colors.accent,
     marginBottom: 6,
   },
   emailText: {
     fontSize: 15,
-    color: colors.mutedText,
   },
   signInContainer: {
     flex: 1,
@@ -211,19 +209,16 @@ const styles = StyleSheet.create({
   },
   message: {
     fontSize: 17,
-    color: colors.mutedText,
     marginBottom: 24,
     textAlign: "center",
   },
   tabContainer: {
     flexDirection: "row",
-    backgroundColor: colors.backgroundLight,
     marginHorizontal: 16,
     borderRadius: 16,
     padding: 4,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: colors.accent,
   },
   tab: {
     flex: 1,
@@ -233,16 +228,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   activeTab: {
-    backgroundColor: colors.accent,
+    // Will be set dynamically
   },
   tabText: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.accent,
     textAlign: "center",
   },
   activeTabText: {
-    color: colors.background,
     fontWeight: "700",
   },
   content: {

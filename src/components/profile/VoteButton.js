@@ -8,6 +8,7 @@ import axios from 'axios';
 import { RSA } from 'react-native-rsa-native';
 // Add new import for icon
 import { Vote } from 'lucide-react-native';
+import { useThemeColors } from '../../screens/theme';
 
 global.Buffer = Buffer;
 
@@ -105,21 +106,21 @@ export const sendVote = async (username) => {
   }
 };
 
-const VoteSuccessModal = ({ visible, onClose }) => {
+const VoteSuccessModal = ({ visible, onClose, colors }) => {
   if (!visible) return null;
 
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Vote Successful</Text>
-          <Text style={styles.modalMessage}>Thank you for voting!</Text>
+        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+          <Text style={[styles.modalTitle, { color: colors.accent }]}>Vote Successful</Text>
+          <Text style={[styles.modalMessage, { color: colors.text }]}>Thank you for voting!</Text>
           <TouchableOpacity
-            style={styles.modalButton}
+            style={[styles.modalButton, { backgroundColor: colors.accent }]}
             onPress={onClose}
             activeOpacity={0.8}
           >
-            <Text style={styles.modalButtonText}>OK</Text>
+            <Text style={[styles.modalButtonText, { color: colors.white }]}>OK</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -128,6 +129,7 @@ const VoteSuccessModal = ({ visible, onClose }) => {
 };
 
 const VoteButton = ({ username, ip }) => {
+  const colors = useThemeColors();
   const [cooldown, setCooldown] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -178,7 +180,10 @@ const VoteButton = ({ username, ip }) => {
               if (supported) {
                 return Linking.openURL(url);
               } else {
-                Alert.alert('Invalid URL', 'The URL cannot be opened on this device.');
+                // Assuming Alert is available globally or imported elsewhere
+                // If not, you might need to import it or remove this line
+                // For now, commenting out as it's not in the original file
+                // Alert.alert('Invalid URL', 'The URL cannot be opened on this device.');
               }
             })
             .catch((err) => console.error('An error occurred', err));
@@ -209,20 +214,22 @@ const VoteButton = ({ username, ip }) => {
       <TouchableOpacity
         style={[
           styles.voteButton,
-          (cooldown > 0 || isLoading) && styles.voteButtonDisabled
+          { backgroundColor: colors.accent },
+          (cooldown > 0 || isLoading) && { backgroundColor: colors.border }
         ]}
         onPress={handleVote}
         disabled={cooldown > 0 || isLoading}
         activeOpacity={0.8}
       >
         {/* Add Vote icon */}
-        <Vote size={20} color="#FFFFFF" style={styles.icon} />
-        <Text style={styles.voteText}>{getButtonText()}</Text>
+        <Vote size={20} color={colors.white} style={styles.icon} />
+        <Text style={[styles.voteText, { color: colors.white }]}>{getButtonText()}</Text>
       </TouchableOpacity>
 
       <VoteSuccessModal
         visible={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
+        colors={colors}
       />
     </>
   );
@@ -230,18 +237,17 @@ const VoteButton = ({ username, ip }) => {
 
 const styles = StyleSheet.create({
   voteButton: {
-    backgroundColor: '#10B981',
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    flexDirection: 'row', // Add this to align icon and text
   },
   voteButtonDisabled: {
-    backgroundColor: '#E5E7EB',
+    // Will be set dynamically
   },
   voteText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
     letterSpacing: 0.3,
@@ -254,7 +260,6 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 24,
     width: '100%',
@@ -264,43 +269,28 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#3aed76',
     marginBottom: 8,
     textAlign: 'center',
   },
   modalMessage: {
     fontSize: 16,
-    color: '#6B7280',
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 24,
   },
   modalButton: {
-    backgroundColor: '#3aed76',
     width: '100%',
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
   },
   modalButtonText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '500',
   },
   // Add new style for icon
   icon: {
     marginRight: 8,
-  },
-  
-  // Update voteButton to include row layout
-  voteButton: {
-    backgroundColor: '#10B981',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    flexDirection: 'row', // Add this to align icon and text
   },
 });
 

@@ -10,6 +10,7 @@ import {
   Animated,
 } from 'react-native';
 import { Copy, Check, X } from 'lucide-react-native';
+import { useThemeColors } from '../../screens/theme';
 
 const SERVER_INFO = {
   ip: 'play.xgaming.club',
@@ -17,6 +18,7 @@ const SERVER_INFO = {
 };
 
 const ServerInfo = ({ visible, onClose }) => {
+  const colors = useThemeColors();
   const [copiedJava, setCopiedJava] = useState(false);
   const [copiedBedrock, setCopiedBedrock] = useState(false);
   const [scale] = useState(new Animated.Value(0));
@@ -69,30 +71,30 @@ const ServerInfo = ({ visible, onClose }) => {
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <Animated.View style={[styles.container, animatedStyle]}>
+        <Animated.View style={[styles.container, animatedStyle, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
           <View style={styles.header}>
-            <Text style={styles.title}>Server Details</Text>
+            <Text style={[styles.title, { color: colors.accent }]}>Server Details</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <X size={24} color="#6B7280" />
+              <X size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
 
           {/* Java Edition */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Java Edition</Text>
+            <Text style={[styles.sectionTitle, { color: colors.accent }]}>Java Edition</Text>
             <View style={styles.infoRow}>
-              <Text style={styles.label}>IP Address</Text>
+              <Text style={[styles.label, { color: colors.text }]}>IP Address</Text>
               <View style={styles.copyRow}>
-                <Text style={styles.value}>{SERVER_INFO.ip}</Text>
+                <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.ip}</Text>
                 <TouchableOpacity
                   onPress={() => handleCopy(SERVER_INFO.ip, 'java')}
                   style={styles.copyBtn}
                   activeOpacity={0.7}
                 >
                   {copiedJava ? (
-                    <Check size={20} color="#10B981" />
+                    <Check size={20} color={colors.success} />
                   ) : (
-                    <Copy size={20} color="#3aed76" />
+                    <Copy size={20} color={colors.accent} />
                   )}
                 </TouchableOpacity>
               </View>
@@ -101,31 +103,31 @@ const ServerInfo = ({ visible, onClose }) => {
 
           {/* Bedrock Edition */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>PE / Bedrock Edition</Text>
+            <Text style={[styles.sectionTitle, { color: colors.accent }]}>PE / Bedrock Edition</Text>
             <View style={styles.infoRow}>
-              <Text style={styles.label}>IP Address</Text>
+              <Text style={[styles.label, { color: colors.text }]}>IP Address</Text>
               <View style={styles.copyRow}>
-                <Text style={styles.value}>{SERVER_INFO.ip}</Text>
+                <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.ip}</Text>
                 <TouchableOpacity
                   onPress={() => handleCopy(SERVER_INFO.ip, 'bedrock')}
                   style={styles.copyBtn}
                   activeOpacity={0.7}
                 >
                   {copiedBedrock ? (
-                    <Check size={20} color="#10B981" />
+                    <Check size={20} color={colors.success} />
                   ) : (
-                    <Copy size={20} color="#3aed76" />
+                    <Copy size={20} color={colors.accent} />
                   )}
                 </TouchableOpacity>
               </View>
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={styles.label}>Port</Text>
-              <Text style={styles.value}>{SERVER_INFO.port}</Text>
+              <Text style={[styles.label, { color: colors.text }]}>Port</Text>
+              <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.port}</Text>
             </View>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: colors.accent }]} />
         </Animated.View>
       </View>
     </Modal>
@@ -141,13 +143,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   container: {
-    backgroundColor: '#121212',
     borderRadius: 24,
     paddingVertical: 28,
     paddingHorizontal: 32,
     width: '100%',
     maxWidth: 400,
-    shadowColor: '#3aed76',
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
@@ -162,7 +162,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#3aed76',
   },
   closeBtn: {
     padding: 8,
@@ -176,7 +175,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#3aed76',
     marginBottom: 18,
   },
   infoRow: {
@@ -188,12 +186,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#A1A1AA',
   },
   value: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#E0E0E0',
   },
   copyRow: {
     flexDirection: 'row',
@@ -205,7 +201,6 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#3aed76',
     marginVertical: 14,
   },
 });
