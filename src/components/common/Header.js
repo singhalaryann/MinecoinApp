@@ -43,7 +43,7 @@ const Header = () => {
 
   return (
     <LinearGradient
-      colors={[colors.backgroundLight, colors.background]}
+      colors={[ colors.background,colors.background]}
       style={styles.mainContainer}
     >
       <View style={styles.container}>
@@ -93,10 +93,10 @@ const Header = () => {
           activeOpacity={0.9}
         >
           <LinearGradient
-            colors={[colors.accentGlow, 'rgba(16,185,129,0.08)']}
+            colors={[colors.accentGlow, colors.accentDark]}
             style={[styles.balancePill, { 
-              borderColor: colors.accentGlow,
-              shadowColor: colors.accent
+              borderColor: colors.accentDark,
+              shadowColor: colors.accentBright
             }]}
           >
             <Image
@@ -108,7 +108,7 @@ const Header = () => {
                 <ActivityIndicator size="small" color={colors.accent} />
               </View>
             ) : (
-              <Text style={[styles.balanceText, { color: colors.accent }]}>
+              <Text style={[styles.balanceText, { color: colors.accentDark }]}>
                 {balance?.toLocaleString() || "0"}
               </Text>
             )}
@@ -128,13 +128,13 @@ const Header = () => {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={[colors.accentGlow, 'rgba(16,185,129,0.08)']}
+            colors={[colors.accentGlow, colors.accentDark]}
             style={[styles.serverButtonInner, { 
               borderColor: colors.accentGlow,
-              shadowColor: colors.accent
+              shadowColor: colors.accentBright
             }]}
           >
-            <Server size={20} color={colors.accent} />
+            <Server size={20} color={colors.accentDark} />
           </LinearGradient>
         </TouchableOpacity>
       </View>

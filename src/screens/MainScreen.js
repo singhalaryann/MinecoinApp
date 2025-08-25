@@ -143,12 +143,12 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
 
 const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChange, colors }) => {
   const sectionConfigs = {
-    survival: { emoji: '🌲', name: 'Survival' },
-    lifesteal: { emoji: '⚔️', name: 'Lifesteal' },
-    creative: { emoji: '🎨', name: 'Creative' },
-    pvp: { emoji: '⚡', name: 'PvP' },
-    skyblock: { emoji: '☁️', name: 'Skyblock' },
-    prison: { emoji: '🔒', name: 'Prison' },
+    survival: { emoji: '🌲', name: 'Survival', color: colors.accent },
+    lifesteal: { emoji: '⚔️', name: 'Lifesteal', color: colors.lifestealColor },
+    creative: { emoji: '🎨', name: 'Creative', color: colors.primaryLight },
+    pvp: { emoji: '⚡', name: 'PvP', color: colors.pvpColor },
+    skyblock: { emoji: '☁️', name: 'Skyblock', color: colors.skyblockColor },
+    prison: { emoji: '🔒', name: 'Prison', color: colors.prisonColor },
   };
 
   return (
@@ -183,6 +183,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
           const config = sectionConfigs[section.toLowerCase()] || {
             emoji: '🎮',
             name: section,
+            color: colors.accent,
           };
           const isActive = selectedSection === section;
           return (
@@ -192,9 +193,9 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
                 styles.filterButton,
                 { backgroundColor: colors.card, borderColor: colors.border },
                 isActive && [styles.filterButtonActive, { 
-                  backgroundColor: colors.accent,
-                  borderColor: colors.accent,
-                  shadowColor: colors.accentGlow 
+                  backgroundColor: config.color,
+                  borderColor: config.color,
+                  shadowColor: config.color 
                 }],
               ]}
               onPress={() => onSectionChange(section)}
@@ -203,7 +204,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
               <Text style={[
                 styles.filterButtonText,
                 { color: colors.lightText },
-                isActive && [styles.filterButtonTextActive, { color: colors.text }]
+                isActive && [styles.filterButtonTextActive, { color: colors.white }]
               ]}>
                 {config.emoji} {config.name}
               </Text>
@@ -276,34 +277,46 @@ const SimpleSectionHeader = React.memo(({ title, count, colors, isNova = false }
 });
 
 const SimpleLoadingState = React.memo(({ colors }) => (
-  <View style={styles.centeredContainer}>
+  <View style={[styles.centeredContainer, { backgroundColor: colors.backgroundLight }]}>
     <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={[styles.loadingText, { color: colors.lightText }]}>
+    <Text style={[styles.loadingText, { color: colors.text }]}>
       Loading Assets...
+    </Text>
+    <Text style={[styles.loadingSubtext, { color: colors.mutedText }]}>
+      Please wait while we fetch your content
     </Text>
   </View>
 ));
 
 const NovaLoadingState = React.memo(({ colors }) => (
-  <View style={styles.centeredContainer}>
-    <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={[styles.loadingText, { color: colors.lightText }]}>
+  <View style={[styles.centeredContainer, { backgroundColor: colors.backgroundLight }]}>
+    <ActivityIndicator size="large" color={colors.primary} />
+    <Text style={[styles.loadingText, { color: colors.text }]}>
       Loading Nova Dashboard...
+    </Text>
+    <Text style={[styles.loadingSubtext, { color: colors.mutedText }]}>
+      Connecting to your personalized experience
     </Text>
   </View>
 ));
 
 const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
-  <View style={styles.centeredContainer}>
-    <Text style={[styles.errorText, { color: colors.error }]}>
-      Error: {error}
+  <View style={[styles.centeredContainer, { backgroundColor: colors.backgroundError }]}>
+    <Text style={[styles.errorIcon, { color: colors.textError }]}>⚠️</Text>
+    <Text style={[styles.errorText, { color: colors.textError }]}>
+      {error}
     </Text>
     <TouchableOpacity 
-      style={[styles.retryButton, { backgroundColor: colors.accent, shadowColor: colors.shadow }]}
+      style={[styles.retryButton, { 
+        backgroundColor: colors.accent, 
+        shadowColor: colors.shadowAccent,
+        borderColor: colors.borderAccent,
+        borderWidth: 1
+      }]}
       onPress={onRetry}
     >
-      <Text style={[styles.retryButtonText, { color: colors.text }]}>
-        Retry
+      <Text style={[styles.retryButtonText, { color: colors.white }]}>
+        🔄 Try Again
       </Text>
     </TouchableOpacity>
   </View>
@@ -324,9 +337,16 @@ const SimpleEmptyState = React.memo(({ selectedSection, selectedTag, colors }) =
   };
 
   return (
-    <View style={styles.centeredContainer}>
+    <View style={[styles.centeredContainer, { backgroundColor: colors.backgroundLight, borderRadius: 12, margin: 20, padding: 30 }]}>
+      <Text style={[styles.emptyIcon, { color: colors.accent }]}>🎮</Text>
+      <Text style={[styles.emptyTitle, { color: colors.text }]}>
+        No Assets Found
+      </Text>
       <Text style={[styles.emptyText, { color: colors.mutedText }]}>
         {getEmptyMessage()}
+      </Text>
+      <Text style={[styles.emptySubtext, { color: colors.lightText }]}>
+        Try adjusting your filters or check back later for new content
       </Text>
     </View>
   );
@@ -716,12 +736,12 @@ const MainScreen = () => {
 
   if (!isNovaReady) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: staticColors.background }]}>
-        <StatusBar barStyle="light-content" backgroundColor={staticColors.background} />
-        <LinearGradient colors={staticColors.gradientDark} style={StyleSheet.absoluteFill} />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.background} />
+        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
-        <NovaLoadingState colors={staticColors} />
+        <NovaLoadingState colors={colors} />
       </SafeAreaView>
     );
   }
@@ -742,7 +762,7 @@ const MainScreen = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[colors.backgroundLight, colors.background]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
         <SimpleErrorState error={error} onRetry={loadGameAssets} colors={colors} />
@@ -753,7 +773,7 @@ const MainScreen = () => {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-      <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[colors.backgroundLight, colors.background]} style={StyleSheet.absoluteFill} />
 
       <Header balance={balance} />
       <NotificationBanner />
@@ -827,10 +847,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  loadingSubtext: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
   errorText: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
+    fontWeight: '600',
   },
   retryButton: {
     paddingVertical: 10,
@@ -843,9 +874,27 @@ const styles = StyleSheet.create({
   retryButtonText: {
     fontWeight: 'bold',
   },
+  emptyIcon: {
+    fontSize: 40,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '500',
+    lineHeight: 20,
   },
 
   heroContainer: {

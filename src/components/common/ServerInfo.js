@@ -78,12 +78,12 @@ const ServerInfo = ({ visible, onClose }) => {
           styles.container, 
           animatedStyle,
           { 
-            backgroundColor: colors.card,
-            shadowColor: colors.accent
+            backgroundColor: colors.background,
+            shadowColor: colors.accentDark
           }
         ]}>
           <View style={styles.header}>
-            <Text style={[styles.title, { color: colors.accent }]}>Server Details</Text>
+            <Text style={[styles.title, { color: colors.accentDark }]}>Server Details</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
               <X size={24} color={colors.mutedText} />
             </TouchableOpacity>
@@ -91,11 +91,11 @@ const ServerInfo = ({ visible, onClose }) => {
 
           {/* Java Edition */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.accent }]}>Java Edition</Text>
+            <Text style={[styles.sectionTitle, { color: colors.accentDark }]}>Java Edition</Text>
             <View style={styles.infoRow}>
               <Text style={[styles.label, { color: colors.mutedText }]}>IP Address</Text>
               <View style={styles.copyRow}>
-                <Text style={[styles.value, { color: colors.lightText }]}>{SERVER_INFO.ip}</Text>
+                <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.ip}</Text>
                 <TouchableOpacity
                   onPress={() => handleCopy(SERVER_INFO.ip, 'java')}
                   style={styles.copyBtn}
@@ -113,11 +113,11 @@ const ServerInfo = ({ visible, onClose }) => {
 
           {/* Bedrock Edition */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.accent }]}>PE / Bedrock Edition</Text>
+            <Text style={[styles.sectionTitle, { color: colors.accentDark }]}>PE / Bedrock Edition</Text>
             <View style={styles.infoRow}>
               <Text style={[styles.label, { color: colors.mutedText }]}>IP Address</Text>
               <View style={styles.copyRow}>
-                <Text style={[styles.value, { color: colors.lightText }]}>{SERVER_INFO.ip}</Text>
+                <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.ip}</Text>
                 <TouchableOpacity
                   onPress={() => handleCopy(SERVER_INFO.ip, 'bedrock')}
                   style={styles.copyBtn}
@@ -134,7 +134,7 @@ const ServerInfo = ({ visible, onClose }) => {
 
             <View style={styles.infoRow}>
               <Text style={[styles.label, { color: colors.mutedText }]}>Port</Text>
-              <Text style={[styles.value, { color: colors.lightText }]}>{SERVER_INFO.port}</Text>
+              <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.port}</Text>
             </View>
           </View>
           <View style={[styles.divider, { backgroundColor: colors.accent }]} />
@@ -147,7 +147,7 @@ const ServerInfo = ({ visible, onClose }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(12, 12, 12, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,

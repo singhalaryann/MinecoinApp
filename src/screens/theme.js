@@ -190,13 +190,13 @@ export const useThemeColors = () => {
 
   // NEW: Detailed theme key-value logging
   if (novaTheme) {
-    console.log("🔍 DETAILED NOVA THEME KEY-VALUE PAIRS:");
-    Object.entries(novaTheme).forEach(([key, value]) => {
-      const valueType = typeof value;
-      const valuePreview = valueType === 'string' ? value : valueType === 'array' ? `[${Array.isArray(value) ? value.length : 'invalid'} items]` : valueType;
-      console.log(`  📍 ${key}: ${valuePreview} (${valueType})`);
-    });
-    console.log("🔍 END OF NOVA THEME DETAILS");
+    // console.log("🔍 DETAILED NOVA THEME KEY-VALUE PAIRS:");
+    // Object.entries(novaTheme).forEach(([key, value]) => {
+    //   const valueType = typeof value;
+    //   const valuePreview = valueType === 'string' ? value : valueType === 'array' ? `[${Array.isArray(value) ? value.length : 'invalid'} items]` : valueType;
+    //   console.log(`  📍 ${key}: ${valuePreview} (${valueType})`);
+    // });
+    // console.log("🔍 END OF NOVA THEME DETAILS");
   }
 
   // Cache status logging - FIXED
