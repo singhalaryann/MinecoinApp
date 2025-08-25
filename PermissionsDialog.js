@@ -10,12 +10,12 @@ const PermissionsDialog = ({ visible, onRequestPermissions }) => {
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.overlay}>
-        <View style={[styles.dialog, { backgroundColor: colors.backgroundDark }]}>
-          <Text style={[styles.title, { color: colors.accentBright }]}>Permissions Required</Text>
-          <Text style={[styles.message, { color: colors.backgroundGray }]}>
+        <View style={[styles.dialog, { backgroundColor: colors.backgroundLight }]}>
+          <Text style={[styles.title, { color: colors.primary }]}>Permissions Required</Text>
+          <Text style={[styles.message, { color: colors.backgroundLight }]}>
             This app requires camera, location, microphone, and storage permissions to function properly.
           </Text>
-          <TouchableOpacity style={[styles.button, { backgroundColor: colors.accentBright }]} onPress={onRequestPermissions}>
+          <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={onRequestPermissions}>
             <Text style={[styles.buttonText, { color: colors.background }]}>Grant Permissions</Text>
           </TouchableOpacity>
         </View>

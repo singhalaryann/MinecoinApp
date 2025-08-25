@@ -57,23 +57,23 @@ const InsufficientBalance = ({ visible, onClose }) => {
         <Animated.View 
           style={[
             styles.modalContainer,
-            { backgroundColor: colors.card, shadowColor: colors.accent }
+            { backgroundColor: colors.card, shadowColor: colors.shadow }
           ]}
         >
           <View style={[styles.iconContainer, { backgroundColor: colors.backgroundLight }]}>
             <Text style={styles.icon}>💰</Text>
           </View>
           
-          <Text style={[styles.title, { color: colors.accent }]}>Insufficient Balance</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Insufficient Balance</Text>
           
-          <Text style={[styles.message, { color: colors.mutedText }]}>
+          <Text style={[styles.message, { color: colors.text }]}>
             You don't have enough coins to purchase this item.
           </Text>
 
           <TouchableOpacity
             style={[styles.getCoinsButton, loading && styles.buttonDisabled, { 
-              backgroundColor: colors.accent,
-              shadowColor: colors.accent
+              backgroundColor: colors.primary,
+              shadowColor: colors.shadow
             }]}
             onPress={handleGetCoins}
             disabled={loading}
@@ -82,7 +82,7 @@ const InsufficientBalance = ({ visible, onClose }) => {
             {loading ? (
               <ActivityIndicator size="small" color={colors.text} />
             ) : (
-              <Text style={[styles.getCoinsText, { color: colors.background }]}>Get More Coins</Text>
+              <Text style={[styles.getCoinsText, { color: colors.text }]}>Get More Coins</Text>
             )}
           </TouchableOpacity>
 
@@ -92,7 +92,7 @@ const InsufficientBalance = ({ visible, onClose }) => {
             disabled={loading}
             activeOpacity={0.6}
           >
-            <Text style={[styles.cancelText, { color: colors.mutedText }]}>Cancel</Text>
+            <Text style={[styles.cancelText, { color: colors.text }]}>Cancel</Text>
           </TouchableOpacity>
         </Animated.View>
       </Animated.View>

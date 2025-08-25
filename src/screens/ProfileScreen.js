@@ -39,18 +39,18 @@ const ProfileScreen = () => {
   if (!isLoggedIn) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={[styles.header, { borderBottomColor: colors.accent }]}>
+        <View style={[styles.header, { borderBottomColor: colors.border }]}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <ArrowLeft size={24} color={colors.accent} />
+            <ArrowLeft size={24} color={colors.primary} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.accent }]}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
         </View>
 
         <View style={styles.signInContainer}>
-          <Text style={[styles.message, { color: colors.mutedText }]}>Please sign in to continue</Text>
+          <Text style={[styles.message, { color: colors.text }]}>Please sign in to continue</Text>
           <GoogleSignInButton onPress={signInWithGoogle} />
         </View>
       </SafeAreaView>
@@ -63,14 +63,14 @@ const ProfileScreen = () => {
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
-        <View style={[styles.header, { borderBottomColor: colors.accent }]}>
+        <View style={[styles.header, { borderBottomColor: colors.primary }]}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <ArrowLeft size={24} color={colors.accent} />
+            <ArrowLeft size={24} color={colors.primary} />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.accent }]}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
         </View>
 
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
@@ -78,27 +78,27 @@ const ProfileScreen = () => {
             styles.userInfoCard,
             {
               backgroundColor: colors.backgroundLight,
-              shadowColor: colors.accent,
-              borderColor: colors.accent
+              shadowColor: colors.shadow,
+              borderColor: colors.border
             }
           ]}>
             <View style={styles.userInfoContent}>
               <View style={styles.avatarContainer}>
                 {user?.photoURL ? (
-                  <Image source={{ uri: user.photoURL }} style={[styles.avatar, { borderColor: colors.accent }]} />
+                  <Image source={{ uri: user.photoURL }} style={[styles.avatar, { borderColor: colors.primary }]} />
                 ) : (
-                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.accentGlow }]}>
-                    <Text style={[styles.avatarText, { color: colors.accent }]}>
+                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+                    <Text style={[styles.avatarText, { color: colors.text }]}>
                       {user?.displayName?.charAt(0) || "U"}
                     </Text>
                   </View>
                 )}
               </View>
               <View style={styles.userTextInfo}>
-                <Text style={[styles.welcomeText, { color: colors.accent }]}>
+                <Text style={[styles.welcomeText, { color: colors.text }]}>
                   Welcome, {user?.displayName || "User"}
                 </Text>
-                {user?.email && <Text style={[styles.emailText, { color: colors.mutedText }]}>{user.email}</Text>}
+                {user?.email && <Text style={[styles.emailText, { color: colors.text }]}>{user.email}</Text>}
               </View>
             </View>
           </View>
@@ -107,7 +107,7 @@ const ProfileScreen = () => {
             styles.tabContainer,
             {
               backgroundColor: colors.backgroundLight,
-              borderColor: colors.accent
+              borderColor: colors.primary
             }
           ]}>
             {tabs.map((tab) => (
@@ -115,7 +115,7 @@ const ProfileScreen = () => {
                 key={tab.id}
                 style={[
                   styles.tab, 
-                  activeTab === tab.id && [styles.activeTab, { backgroundColor: colors.accent }]
+                  activeTab === tab.id && [styles.activeTab, { backgroundColor: colors.primary }]
                 ]}
                 onPress={() => setActiveTab(tab.id)}
                 activeOpacity={0.8}
@@ -123,8 +123,8 @@ const ProfileScreen = () => {
                 <Text
                   style={[
                     styles.tabText, 
-                    { color: colors.accent },
-                    activeTab === tab.id && [styles.activeTabText, { color: colors.background }]
+                    { color: colors.text },
+                    activeTab === tab.id && [styles.activeTabText, { color: colors.text }]
                   ]}
                 >
                   {tab.id}

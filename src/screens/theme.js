@@ -244,18 +244,12 @@ export const useThemeColors = () => {
   return {
     // Core Gamer Aesthetic - Blue + Emerald + Magenta Accent
     primary: activeTheme?.primary || '#3B82F6',
-    primaryDark: activeTheme?.primaryDark || '#1E3A8A',
-    primaryLight: activeTheme?.primaryLight || '#93C5FD',
-    primaryFaded: activeTheme?.primaryFaded || 'rgba(59, 130, 246, 0.1)',
+   
     
     // Accent - Emerald Green
     accent: activeTheme?.accent || '#10B981',
-    accentDark: activeTheme?.accentDark || '#059669',
-    accentGlow: activeTheme?.accentGlow || 'rgba(16, 185, 129, 0.25)',
     
     // Secondary Accent - Gamer Pink
-    highlight: activeTheme?.highlight || '#EC4899',
-    highlightGlow: activeTheme?.highlightGlow || 'rgba(236, 72, 153, 0.2)',
     
     // Backgrounds
     background: activeTheme?.background || '#0A0A0A',
@@ -264,57 +258,26 @@ export const useThemeColors = () => {
     
     // Text
     text: activeTheme?.text || '#F3F4F6',
-    lightText: activeTheme?.lightText || '#D1D5DB',
-    mutedText: activeTheme?.mutedText || '#6B7280',
     
     // Borders & Glow
     border: activeTheme?.border || 'rgba(59, 130, 246, 0.2)',
-    borderStrong: activeTheme?.borderStrong || '#3B82F6',
-    glow: activeTheme?.glow || 'rgba(59, 130, 246, 0.4)',
-    
-    // ADDED: Primary glow for main UI elements
-    primaryGlow: activeTheme?.primaryGlow || 'rgba(59, 130, 246, 0.25)',
-    
-    // FIXED: Array colors with safety check to prevent .map errors
-    inactiveButton: Array.isArray(activeTheme?.inactiveButton) 
-      ? activeTheme.inactiveButton 
-      : ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
-    
-    activeGradient: Array.isArray(activeTheme?.activeGradient)
-      ? activeTheme.activeGradient
-      : ['#10B981', '#10B981'],
+     
     
     // ADDED: Primary gradient for main UI elements
-    primaryGradient: Array.isArray(activeTheme?.primaryGradient)
-      ? activeTheme.primaryGradient
-      : ['#3B82F6', '#1E3A8A'],
     
-    dangerGradient: Array.isArray(activeTheme?.dangerGradient)
-      ? activeTheme.dangerGradient
-      : ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
-    
-    loadingGradient: Array.isArray(activeTheme?.loadingGradient)
-      ? activeTheme.loadingGradient
-      : ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
-    
-    gradientDark: Array.isArray(activeTheme?.gradientDark)
-      ? activeTheme.gradientDark
-      : ['#0A0A0A', '#111827', '#0A0A0A'],
     
     // Shadows
     shadow: activeTheme?.shadow || '#1E3A8A',
     fabShadow: activeTheme?.fabShadow || '#10B981',
     
     // ADDED: Primary shadow for main UI elements
-    primaryShadow: activeTheme?.primaryShadow || '#1E3A8A',
     
     // Misc
-    sectionUnderline: activeTheme?.sectionUnderline || '#93C5FD',
+    
     error: activeTheme?.error || '#EF4444',
     
     // ADDED: Missing colors used throughout the codebase
     // Bright green accent (used extensively)
-    accentBright: activeTheme?.accentBright || '#3aed76',
     
     // Section-specific colors
     keysColor: activeTheme?.keysColor || '#F59E0B',      // Orange for keys section
@@ -325,42 +288,25 @@ export const useThemeColors = () => {
     prisonColor: activeTheme?.prisonColor || '#6B7280',       // Gray for prison
     
     // Additional background colors
-    backgroundDark: activeTheme?.backgroundDark || '#121212',
-    backgroundGray: activeTheme?.backgroundGray || '#A1A1AA',
     
     // White color
     white: activeTheme?.white || '#FFFFFF',
     
     // Additional accent colors
-    accentFaded: activeTheme?.accentFaded || 'rgba(58, 237, 118, 0.1)',
     
     // Success and warning colors
     success: activeTheme?.success || '#10B981',
     warning: activeTheme?.warning || '#F59E0B',
     
     // Additional border colors
-    borderAccent: activeTheme?.borderAccent || 'rgba(58, 237, 118, 0.6)',
-    borderError: activeTheme?.borderError || 'rgba(239, 68, 68, 0.6)',
-    borderWarning: activeTheme?.borderWarning || 'rgba(245, 158, 11, 0.6)',
-    borderPrimary: activeTheme?.borderPrimary || 'rgba(139, 92, 246, 0.6)',
     
     // Additional background variations
-    backgroundAccent: activeTheme?.backgroundAccent || 'rgba(58, 237, 118, 0.1)',
-    backgroundError: activeTheme?.backgroundError || 'rgba(239, 68, 68, 0.15)',
-    backgroundWarning: activeTheme?.backgroundWarning || 'rgba(245, 158, 11, 0.15)',
-    backgroundPrimary: activeTheme?.backgroundPrimary || 'rgba(139, 92, 246, 0.15)',
-    
+     
     // Additional text colors
-    textAccent: activeTheme?.textAccent || '#3aed76',
-    textError: activeTheme?.textError || '#EF4444',
-    textWarning: activeTheme?.textWarning || '#F59E0B',
-    textPrimary: activeTheme?.textPrimary || '#8B5CF6',
+    
     
     // Additional shadow colors
-    shadowAccent: activeTheme?.shadowAccent || '#3aed76',
-    shadowError: activeTheme?.shadowError || '#EF4444',
-    shadowWarning: activeTheme?.shadowWarning || '#F59E0B',
-    shadowPrimary: activeTheme?.shadowPrimary || '#8B5CF6'
+    
   };
 };
 
@@ -368,18 +314,11 @@ export const useThemeColors = () => {
 export const colors = {
   // Core Gamer Aesthetic - Blue + Emerald + Magenta Accent
   primary: '#3B82F6',
-  primaryDark: '#1E3A8A',
-  primaryLight: '#93C5FD',
-  primaryFaded: 'rgba(59, 130, 246, 0.1)',
   
   // Accent - Emerald Green
   accent: '#10B981',
-  accentDark: '#059669',
-  accentGlow: 'rgba(16, 185, 129, 0.25)',
   
   // Secondary Accent - Gamer Pink
-  highlight: '#EC4899',
-  highlightGlow: 'rgba(236, 72, 153, 0.2)',
   
   // Backgrounds
   background: '#0A0A0A',
@@ -388,42 +327,21 @@ export const colors = {
   
   // Text
   text: '#F3F4F6',
-  lightText: '#D1D5DB',
-  mutedText: '#6B7280',
   
   // Borders & Glow
   border: 'rgba(59, 130, 246, 0.2)',
-  borderStrong: '#3B82F6',
-  glow: 'rgba(59, 130, 246, 0.4)',
   
   // ADDED: Primary glow for main UI elements
-  primaryGlow: 'rgba(59, 130, 246, 0.25)',
-  
-  // Buttons - Arrays for gradients
-  inactiveButton: ['rgba(255, 255, 255, 0.04)', 'rgba(255, 255, 255, 0.02)'],
-  activeGradient: ['#10B981', '#10B981'],
-  
-  // ADDED: Primary gradient for main UI elements
-  primaryGradient: ['#3B82F6', '#1E3A8A'],
-  
-  dangerGradient: ['rgba(239, 68, 68, 0.15)', 'rgba(239, 68, 68, 0.05)'],
-  loadingGradient: ['rgba(59, 130, 246, 0.1)', 'rgba(59, 130, 246, 0.05)'],
-  
   // Shadows
   shadow: '#1E3A8A',
   fabShadow: '#10B981',
   
   // ADDED: Primary shadow for main UI elements
-  primaryShadow: '#1E3A8A',
-  
-  // Misc
-  gradientDark: ['#0A0A0A', '#111827', '#0A0A0A'],
-  sectionUnderline: '#93C5FD',
+ 
   error: '#EF4444',
   
   // ADDED: Missing colors used throughout the codebase
   // Bright green accent (used extensively)
-  accentBright: '#3aed76',
   
   // Section-specific colors
   keysColor: '#F59E0B',      // Orange for keys section
@@ -434,40 +352,16 @@ export const colors = {
   prisonColor: '#6B7280',       // Gray for prison
   
   // Additional background colors
-  backgroundDark: '#121212',
-  backgroundGray: '#A1A1AA',
   
   // White color
   white: '#FFFFFF',
   
   // Additional accent colors
-  accentFaded: 'rgba(58, 237, 118, 0.1)',
   
   // Success and warning colors
   success: '#10B981',
   warning: '#F59E0B',
   
   // Additional border colors
-  borderAccent: 'rgba(58, 237, 118, 0.6)',
-  borderError: 'rgba(239, 68, 68, 0.6)',
-  borderWarning: 'rgba(245, 158, 11, 0.6)',
-  borderPrimary: 'rgba(139, 92, 246, 0.6)',
-  
-  // Additional background variations
-  backgroundAccent: 'rgba(58, 237, 118, 0.1)',
-  backgroundError: 'rgba(239, 68, 68, 0.15)',
-  backgroundWarning: 'rgba(245, 158, 11, 0.15)',
-  backgroundPrimary: 'rgba(139, 92, 246, 0.15)',
-  
-  // Additional text colors
-  textAccent: '#3aed76',
-  textError: '#EF4444',
-  textWarning: '#F59E0B',
-  textPrimary: '#8B5CF6',
-  
-  // Additional shadow colors
-  shadowAccent: '#3aed76',
-  shadowError: '#EF4444',
-  shadowWarning: '#F59E0B',
-  shadowPrimary: '#8B5CF6'
+ 
 };

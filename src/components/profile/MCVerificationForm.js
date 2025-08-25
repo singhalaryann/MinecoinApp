@@ -56,19 +56,19 @@ const MCVerificationForm = () => {
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-          <View style={[styles.successIcon, { backgroundColor: colors.accent }]}>
+          <View style={[styles.successIcon, { backgroundColor: colors.primary }]}>
             <Check size={28} color={colors.text} />
           </View>
-          <Text style={[styles.modalTitle, { color: colors.accent }]}>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>
             {isUpdating ? "Update Successful!" : "Verification Successful!"}
           </Text>
-          <Text style={[styles.modalDescription, { color: colors.mutedText }]}>
+          <Text style={[styles.modalDescription, { color: colors.text }]}>
             {isUpdating
               ? "Your Minecraft account has been successfully updated"
               : "Your Minecraft account has been successfully verified"}
           </Text>
-          <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.accent }]} onPress={onClose}>
-            <Text style={[styles.modalButtonText, { color: colors.background }]}>Continue</Text>
+          <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.primary }]} onPress={onClose}>
+            <Text style={[styles.modalButtonText, { color: colors.text }]}>Continue</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -81,7 +81,7 @@ const MCVerificationForm = () => {
       styles.validationContainer,
       {
         backgroundColor: colors.card,
-        borderColor: colors.accent
+        borderColor: colors.border
       }
     ]}>
       <AlertCircle size={16} color={type === "error" ? colors.error : colors.accent} />
@@ -248,9 +248,9 @@ const MCVerificationForm = () => {
         styles.container, 
         styles.loadingContainer,
         {
-          backgroundColor: colors.background,
-          borderColor: colors.accent,
-          shadowColor: colors.accent
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+            shadowColor: colors.shadow
         }
       ]}>
         <ActivityIndicator size="large" color={colors.accent} />
@@ -263,57 +263,57 @@ const MCVerificationForm = () => {
       <View style={[
         styles.container,
         {
-          backgroundColor: colors.background,
-          borderColor: colors.accent,
-          shadowColor: colors.accent
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+            shadowColor: colors.shadow
         }
       ]}>
         <View style={[
           styles.verifiedCard,
           {
-            backgroundColor: colors.card,
-            borderColor: colors.accent,
-            shadowColor: colors.accent
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            shadowColor: colors.shadow
           }
         ]}>
-          <View style={[styles.verifiedIcon, { backgroundColor: colors.accent }]}>
+          <View style={[styles.verifiedIcon, { backgroundColor: colors.primary }]}>
             <Check size={28} color={colors.text} />
           </View>
-          <Text style={[styles.verifiedTitle, { color: colors.accent }]}>Account Verified</Text>
-          <Text style={[styles.verifiedUsername, { color: colors.mutedText }]}>
+          <Text style={[styles.verifiedTitle, { color: colors.text }]}>Account Verified</Text>
+          <Text style={[styles.verifiedUsername, { color: colors.text }]}>
             {formState.credentials.username}
           </Text>
-          <Text style={[styles.verifiedDescription, { color: colors.mutedText }]}>
+          <Text style={[styles.verifiedDescription, { color: colors.text }]}>
             Your Minecraft account has been verified and is ready to use
           </Text>
           <View style={[
             styles.rewardsContainer,
             {
               backgroundColor: colors.card,
-              borderColor: colors.accent
+              borderColor: colors.border
             }
           ]}>
             <View style={styles.rewardsHeader}>
-              <Text style={[styles.rewardsTitle, { color: colors.accent }]}>✨ Daily Rewards Activated</Text>
+              <Text style={[styles.rewardsTitle, { color: colors.text }]}>✨ Daily Rewards Activated</Text>
             </View>
             <View style={styles.rewardsInfo}>
-              <Text style={[styles.rewardsBenefit, { color: colors.accent }]}>
+              <Text style={[styles.rewardsBenefit, { color: colors.text }]}>
                 🎁 Get 20 free coins daily
               </Text>
-              <Text style={[styles.rewardsDescription, { color: colors.mutedText }]}>
+              <Text style={[styles.rewardsDescription, { color: colors.text }]}>
                 Simply open the app once every 24 hours to claim your reward
                 automatically
               </Text>
             </View>
           </View>
           <TouchableOpacity
-            style={[styles.discordButton, { backgroundColor: colors.accent }]}
+            style={[styles.discordButton, { backgroundColor: colors.primary }]}
             onPress={handleDiscordPress}
           >
-            <Text style={[styles.discordButtonText, { color: colors.background }]}>Join Our Discord</Text>
+            <Text style={[styles.discordButtonText, { color: colors.text }]}>Join Our Discord</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.editButton, { borderColor: colors.accent }]}
+            style={[styles.editButton, { borderColor: colors.primary }]}
             onPress={() =>
               setFormState((prev) => ({
                 ...prev,
@@ -321,7 +321,7 @@ const MCVerificationForm = () => {
               }))
             }
           >
-            <Text style={[styles.editButtonText, { color: colors.accent }]}>Edit Account Details</Text>
+            <Text style={[styles.editButtonText, { color: colors.text }]}>Edit Account Details</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -336,9 +336,9 @@ const MCVerificationForm = () => {
       style={[
         styles.container,
         {
-          backgroundColor: colors.background,
-          borderColor: colors.accent,
-          shadowColor: colors.accent
+          backgroundColor: colors.backgroundLight,
+          borderColor: colors.border,
+            shadowColor: colors.shadow
         }
       ]}
     >
@@ -351,13 +351,13 @@ const MCVerificationForm = () => {
       <View style={[
         styles.formContent,
         {
-          backgroundColor: colors.background,
-          borderColor: colors.accent,
-          shadowColor: colors.accent
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+            shadowColor: colors.shadow
         }
       ]}>
-        <Text style={[styles.title, { color: colors.accent }]}>Minecraft Account</Text>
-        <Text style={[styles.subtitle, { color: colors.mutedText }]}>
+        <Text style={[styles.title, { color: colors.text }]}>Minecraft Account</Text>
+        <Text style={[styles.subtitle, { color: colors.text }]}>
           {formState.uiState.isEditing
             ? "Update your account details"
             : "Enter your account details"}
@@ -369,7 +369,7 @@ const MCVerificationForm = () => {
               styles.inputWrapper,
               {
                 backgroundColor: colors.card,
-                borderColor: colors.accent
+                borderColor: colors.border
               },
               formState.validation.errors.username && [styles.inputError, { borderColor: colors.error }],
             ]}
@@ -377,9 +377,9 @@ const MCVerificationForm = () => {
             <View style={styles.inputContent}>
               <User size={20} color={colors.accent} />
               <TextInput
-                style={[styles.input, { color: colors.accent }]}
+                style={[styles.input, { color: colors.text }]}
                 placeholder="Enter your Minecraft gamertag"
-                placeholderTextColor={colors.mutedText}
+                placeholderTextColor={colors.text}
                 value={formState.credentials.username}
                 onChangeText={(text) =>
                   setFormState((prev) => ({
@@ -395,7 +395,7 @@ const MCVerificationForm = () => {
                 autoCapitalize="none"
               />
               {!editableUsername && (
-                <Lock size={20} color={colors.mutedText} style={styles.lockIcon} />
+                <Lock size={20} color={colors.text} style={styles.lockIcon} />
               )}
             </View>
           </View>
@@ -412,7 +412,7 @@ const MCVerificationForm = () => {
               styles.inputWrapper,
               {
                 backgroundColor: colors.card,
-                borderColor: colors.accent
+                borderColor: colors.border
               },
               formState.validation.errors.password && [styles.inputError, { borderColor: colors.error }],
             ]}
@@ -420,9 +420,9 @@ const MCVerificationForm = () => {
             <View style={styles.inputContent}>
               <Lock size={20} color={colors.accent} />
               <TextInput
-                style={[styles.input, { color: colors.accent }]}
+                style={[styles.input, { color: colors.text }]}
                 placeholder="Password used with /register"
-                placeholderTextColor={colors.mutedText}
+                placeholderTextColor={colors.text}
                 secureTextEntry={formState.uiState.secureTextEntry}
                 value={formState.credentials.password}
                 onChangeText={(text) =>
@@ -448,7 +448,7 @@ const MCVerificationForm = () => {
                 }
                 style={styles.showButton}
               >
-                <Text style={[styles.showButtonText, { color: colors.accent }]}>
+                <Text style={[styles.showButtonText, { color: colors.text }]}>
                   {formState.uiState.secureTextEntry ? "Show" : "Hide"}
                 </Text>
               </TouchableOpacity>
@@ -474,14 +474,14 @@ const MCVerificationForm = () => {
           style={[
             styles.submitButton,
             {
-              backgroundColor: colors.accent
+              backgroundColor: colors.primary
             },
             formState.uiState.isSubmitting && styles.submitButtonDisabled,
           ]}
           onPress={handleSubmit}
           disabled={formState.uiState.isSubmitting}
         >
-          <Text style={[styles.submitButtonText, { color: colors.background }]}>
+          <Text style={[styles.submitButtonText, { color: colors.text }]}>
             {formState.uiState.isSubmitting
               ? "Processing..."
               : formState.uiState.isEditing

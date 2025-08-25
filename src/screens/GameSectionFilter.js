@@ -15,13 +15,13 @@
    const colors = themeColors || staticColors;
 
    const sectionColors = {
-     'all': colors.accentBright,
+     'all': colors.primary,
      'survival': colors.success,
      'lifesteal': colors.error,
      'creative': colors.primary,
      'pvp': colors.warning,
-     'skyblock': colors.textPrimary,
-     'prison': colors.mutedText,
+     'skyblock': colors.primary,
+     'prison': colors.text,
    };
 
    return (
@@ -37,15 +37,15 @@
              selectedSection === 'all' && styles.selectedButton,
              { 
                backgroundColor: selectedSection === 'all' ? sectionColors.all : 'transparent',
-               borderColor: colors.accentBright
+               borderColor: colors.border
              }
            ]}
            onPress={() => onSectionChange('all')}
          >
            <Text style={[
              styles.sectionText,
-             selectedSection === 'all' && [styles.selectedText, { color: '#0A0A0A' }],
-             { color: colors.accentBright }
+             selectedSection === 'all' && [styles.selectedText, { color: colors.text }],
+             { color: colors.text }
            ]}>
              All Games
            </Text>
@@ -59,17 +59,17 @@
                selectedSection === section && styles.selectedButton,
                {
                  backgroundColor: selectedSection === section
-                   ? sectionColors[section.toLowerCase()] || colors.accentBright
+                   ? sectionColors[section.toLowerCase()] || colors.accent
                    : 'transparent',
-                 borderColor: colors.accentBright
+                 borderColor: colors.border
                }
              ]}
              onPress={() => onSectionChange(section)}
            >
              <Text style={[
                styles.sectionText,
-               selectedSection === section && [styles.selectedText, { color: '#0A0A0A' }],
-               { color: colors.accentBright }
+               selectedSection === section && [styles.selectedText, { color: colors.text }],
+               { color: colors.text }
              ]}>
                {section.charAt(0).toUpperCase() + section.slice(1)}
              </Text>

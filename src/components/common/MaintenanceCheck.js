@@ -48,7 +48,7 @@ const MaintenanceCheck = ({ children }) => {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={[styles.loadingBox, { backgroundColor: colors.card }]}>
           <ActivityIndicator size="large" color={colors.accent} />
-          <Text style={[styles.loadingText, { color: colors.accent }]}>Loading app...</Text>
+          <Text style={[styles.loadingText, { color: colors.text }]}>Loading app...</Text>
         </View>
       </View>
     );
@@ -68,8 +68,8 @@ const MaintenanceCheck = ({ children }) => {
                   ignoreSilentSwitch="obey"
                 />
         <View style={styles.overlay}>
-          <Text style={[styles.title, { color: colors.accent }]}>Maintenance Mode</Text>
-          <Text style={[styles.message, { color: colors.accent }]}>{message}</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Maintenance Mode</Text>
+          <Text style={[styles.message, { color: colors.text }]}>{message}</Text>
         </View>
       </View>
     );

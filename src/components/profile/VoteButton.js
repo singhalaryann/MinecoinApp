@@ -106,21 +106,21 @@ export const sendVote = async (username) => {
   }
 };
 
-const VoteSuccessModal = ({ visible, onClose }) => {
+const VoteSuccessModal = ({ visible, onClose, colors }) => {
   if (!visible) return null;
 
   return (
     <Modal transparent visible={visible} animationType="fade">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Vote Successful</Text>
-          <Text style={styles.modalMessage}>Thank you for voting!</Text>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>Vote Successful</Text>
+          <Text style={[styles.modalMessage, { color: colors.text }]}>Thank you for voting!</Text>
           <TouchableOpacity
             style={styles.modalButton}
             onPress={onClose}
             activeOpacity={0.8}
           >
-            <Text style={styles.modalButtonText}>OK</Text>
+            <Text style={[styles.modalButtonText, { color: colors.text }]}>OK</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -222,12 +222,13 @@ const VoteButton = ({ username, ip }) => {
       >
         {/* Add Vote icon */}
         <Vote size={20} color={colors.text} style={styles.icon} />
-        <Text style={styles.voteText}>{getButtonText()}</Text>
+        <Text style={[styles.voteText, { color: colors.text }]}>{getButtonText()}</Text>
       </TouchableOpacity>
 
       <VoteSuccessModal
         visible={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
+        colors={colors}
       />
     </>
   );
@@ -235,7 +236,7 @@ const VoteButton = ({ username, ip }) => {
 
 const styles = StyleSheet.create({
   voteButton: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', // Add this to align icon and text
   },
   voteButtonDisabled: {
-    backgroundColor: colors.mutedText,
+    backgroundColor: colors.text,
   },
   voteText: {
     color: colors.text,
@@ -276,13 +277,13 @@ const styles = StyleSheet.create({
   },
   modalMessage: {
     fontSize: 16,
-    color: colors.mutedText,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 24,
   },
   modalButton: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 12,

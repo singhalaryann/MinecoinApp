@@ -19,7 +19,7 @@ import { db } from '../../config/firebase';
 
 // Component for each section header
 const SectionHeader = ({ title }) => (
-  <Text style={styles.title}>{title}</Text>
+  <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
 );
 
 const GiftCardGenerator = () => {
@@ -72,24 +72,24 @@ const GiftCardGenerator = () => {
   return (
     <View style={[styles.sectionContainer, { 
       backgroundColor: colors.backgroundLight,
-      borderColor: colors.accent
+      borderColor: colors.border
     }]}>
-      <Text style={[styles.title, { color: colors.accent }]}>🎁 Generate Gift Card</Text>
-      <Text style={[styles.subtitle, { color: colors.mutedText }]}>
+      <Text style={[styles.title, { color: colors.text }]}>🎁 Generate Gift Card</Text>
+      <Text style={[styles.subtitle, { color: colors.text }]}>
         Create gift code (5% tax deducted). Example: 100 → 95
       </Text>
 
       <TextInput
         style={[styles.input, { 
           backgroundColor: colors.card,
-          borderColor: colors.accent,
+          borderColor: colors.border,
           color: colors.text
         }]}
         value={giftAmount}
         onChangeText={setGiftAmount}
         keyboardType="number-pad"
         placeholder="Enter amount"
-        placeholderTextColor={colors.mutedText}
+        placeholderTextColor={colors.text}
         editable={!isGenerating && !isProcessing}
       />
 
@@ -97,12 +97,12 @@ const GiftCardGenerator = () => {
         style={[
           styles.actionButton, 
           (isGenerating || isProcessing) && styles.buttonDisabled,
-          { backgroundColor: colors.accent }
+          { backgroundColor: colors.primary }
         ]}
         onPress={handleGenerate}
         disabled={isGenerating || isProcessing || !giftAmount}
       >
-        <Text style={[styles.actionButtonText, { color: colors.background }]}>
+        <Text style={[styles.actionButtonText, { color: colors.text }]}>
           {isGenerating ? 'Generating...' : 'Generate Gift Code'}
         </Text>
       </TouchableOpacity>
@@ -110,19 +110,19 @@ const GiftCardGenerator = () => {
       {generatedCode && (
         <View style={[styles.codeContainer, { 
           backgroundColor: colors.card,
-          borderColor: colors.accent
+          borderColor: colors.border
         }]}>
-          <Text style={[styles.codeText, { color: colors.accent }]}>
+          <Text style={[styles.codeText, { color: colors.text }]}>
             Gift Code: {generatedCode.code} (Amount: {generatedCode.netAmount})
           </Text>
           <TouchableOpacity
-            style={[styles.copyButton, { backgroundColor: colors.accent }]}
+            style={[styles.copyButton, { backgroundColor: colors.primary }]}
             onPress={() => {
               Clipboard.setString(generatedCode.code);
               Alert.alert('Success', 'Copied to clipboard!');
             }}
           >
-            <Text style={[styles.copyButtonText, { color: colors.background }]}>Copy</Text>
+            <Text style={[styles.copyButtonText, { color: colors.text }]}>Copy</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -170,21 +170,21 @@ const GiftCodeClaimer = ({ addBalance }) => {
   return (
     <View style={[styles.sectionContainer, { 
       backgroundColor: colors.backgroundLight,
-      borderColor: colors.accent
+      borderColor: colors.border
     }]}>
-      <Text style={[styles.title, { color: colors.accent }]}>🎟️ Claim Gift Code</Text>
-      <Text style={[styles.subtitle, { color: colors.mutedText }]}>Redeem a gift code to add balance</Text>
+      <Text style={[styles.title, { color: colors.text }]}>🎟️ Claim Gift Code</Text>
+      <Text style={[styles.subtitle, { color: colors.text }]}>Redeem a gift code to add balance</Text>
 
       <TextInput
         style={[styles.input, { 
           backgroundColor: colors.card,
-          borderColor: colors.accent,
+          borderColor: colors.border,
           color: colors.text
         }]}
         value={claimCode}
         onChangeText={setClaimCode}
         placeholder="Enter gift code"
-        placeholderTextColor={colors.mutedText}
+        placeholderTextColor={colors.text}
         autoCapitalize="characters"
         editable={!isClaiming && !isProcessing}
       />
@@ -193,12 +193,12 @@ const GiftCodeClaimer = ({ addBalance }) => {
         style={[
           styles.actionButton, 
           (isClaiming || isProcessing) && styles.buttonDisabled,
-          { backgroundColor: colors.accent }
+          { backgroundColor: colors.primary }
         ]}
         onPress={handleClaim}
         disabled={isClaiming || isProcessing || !claimCode.trim()}
       >
-        <Text style={[styles.actionButtonText, { color: colors.background }]}>
+        <Text style={[styles.actionButtonText, { color: colors.text }]}>
           {isClaiming ? 'Claiming...' : 'Claim Gift Code'}
         </Text>
       </TouchableOpacity>
@@ -208,11 +208,11 @@ const GiftCodeClaimer = ({ addBalance }) => {
           style={[
             styles.resultContainer,
             claimResult.success ? 
-              [styles.successResult, { backgroundColor: colors.accentGlow, borderColor: colors.accent }] : 
-              [styles.failureResult, { backgroundColor: colors.dangerGradient[0], borderColor: colors.error }]
+              [styles.successResult, { backgroundColor: colors.card, borderColor: colors.border }] : 
+              [styles.failureResult, { backgroundColor: colors.card, borderColor: colors.error }]
           ]}
         >
-          <Text style={[styles.resultText, { color: colors.accent }]}>
+          <Text style={[styles.resultText, { color: colors.text }]}>
             {claimResult.success
               ? `🎉 Success! ${claimResult.amount} added.`
               : `❌ Failed: ${claimResult.message}`}
@@ -235,11 +235,11 @@ const AppEventsCard = () => {
       styles.container, 
       { 
         backgroundColor: colors.background,
-        borderColor: colors.accent,
-        shadowColor: colors.accent
+        borderColor: colors.border,
+        shadowColor: colors.shadow
       }
     ]}>
-      <Text style={[styles.balance, { color: colors.accent }]}>Balance: {balance}</Text>
+      <Text style={[styles.balance, { color: colors.text }]}>Balance: {balance}</Text>
 
       <GiftCardGenerator
         balance={balance}
@@ -247,7 +247,7 @@ const AppEventsCard = () => {
         user={user}
       />
 
-      <View style={[styles.divider, { backgroundColor: colors.accent }]} />
+      <View style={[styles.divider, { backgroundColor: colors.primary }]} />
 
       <GiftCodeClaimer
         addBalance={addBalance}

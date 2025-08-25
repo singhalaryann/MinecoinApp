@@ -27,7 +27,7 @@ const TransactionList = ({ userId }) => {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.emptyStateCard}>
-          <Text style={[styles.emptyStateText, { color: colors.mutedText }]}>
+          <Text style={[styles.emptyStateText, { color: colors.text }]}>
             Please sign in to view your transactions
           </Text>
         </View>
@@ -37,9 +37,9 @@ const TransactionList = ({ userId }) => {
 
   if (!transactions || transactions.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.backgroundLight }]}>
         <View style={styles.emptyStateCard}>
-          <Text style={[styles.emptyStateText, { color: colors.mutedText }]}>No transactions yet</Text>
+          <Text style={[styles.emptyStateText, { color: colors.text }]}>No transactions yet</Text>
         </View>
       </View>
     );
@@ -67,8 +67,8 @@ const TransactionList = ({ userId }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.heading, { color: colors.accent }]}>Transaction History</Text>
+    <View style={[styles.container]}>
+      <Text style={[styles.heading, { color: colors.text }]}>Transaction History</Text>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {[...transactions].reverse().map((transaction, index) => {
           const { title, amount, date, type } = formatTransaction(transaction);
@@ -77,14 +77,14 @@ const TransactionList = ({ userId }) => {
               styles.transactionCard,
               {
                 backgroundColor: colors.card,
-                shadowColor: colors.accent
+                shadowColor: colors.shadow
               }
             ]}>
               <View style={styles.transactionContent}>
                 <View
                   style={[
                     styles.iconContainer,
-                    type === 'purchase' ? [styles.redIconBg, { backgroundColor: colors.dangerGradient[0] }] : [styles.greenIconBg, { backgroundColor: colors.accentGlow }],
+                    type === 'purchase' ? [styles.redIconBg, { backgroundColor: colors.primary }] : [styles.greenIconBg, { backgroundColor: colors.primary }],
                   ]}
                 >
                   {type === 'purchase' ? (
@@ -94,15 +94,15 @@ const TransactionList = ({ userId }) => {
                   )}
                 </View>
                 <View style={styles.detailsContainer}>
-                  <Text style={[styles.transactionTitle, { color: colors.lightText }]} numberOfLines={1} ellipsizeMode="tail">
+                  <Text style={[styles.transactionTitle, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">
                     {title}
                   </Text>
-                  <Text style={[styles.transactionDate, { color: colors.mutedText }]}>{date}</Text>
+                  <Text style={[styles.transactionDate, { color: colors.text }]}>{date}</Text>
                 </View>
                 <Text
                   style={[
                     styles.amount,
-                    type === 'purchase' ? [styles.debitAmount, { color: colors.error }] : [styles.creditAmount, { color: colors.accent }],
+                    type === 'purchase' ? [styles.debitAmount, { color: colors.text }] : [styles.creditAmount, { color: colors.text }],
                   ]}
                 >
                   {amount} coins

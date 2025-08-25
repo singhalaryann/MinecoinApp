@@ -8,46 +8,13 @@
                     "description": "Primary blue color for main UI elements",
                     "default": "#3B82F6"
                 },
-                "primaryDark": {
-                    "type": "string",
-                    "description": "Deep blue for depth and contrast",
-                    "default": "#1E3A8A"
-                },
-                "primaryLight": {
-                    "type": "string",
-                    "description": "Soft blue for highlights and accents",
-                    "default": "#93C5FD"
-                },
-                "primaryFaded": {
-                    "type": "string",
-                    "description": "Transparent primary blue for subtle backgrounds",
-                    "default": "rgba(59, 130, 246, 0.1)"
-                },
+                
                 "accent": {
                     "type": "string",
                     "description": "Main emerald green accent color",
                     "default": "#10B981"
                 },
-                "accentDark": {
-                    "type": "string",
-                    "description": "Dark emerald for depth",
-                    "default": "#059669"
-                },
-                "accentGlow": {
-                    "type": "string",
-                    "description": "Glowing emerald effect",
-                    "default": "rgba(16, 185, 129, 0.25)"
-                },
-                "highlight": {
-                    "type": "string",
-                    "description": "Magenta/pink highlight for gamer energy",
-                    "default": "#EC4899"
-                },
-                "highlightGlow": {
-                    "type": "string",
-                    "description": "Glowing magenta effect",
-                    "default": "rgba(236, 72, 153, 0.2)"
-                },
+               
                 "background": {
                     "type": "string",
                     "description": "Main dark background color",
@@ -68,96 +35,30 @@
                     "description": "Primary text color",
                     "default": "#F3F4F6"
                 },
-                "lightText": {
-                    "type": "string",
-                    "description": "Secondary text color",
-                    "default": "#D1D5DB"
-                },
-                "mutedText": {
-                    "type": "string",
-                    "description": "Muted text for less important content",
-                    "default": "#6B7280"
-                },
+               
                 "border": {
                     "type": "string",
                     "description": "Subtle border color",
                     "default": "rgba(59, 130, 246, 0.2)"
                 },
-                "borderStrong": {
-                    "type": "string",
-                    "description": "Strong border color",
-                    "default": "#3B82F6"
-                },
-                "glow": {
-                    "type": "string",
-                    "description": "Primary glow effect",
-                    "default": "rgba(59, 130, 246, 0.4)"
-                },
-                "primaryGlow": {
-                    "type": "string",
-                    "description": "Glow effect for primary UI elements",
-                    "default": "rgba(59, 130, 246, 0.25)"
-                },
-                "inactiveButton": {
-                    "type": "array",
-                    "description": "Gradient for inactive buttons",
-                    "default": ["rgba(255, 255, 255, 0.04)", "rgba(255, 255, 255, 0.02)"]
-                },
-                "activeGradient": {
-                    "type": "array",
-                    "description": "Gradient for active buttons",
-                    "default": ["#10B981", "#10B981"]
-                },
-                "primaryGradient": {
-                    "type": "array",
-                    "description": "Gradient for primary UI elements",
-                    "default": ["#3B82F6", "#1E3A8A"]
-                },
-                "dangerGradient": {
-                    "type": "array",
-                    "description": "Gradient for danger/error states",
-                    "default": ["rgba(239, 68, 68, 0.15)", "rgba(239, 68, 68, 0.05)"]
-                },
-                "loadingGradient": {
-                    "type": "array",
-                    "description": "Gradient for loading states",
-                    "default": ["rgba(59, 130, 246, 0.1)", "rgba(59, 130, 246, 0.05)"]
-                },
+               
                 "shadow": {
                     "type": "string",
                     "description": "Primary shadow color",
                     "default": "#1E3A8A"
                 },
-                "primaryShadow": {
-                    "type": "string",
-                    "description": "Shadow color for primary UI elements",
-                    "default": "#1E3A8A"
-                },
+                
                 "fabShadow": {
                     "type": "string",
                     "description": "Shadow for floating action buttons",
                     "default": "#10B981"
-                },
-                "gradientDark": {
-                    "type": "array",
-                    "description": "Dark gradient for backgrounds",
-                    "default": ["#0A0A0A", "#111827", "#0A0A0A"]
-                },
-                "sectionUnderline": {
-                    "type": "string",
-                    "description": "Underline color for sections",
-                    "default": "#93C5FD"
                 },
                 "error": {
                     "type": "string",
                     "description": "Error/red color",
                     "default": "#EF4444"
                 },
-                "accentBright": {
-                    "type": "string",
-                    "description": "Bright green accent color used extensively",
-                    "default": "#3aed76"
-                },
+                
                 "keysColor": {
                     "type": "string",
                     "description": "Orange color for keys section",
@@ -188,26 +89,13 @@
                     "description": "Gray color for prison section",
                     "default": "#6B7280"
                 },
-                "backgroundDark": {
-                    "type": "string",
-                    "description": "Dark background color",
-                    "default": "#121212"
-                },
-                "backgroundGray": {
-                    "type": "string",
-                    "description": "Gray background color",
-                    "default": "#A1A1AA"
-                },
+                
                 "white": {
                     "type": "string",
                     "description": "White color",
                     "default": "#FFFFFF"
                 },
-                "accentFaded": {
-                    "type": "string",
-                    "description": "Faded accent color",
-                    "default": "rgba(58, 237, 118, 0.1)"
-                },
+                
                 "success": {
                     "type": "string",
                     "description": "Success color",
@@ -217,171 +105,83 @@
                     "type": "string",
                     "description": "Warning color",
                     "default": "#F59E0B"
-                },
-                "borderAccent": {
-                    "type": "string",
-                    "description": "Accent border color",
-                    "default": "rgba(58, 237, 118, 0.6)"
-                },
-                "borderError": {
-                    "type": "string",
-                    "description": "Error border color",
-                    "default": "rgba(239, 68, 68, 0.6)"
-                },
-                "borderWarning": {
-                    "type": "string",
-                    "description": "Warning border color",
-                    "default": "rgba(245, 158, 11, 0.6)"
-                },
-                "borderPrimary": {
-                    "type": "string",
-                    "description": "Primary border color",
-                    "default": "rgba(139, 92, 246, 0.6)"
-                },
-                "backgroundAccent": {
-                    "type": "string",
-                    "description": "Accent background color",
-                    "default": "rgba(58, 237, 118, 0.1)"
-                },
-                "backgroundError": {
-                    "type": "string",
-                    "description": "Error background color",
-                    "default": "rgba(239, 68, 68, 0.15)"
-                },
-                "backgroundWarning": {
-                    "type": "string",
-                    "description": "Warning background color",
-                    "default": "rgba(245, 158, 11, 0.15)"
-                },
-                "backgroundPrimary": {
-                    "type": "string",
-                    "description": "Primary background color",
-                    "default": "rgba(139, 92, 246, 0.15)"
-                },
-                "textAccent": {
-                    "type": "string",
-                    "description": "Accent text color",
-                    "default": "#3aed76"
-                },
-                "textError": {
-                    "type": "string",
-                    "description": "Error text color",
-                    "default": "#EF4444"
-                },
-                "textWarning": {
-                    "type": "string",
-                    "description": "Warning text color",
-                    "default": "#F59E0B"
-                },
-                "textPrimary": {
-                    "type": "string",
-                    "description": "Primary text color",
-                    "default": "#8B5CF6"
-                },
-                "shadowAccent": {
-                    "type": "string",
-                    "description": "Accent shadow color",
-                    "default": "#3aed76"
-                },
-                "shadowError": {
-                    "type": "string",
-                    "description": "Error shadow color",
-                    "default": "#EF4444"
-                },
-                "shadowWarning": {
-                    "type": "string",
-                    "description": "Warning shadow color",
-                    "default": "#F59E0B"
-                },
-                "shadowPrimary": {
-                    "type": "string",
-                    "description": "Primary shadow color",
-                    "default": "#8B5CF6"
                 }
             }
         },
-        "assets-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the assets section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"},\"example-id-2\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
-                },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the assets section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "keys-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the keys section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
-                },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the keys section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "companion-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the companion section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
-                },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the companion section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "rank-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the rank section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
-                },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the rank section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "default-section": {
-            "type": "Level",
-            "keys": {
-                "section": {
-                    "type": "string",
-                    "description": "The section of the default section",
-                    "default": "assets"
-                }
-            }
+        "game-sections": {
+        "type": "Level",
+        "keys": {
+          "sections": {
+            "type": "array",
+            "description": "Available game sections for filtering",
+            "default": ["survival", "lifesteal", "creative", "pvp", "skyblock", "prison"]
+          },
+          "sectionConfigs": {
+            "type": "text",
+            "description": "Configuration for each game section with emojis and names",
+            "default": "{\"survival\":{\"emoji\":\"🌲\",\"name\":\"Survival\"},\"lifesteal\":{\"emoji\":\"⚔\",\"name\":\"Lifesteal\"},\"creative\":{\"emoji\":\"🎨\",\"name\":\"Creative\"},\"pvp\":{\"emoji\":\"⚡\",\"name\":\"PvP\"},\"skyblock\":{\"emoji\":\"☁\",\"name\":\"Skyblock\"},\"prison\":{\"emoji\":\"🔒\",\"name\":\"Prison\"}}"
+          },
+          "defaultSection": {
+            "type": "string",
+            "description": "Default selected section when app loads",
+            "default": "all"
+          }
         }
+      },
+      "game-assets": {
+        "type": "Level",
+        "keys": {
+          "content": {
+            "type": "text",
+            "description": "Game assets content structure - fetched from Firebase gamesAssets collection",
+            "default": "{}"
+          },
+          "assetStructure": {
+            "type": "text",
+            "description": "Expected structure of game assets. 'tag' key is used for automatic category.",
+            "default": "{\"id\":\"string\",\"title\":\"string\",\"section\":\"string\",\"price\":\"number\",\"originalPrice\":\"number\",\"discount\":\"number\",\"imageUrl\":\"string\",\"gameType\":\"string\",\"isNew\":\"boolean\",\"achievementText\":\"string\",\"tag\":\"string\"}"
+          },
+          "sections": {
+            "type": "array",
+            "description": "Available sections for game assets",
+            "default": ["survival", "lifesteal", "creative", "pvp", "skyblock", "prison"]
+          }
+        }
+      },
+      "app-config": {
+        "type": "Level",
+        "keys": {
+          "heroTitle": {
+            "type": "string",
+            "description": "Main hero title for the game assets screen",
+            "default": "GAME ASSETS"
+          },
+          "heroSubtitle": {
+            "type": "string",
+            "description": "Hero subtitle template",
+            "default": "Explore {count} premium assets"
+          },
+          "supportUrl": {
+            "type": "string",
+            "description": "Support Telegram URL",
+            "default": "https://t.me/xgamingclub"
+          },
+          "supportButtonText": {
+            "type": "string",
+            "description": "Support button text",
+            "default": "SUPPORT"
+          }
+        }
+      }
     },
     "experiences": {
         "home": {
             "description": "Home screen",
             "objects": {
-                "ui-theme": true,
-                "default-section": true,
-                "assets-section": true,
-                "keys-section": true,
-                "companion-section": true,
-                "rank-section": true
-            }
+          "game-sections": true,
+          "game-assets": true,
+          "app-config": true
+        }
         },
         "theme": {
             "description": "Global theme configuration",

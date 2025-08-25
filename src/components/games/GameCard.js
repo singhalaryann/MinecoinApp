@@ -79,58 +79,58 @@ const GameCard = ({ game, style, showSection = true }) => {
   const getSectionConfig = (section) => {
     const configs = {
       survival: {
-        gradient: [colors.accentDark, colors.accent],
-        shadowColor: colors.accent,
-        borderColor: colors.accentGlow,
-        bgColor: colors.accentGlow,
+gradient: [colors.primary, colors.primary],
+        shadowColor: colors.shadow,
+        borderColor: colors.border,
+        bgColor: colors.primary,
         icon: '🌲',
         name: 'SURVIVAL',
       },
       lifesteal: {
-        gradient: colors.dangerGradient,
-        shadowColor: colors.error,
-        borderColor: colors.error,
-        bgColor: colors.dangerGradient[0],
+gradient: [colors.primary, colors.primary],
+        shadowColor: colors.shadow,
+        borderColor: colors.border,
+        bgColor: colors.primary,
         icon: '⚔️',
         name: 'LIFESTEAL',
       },
       creative: {
-        gradient: [colors.primaryLight, colors.primaryDark],
-        shadowColor: colors.primary,
+gradient: [colors.primary, colors.primary],
+        shadowColor: colors.shadow,
         borderColor: colors.border,
-        bgColor: colors.primaryFaded,
+        bgColor: colors.primary,
         icon: '🎨',
         name: 'CREATIVE',
       },
       pvp: {
-        gradient: [colors.highlight, colors.highlightGlow],
-        shadowColor: colors.highlight,
-        borderColor: colors.highlightGlow,
-        bgColor: colors.highlightGlow,
+gradient: [colors.primary, colors.primary],
+        shadowColor: colors.shadow,
+        borderColor: colors.border,
+        bgColor: colors.primary,
         icon: '⚡',
         name: 'PVP',
       },
       skyblock: {
-        gradient: [colors.primary, colors.primaryLight],
-        shadowColor: colors.primary,
-        borderColor: colors.primaryFaded,
-        bgColor: colors.primaryFaded,
+gradient: [colors.primary, colors.primary],
+        shadowColor: colors.shadow,
+        borderColor: colors.border,
+        bgColor: colors.primary,
         icon: '☁️',
         name: 'SKYBLOCK',
       },
       prison: {
-        gradient: [colors.mutedText, colors.border],
-        shadowColor: colors.mutedText,
+gradient: [colors.primary, colors.primary],
+        shadowColor: colors.shadow,
         borderColor: colors.border,
-        bgColor: colors.border,
+        bgColor: colors.primary,
         icon: '🔒',
         name: 'PRISON',
       },
       default: {
-        gradient: [colors.accentDark, colors.accent],
-        shadowColor: colors.accent,
-        borderColor: colors.accentGlow,
-        bgColor: colors.accentGlow,
+        gradient: [colors.primary, colors.primary],
+        shadowColor: colors.shadow,
+        borderColor: colors.border,
+        bgColor: colors.primary,
         icon: '🎮',
         name: 'GAME',
       },
@@ -253,7 +253,7 @@ const GameCard = ({ game, style, showSection = true }) => {
 
       {/* Main Card Container */}
       <LinearGradient
-        colors={[colors.backgroundLight, colors.background]}
+        colors={[colors.card, colors.card]}
         style={[
           styles.container,
           {
@@ -279,7 +279,7 @@ const GameCard = ({ game, style, showSection = true }) => {
 
             {/* Gaming Overlay */}
             <LinearGradient
-              colors={['transparent', colors.primaryFaded]}
+              colors={['transparent', colors.primary]}
               style={styles.imageOverlay}
             />
           </View>
@@ -305,7 +305,7 @@ const GameCard = ({ game, style, showSection = true }) => {
             {/* Discount Tag */}
             {game.discount > 0 && (
               <LinearGradient
-                colors={colors.dangerGradient}
+                colors={[colors.error,colors.warning]}
                 style={[styles.tag, styles.discountTag, { shadowColor: colors.error }]}
               >
                 <Text style={[styles.tagIcon, { color: colors.text }]}>🔥</Text>
@@ -317,7 +317,7 @@ const GameCard = ({ game, style, showSection = true }) => {
             {game.isNew && (
               <LinearGradient
                 colors={sectionConfig.gradient}
-                style={[styles.tag, styles.newTag, { shadowColor: colors.accent }]}
+                style={[styles.tag, styles.newTag, { shadowColor: colors.shadow }]}
               >
                 <Text style={[styles.tagIcon, { color: colors.text }]}>✨</Text>
                 <Text style={[styles.tagText, { color: colors.text }]}>NEW</Text>
@@ -331,38 +331,38 @@ const GameCard = ({ game, style, showSection = true }) => {
           {/* Gaming Header */}
           <View style={styles.gameHeader}>
             <View style={styles.titleSection}>
-              <Text style={[styles.gameTitle, { color: colors.accent }]} numberOfLines={1} ellipsizeMode="tail">
+              <Text style={[styles.gameTitle, { color: colors.text }]} numberOfLines={1} ellipsizeMode="tail">
                 {game.title}
               </Text>
               <View style={styles.passSection}>
                 <LinearGradient
-                  colors={[colors.accentGlow, colors.accentFaded]}
+                  colors={[colors.primary, colors.primary]}
                   style={styles.passBadge}
                 >
-                  <Text style={[styles.passIcon, { color: colors.accent }]}>🎮</Text>
-                  <Text style={[styles.passText, { color: colors.accent }]}>PREMIUM PASS</Text>
+                  <Text style={[styles.passIcon, { color: colors.text }]}>🎮</Text>
+                  <Text style={[styles.passText, { color: colors.text }]}>PREMIUM PASS</Text>
                 </LinearGradient>
               </View>
             </View>
           </View>
 
           {/* Gaming Description */}
-          <Text style={[styles.gameDescription, { color: colors.lightText }]} numberOfLines={2} ellipsizeMode="tail">
+          <Text style={[styles.gameDescription, { color: colors.text }]} numberOfLines={2} ellipsizeMode="tail">
             {game.achievementText || "Unlock exclusive gaming features and premium rewards"}
           </Text>
 
           {/* Gaming Stats */}
           <View style={styles.gameStats}>
             <View style={styles.statItem}>
-              <Text style={[styles.statLabel, { color: colors.mutedText }]}>PRICE</Text>
+              <Text style={[styles.statLabel, { color: colors.text }]}>PRICE</Text>
               <View style={styles.statValue}>
-                <Text style={[styles.priceText, { color: colors.accent }]}>{game.price}</Text>
+                <Text style={[styles.priceText, { color: colors.text }]}>{game.price}</Text>
                 <Image source={require('../../../assets/rupee.png')} style={styles.priceIcon} />
               </View>
             </View>
-            <View style={[styles.statDivider, { backgroundColor: colors.accentGlow }]} />
+            <View style={[styles.statDivider, { backgroundColor: colors.primary }]} />
             <View style={styles.statItem}>
-              <Text style={[styles.statLabel, { color: colors.mutedText }]}>TYPE</Text>
+              <Text style={[styles.statLabel, { color: colors.text }]}>TYPE</Text>
               <Text style={[styles.statValueText, { color: colors.text }]}>ASSET</Text>
             </View>
           </View>
@@ -370,11 +370,11 @@ const GameCard = ({ game, style, showSection = true }) => {
           {/* Error Display */}
           {error && (
             <LinearGradient
-              colors={colors.dangerGradient}
+              colors={[colors.primary,colors.primary]}
               style={[styles.errorContainer, { borderColor: colors.error }]}
             >
               <Text style={styles.errorIcon}>⚠️</Text>
-              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+              <Text style={[styles.errorText, { color: colors.text }]}>{error}</Text>
             </LinearGradient>
           )}
 
@@ -382,7 +382,7 @@ const GameCard = ({ game, style, showSection = true }) => {
           <View style={styles.actionSection}>
             {!showBuyButton ? (
               <TouchableOpacity
-                style={[styles.buyNowButton, { shadowColor: colors.accent }]}
+                style={[styles.buyNowButton, { shadowColor: colors.shadow }]}
                 onPress={handleCoinPress}
                 disabled={purchasing}
                 activeOpacity={0.8}
@@ -404,7 +404,7 @@ const GameCard = ({ game, style, showSection = true }) => {
               <View style={styles.purchaseSection}>
                 {/* Quantity Selector */}
                 <View style={styles.quantitySection}>
-                  <Text style={[styles.quantityLabel, { color: colors.mutedText }]}>QUANTITY</Text>
+                  <Text style={[styles.quantityLabel, { color: colors.text }]}>QUANTITY</Text>
                   <View style={styles.quantityControls}>
                     <TouchableOpacity
                       style={styles.quantityButton}
@@ -413,7 +413,7 @@ const GameCard = ({ game, style, showSection = true }) => {
                       disabled={purchasing}
                     >
                       <LinearGradient
-                        colors={[colors.accentDark, colors.accent]}
+                        colors={[colors.primary, colors.primary]}
                         style={styles.quantityButtonGradient}
                       >
                         <Text style={[styles.quantityButtonText, { color: colors.text }]}>−</Text>
@@ -421,7 +421,7 @@ const GameCard = ({ game, style, showSection = true }) => {
                     </TouchableOpacity>
 
                     <View style={styles.quantityDisplay}>
-                      <Text style={[styles.quantityText, { color: colors.accent }]}>{quantity}</Text>
+                      <Text style={[styles.quantityText, { color: colors.text }]}>{quantity}</Text>
                     </View>
 
                     <TouchableOpacity
@@ -431,7 +431,7 @@ const GameCard = ({ game, style, showSection = true }) => {
                       disabled={purchasing}
                     >
                       <LinearGradient
-                        colors={[colors.accentDark, colors.accent]}
+                        colors={[colors.primary, colors.primary]}
                         style={styles.quantityButtonGradient}
                       >
                         <Text style={[styles.quantityButtonText, { color: colors.text }]}>+</Text>
@@ -443,8 +443,8 @@ const GameCard = ({ game, style, showSection = true }) => {
                 {/* Confirm Purchase */}
                 <View style={styles.confirmSection}>
                   <View style={styles.totalSection}>
-                    <Text style={[styles.totalLabel, { color: colors.mutedText }]}>TOTAL</Text>
-                    <Text style={[styles.totalValue, { color: colors.accent }]}>{game.price * quantity}</Text>
+                    <Text style={[styles.totalLabel, { color: colors.text }]}>TOTAL</Text>
+                    <Text style={[styles.totalValue, { color: colors.text }]}>{game.price * quantity}</Text>
                   </View>
                   <TouchableOpacity
                     style={[styles.confirmButton, purchasing && styles.confirmButtonDisabled]}
@@ -453,13 +453,13 @@ const GameCard = ({ game, style, showSection = true }) => {
                     activeOpacity={0.8}
                   >
                     <LinearGradient
-                      colors={purchasing ? colors.dangerGradient : [colors.accentDark, colors.accent]}
+                      colors={purchasing ? colors.primary : [colors.primary, colors.primary]}
                       style={styles.confirmButtonGradient}
                     >
                       {purchasing ? (
                         <ActivityIndicator size="small" color={colors.text} />
                       ) : (
-                        <Text style={[styles.confirmButtonText, { color: colors.white }]}>CONFIRM</Text>
+                        <Text style={[styles.confirmButtonText, { color: colors.text }]}>CONFIRM</Text>
                       )}
                     </LinearGradient>
                   </TouchableOpacity>

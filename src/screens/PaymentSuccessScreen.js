@@ -28,11 +28,11 @@ const PaymentSuccessScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={[styles.successIcon, { backgroundColor: colors.accent }]}>
+      <View style={[styles.successIcon, { backgroundColor: colors.primary }]}>
         <Check size={32} color={colors.text} />
       </View>
-      <Text style={[styles.successText, { color: colors.accent }]}>Payment Successful!</Text>
-      <Text style={[styles.redirectText, { color: colors.mutedText }]}>Redirecting to home...</Text>
+      <Text style={[styles.successText, { color: colors.text }]}>Payment Successful!</Text>
+      <Text style={[styles.redirectText, { color: colors.text }]}>Redirecting to home...</Text>
     </View>
   );
 };

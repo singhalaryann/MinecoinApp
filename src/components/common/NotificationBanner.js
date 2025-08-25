@@ -92,13 +92,13 @@ const NotificationBanner = () => {
       styles.container, 
       { 
         opacity,
-        backgroundColor: colors.accent,
+        backgroundColor: colors.primary,
         shadowColor: colors.shadow
       }
     ]}>
       <View style={styles.contentWrapper}>
         <Text
-          style={[styles.text, { color: colors.background }]}
+          style={[styles.text, { color: colors.text }]}
           numberOfLines={1}        // Limit to single line
           ellipsizeMode="tail"    // Add ... if text too long
         >

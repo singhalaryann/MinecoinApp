@@ -16,7 +16,7 @@ const QuestButton = ({ onPress, title, isActive = false }) => {
 
   return (
     <TouchableOpacity
-      style={[styles.button, { backgroundColor: colors.accent }]}
+      style={[styles.button, { backgroundColor: colors.primary }]}
       onPress={handleQuestPress}
       activeOpacity={0.8}
     >

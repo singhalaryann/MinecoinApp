@@ -78,22 +78,22 @@ const ServerInfo = ({ visible, onClose }) => {
           styles.container, 
           animatedStyle,
           { 
-            backgroundColor: colors.background,
-            shadowColor: colors.accentDark
+            backgroundColor: colors.card,
+            shadowColor: colors.shadow
           }
         ]}>
           <View style={styles.header}>
-            <Text style={[styles.title, { color: colors.accentDark }]}>Server Details</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Server Details</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <X size={24} color={colors.mutedText} />
+              <X size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
 
           {/* Java Edition */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.accentDark }]}>Java Edition</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Java Edition</Text>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: colors.mutedText }]}>IP Address</Text>
+              <Text style={[styles.label, { color: colors.text }]}>IP Address</Text>
               <View style={styles.copyRow}>
                 <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.ip}</Text>
                 <TouchableOpacity
@@ -113,9 +113,9 @@ const ServerInfo = ({ visible, onClose }) => {
 
           {/* Bedrock Edition */}
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.accentDark }]}>PE / Bedrock Edition</Text>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>PE / Bedrock Edition</Text>
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: colors.mutedText }]}>IP Address</Text>
+              <Text style={[styles.label, { color: colors.text }]}>IP Address</Text>
               <View style={styles.copyRow}>
                 <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.ip}</Text>
                 <TouchableOpacity
@@ -133,11 +133,11 @@ const ServerInfo = ({ visible, onClose }) => {
             </View>
 
             <View style={styles.infoRow}>
-              <Text style={[styles.label, { color: colors.mutedText }]}>Port</Text>
+              <Text style={[styles.label, { color: colors.text }]}>Port</Text>
               <Text style={[styles.value, { color: colors.text }]}>{SERVER_INFO.port}</Text>
             </View>
           </View>
-          <View style={[styles.divider, { backgroundColor: colors.accent }]} />
+          <View style={[styles.divider, { backgroundColor: colors.primary }]} />
         </Animated.View>
       </View>
     </Modal>

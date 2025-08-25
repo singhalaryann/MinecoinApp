@@ -71,16 +71,16 @@ const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedTag, 
 
   return (
     <View style={[styles.heroContainer]}>
-      <Text style={[styles.heroTitle, { color: colors.accent, textShadowColor: colors.accentGlow }]}>
+      <Text style={[styles.heroTitle, { color: colors.text, textshadowColor: colors.shadow }]}>
         GAME ASSETS
       </Text>
-      <Text style={[styles.heroSubtitle, { color: colors.lightText }]}>
+      <Text style={[styles.heroSubtitle, { color: colors.text }]}>
         {selectedSection === 'all' && selectedTag === 'all'
           ? `Explore ${gameCount} premium assets`
           : `Showing ${filteredCount} ${getFilterText()}assets`
         }
       </Text>
-      <View style={[styles.heroDivider, { backgroundColor: colors.accent }]} />
+      <View style={[styles.heroDivider, { backgroundColor: colors.border }]} />
     </View>
   );
 });
@@ -90,7 +90,7 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
   
   const tagConfigs = {
     all: { emoji: '🎮', name: 'All', color: colors.primary },
-    rank: { emoji: '👑', name: 'Ranks', color: colors.highlight },
+    rank: { emoji: '👑', name: 'Ranks', color: colors.primary },
     keys: { emoji: '🔑', name: 'Keys', color: colors.keysColor },
     companion: { emoji: '🐾', name: 'Companions', color: colors.companionColor },
     asset: { emoji: '💎', name: 'Asset', color: colors.accent },
@@ -98,7 +98,7 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
 
   return (
     <View style={[styles.tagsContainer, { borderBottomColor: colors.border }]}>
-      <Text style={[styles.tagsLabel, { color: colors.mutedText }]}>FILTER BY TYPE:</Text>
+      <Text style={[styles.tagsLabel, { color: colors.text }]}>FILTER BY TYPE:</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -113,7 +113,7 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
               key={tag}
               style={[
                 styles.tagButton,
-                { backgroundColor: colors.card, borderColor: colors.border },
+                { backgroundColor: colors.primary, borderColor: colors.border },
                 isActive && [styles.tagButtonActive, { 
                   backgroundColor: config.color, 
                   borderColor: config.color,
@@ -128,7 +128,7 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
             >
               <Text style={[
                 styles.tagButtonText,
-                { color: colors.lightText },
+                { color: colors.text },
                 isActive && { color: colors.white }
               ]}>
                 {config.emoji} {config.name}
@@ -145,7 +145,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
   const sectionConfigs = {
     survival: { emoji: '🌲', name: 'Survival', color: colors.accent },
     lifesteal: { emoji: '⚔️', name: 'Lifesteal', color: colors.lifestealColor },
-    creative: { emoji: '🎨', name: 'Creative', color: colors.primaryLight },
+    creative: { emoji: '🎨', name: 'Creative', color: colors.warning },
     pvp: { emoji: '⚡', name: 'PvP', color: colors.pvpColor },
     skyblock: { emoji: '☁️', name: 'Skyblock', color: colors.skyblockColor },
     prison: { emoji: '🔒', name: 'Prison', color: colors.prisonColor },
@@ -161,11 +161,11 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
         <TouchableOpacity
           style={[
             styles.filterButton,
-            { backgroundColor: colors.card, borderColor: colors.border },
+            { backgroundColor: colors.primary, borderColor: colors.border },
             selectedSection === 'all' && [styles.filterButtonActive, { 
               backgroundColor: colors.primary,
               borderColor: colors.primary,
-              shadowColor: colors.primaryGlow
+              shadowColor: colors.shadow
             }],
           ]}
           onPress={() => onSectionChange('all')}
@@ -173,7 +173,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
         >
           <Text style={[
             styles.filterButtonText, 
-            { color: colors.lightText },
+            { color: colors.text },
             selectedSection === 'all' && [styles.filterButtonTextActive, { color: colors.white }]
           ]}>
             🎮 All Games
@@ -191,7 +191,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
               key={section}
               style={[
                 styles.filterButton,
-                { backgroundColor: colors.card, borderColor: colors.border },
+                { backgroundColor: colors.primary, borderColor: colors.border },
                 isActive && [styles.filterButtonActive, { 
                   backgroundColor: config.color,
                   borderColor: config.color,
@@ -203,7 +203,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
             >
               <Text style={[
                 styles.filterButtonText,
-                { color: colors.lightText },
+                { color: colors.text },
                 isActive && [styles.filterButtonTextActive, { color: colors.white }]
               ]}>
                 {config.emoji} {config.name}
@@ -264,12 +264,12 @@ const SimpleSectionHeader = React.memo(({ title, count, colors, isNova = false }
           {title.toUpperCase()}
         </Text>
         {isNova && (
-          <View style={[styles.novaBadge, { backgroundColor: colors.highlight }]}>
-            <Text style={[styles.novaBadgeText, { color: colors.white }]}>NOVA</Text>
+          <View style={[styles.novaBadge, { backgroundColor: colors.primary }]}>
+            <Text style={[styles.novaBadgeText, { color: colors.text }]}>NOVA</Text>
           </View>
         )}
       </View>
-      <Text style={[styles.sectionCount, { color: colors.mutedText }]}>
+      <Text style={[styles.sectionCount, { color: colors.text }]}>
         {count} Assets
       </Text>
     </View>
@@ -282,7 +282,7 @@ const SimpleLoadingState = React.memo(({ colors }) => (
     <Text style={[styles.loadingText, { color: colors.text }]}>
       Loading Assets...
     </Text>
-    <Text style={[styles.loadingSubtext, { color: colors.mutedText }]}>
+    <Text style={[styles.loadingSubtext, { color: colors.text }]}>
       Please wait while we fetch your content
     </Text>
   </View>
@@ -294,28 +294,28 @@ const NovaLoadingState = React.memo(({ colors }) => (
     <Text style={[styles.loadingText, { color: colors.text }]}>
       Loading Nova Dashboard...
     </Text>
-    <Text style={[styles.loadingSubtext, { color: colors.mutedText }]}>
+    <Text style={[styles.loadingSubtext, { color: colors.text }]}>
       Connecting to your personalized experience
     </Text>
   </View>
 ));
 
 const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
-  <View style={[styles.centeredContainer, { backgroundColor: colors.backgroundError }]}>
-    <Text style={[styles.errorIcon, { color: colors.textError }]}>⚠️</Text>
-    <Text style={[styles.errorText, { color: colors.textError }]}>
+  <View style={[styles.centeredContainer, { backgroundColor: colors.error }]}>
+    <Text style={[styles.errorIcon, { color: colors.text }]}>⚠️</Text>
+    <Text style={[styles.errorText, { color: colors.text }]}>
       {error}
     </Text>
     <TouchableOpacity 
       style={[styles.retryButton, { 
-        backgroundColor: colors.accent, 
-        shadowColor: colors.shadowAccent,
-        borderColor: colors.borderAccent,
+        backgroundColor: colors.primary, 
+        shadowColor: colors.shadow,
+        borderColor: colors.border,
         borderWidth: 1
       }]}
       onPress={onRetry}
     >
-      <Text style={[styles.retryButtonText, { color: colors.white }]}>
+      <Text style={[styles.retryButtonText, { color: colors.text }]}>
         🔄 Try Again
       </Text>
     </TouchableOpacity>
@@ -338,14 +338,14 @@ const SimpleEmptyState = React.memo(({ selectedSection, selectedTag, colors }) =
 
   return (
     <View style={[styles.centeredContainer, { backgroundColor: colors.backgroundLight, borderRadius: 12, margin: 20, padding: 30 }]}>
-      <Text style={[styles.emptyIcon, { color: colors.accent }]}>🎮</Text>
+      <Text style={[styles.emptyIcon, { color: colors.text }]}>🎮</Text>
       <Text style={[styles.emptyTitle, { color: colors.text }]}>
         No Assets Found
       </Text>
-      <Text style={[styles.emptyText, { color: colors.mutedText }]}>
+      <Text style={[styles.emptyText, { color: colors.text }]}>
         {getEmptyMessage()}
       </Text>
-      <Text style={[styles.emptySubtext, { color: colors.lightText }]}>
+      <Text style={[styles.emptySubtext, { color: colors.text }]}>
         Try adjusting your filters or check back later for new content
       </Text>
     </View>
@@ -738,7 +738,7 @@ const MainScreen = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[colors.background,colors.backgroundLight]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
         <NovaLoadingState colors={colors} />
@@ -750,7 +750,7 @@ const MainScreen = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[colors.background,colors.backgroundLight]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} />
         <NotificationBanner />
         <SimpleLoadingState colors={colors} />
@@ -811,12 +811,12 @@ const MainScreen = () => {
       </ScrollView>
 
       <TouchableOpacity
-        style={[styles.fab, { shadowColor: colors.primaryShadow }]} 
+        style={[styles.fab, { shadowColor: colors.primary }]} 
         activeOpacity={0.8}
         onPress={() => Linking.openURL('https://t.me/xgamingclub')}
       >
-        <LinearGradient colors={colors.primaryGradient || [colors.primary, colors.primaryDark]} style={styles.fabGradient}>
-          <Text style={[styles.fabText, { color: colors.white }]}>
+        <LinearGradient colors={[colors.primary, colors.primary]} style={styles.fabGradient}>
+          <Text style={[styles.fabText, { color: colors.text }]}>
             SUPPORT
           </Text>
         </LinearGradient>

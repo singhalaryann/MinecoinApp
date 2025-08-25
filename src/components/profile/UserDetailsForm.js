@@ -35,14 +35,14 @@ const UserDetailsForm = () => {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={[styles.container]}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
     >
       {/* Calendar Section */}
       <View style={[styles.cardContainer, { 
         backgroundColor: colors.card, 
-        shadowColor: colors.accent,
+        shadowColor: colors.shadow,
         borderColor: colors.border 
       }]}>
         <CalendarCard />
@@ -51,7 +51,7 @@ const UserDetailsForm = () => {
       {/* Daily Questions Section */}
       <View style={[styles.cardContainer, { 
         backgroundColor: colors.card, 
-        shadowColor: colors.accent,
+        shadowColor: colors.shadow,
         borderColor: colors.border 
       }]}>
         <AppEventsCard />

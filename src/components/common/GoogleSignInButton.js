@@ -24,7 +24,7 @@ const GoogleSignInButton = ({ onPress, loading = false, disabled = false }) => {
         styles.button, 
         { 
           backgroundColor: colors.background,
-          shadowColor: colors.accent
+          shadowColor: colors.shadow
         }
       ]}
       onPress={handleSignIn}
@@ -36,7 +36,7 @@ const GoogleSignInButton = ({ onPress, loading = false, disabled = false }) => {
           style={styles.icon}
           resizeMode="contain"
         />
-        <Text style={[styles.buttonText, { color: colors.accent }]}>Sign in with Google</Text>
+        <Text style={[styles.buttonText, { color: colors.text }]}>Sign in with Google</Text>
       </View>
     </TouchableOpacity>
   );

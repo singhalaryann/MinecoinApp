@@ -63,12 +63,12 @@ const Toast = ({ message, visible, onHide, onComplete }) => {
     <Animated.View style={[
       styles.toastContainer,
       {
-        backgroundColor: colors.accent,
+        backgroundColor: colors.primary,
         shadowColor: colors.shadow
       },
       animatedStyle
     ]}>
-      <Text style={[styles.toastText, { color: colors.background }]}>{message}</Text>
+      <Text style={[styles.toastText, { color: colors.text }]}>{message}</Text>
     </Animated.View>
   );
 };
@@ -223,11 +223,11 @@ const CoinBundleScreen = () => {
         onHide={() => setToastVisible(false)}
         onComplete={() => navigation.navigate('Main')}
       />
-      <View style={[styles.header, { borderBottomColor: colors.accent }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeft size={24} color={colors.accent} />
+          <ArrowLeft size={24} color={colors.primary} />
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.accent }]}>Get Coins</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Get Coins</Text>
       </View>
 
       <ScrollView
@@ -239,10 +239,10 @@ const CoinBundleScreen = () => {
           styles.cardContainer,
           {
             backgroundColor: colors.card,
-            shadowColor: colors.accent
+            shadowColor: colors.shadow
           }
         ]}>
-          <Text style={[styles.subtitle, { color: colors.accent }]}>Select a coin bundle to purchase</Text>
+          <Text style={[styles.subtitle, { color: colors.text }]}>Select a coin bundle to purchase</Text>
 
           {loading ? (
             <ActivityIndicator size="large" color={colors.accent} style={styles.loader} />
@@ -251,8 +251,8 @@ const CoinBundleScreen = () => {
               style={[
                 styles.bundleButton,
                 {
-                  backgroundColor: colors.accent,
-                  shadowColor: colors.accent
+                  backgroundColor: colors.primary,
+                  shadowColor: colors.shadow
                 },
                 isButtonDisabled && styles.disabledButton
               ]}
@@ -263,7 +263,7 @@ const CoinBundleScreen = () => {
               {isUpdating ? (
                 <ActivityIndicator size="small" color={colors.text} />
               ) : (
-                <Text style={[styles.bundleButtonText, { color: colors.background }]}>
+                <Text style={[styles.bundleButtonText, { color: colors.text }]}>
                   {transactionCompleted ? 'Purchase Complete' : 'View Coin Bundles'}
                 </Text>
               )}
@@ -274,15 +274,15 @@ const CoinBundleScreen = () => {
             styles.infoContainer,
             {
               backgroundColor: colors.card,
-              shadowColor: colors.accent
+              shadowColor: colors.shadow
             }
           ]}>
-            <Text style={[styles.infoText, { color: colors.mutedText }]}>• Purchases will be added to your account immediately</Text>
-            <Text style={[styles.infoText, { color: colors.mutedText }]}>• All purchases are final and non-refundable</Text>
-            <Text style={[styles.infoText, { color: colors.mutedText }]}>• For any issues, please contact support</Text>
+            <Text style={[styles.infoText, { color: colors.text }]}>• Purchases will be added to your account immediately</Text>
+            <Text style={[styles.infoText, { color: colors.text }]}>• All purchases are final and non-refundable</Text>
+            <Text style={[styles.infoText, { color: colors.text }]}>• For any issues, please contact support</Text>
           </View>
 
-          {error && <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>}
+          {error && <Text style={[styles.errorText, { color: colors.text }]}>{error}</Text>}
         </View>
       </ScrollView>
     </SafeAreaView>

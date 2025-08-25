@@ -54,27 +54,27 @@ const Header = () => {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={[colors.accentDark, colors.accent]}
+            colors={[colors.primary, colors.primary]}
             style={[styles.profileGlow, { 
-              shadowColor: colors.accent,
+              shadowColor: colors.shadow,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.25,
               shadowRadius: 8,
               elevation: 6,
-              borderColor: colors.accent
+              borderColor: colors.border
             }]}
           >
             {isLoggedIn && user?.photoURL ? (
               <Image
                 source={{ uri: user.photoURL }}
-                style={[styles.profileImage, { borderColor: colors.accent }]}
+                style={[styles.profileImage, { borderColor: colors.border }]}
               />
             ) : (
-              <View style={[styles.initialsContainer, { 
+             <View style={[styles.initialsContainer, { 
                 backgroundColor: colors.background,
-                borderColor: colors.accent
+                borderColor: colors.border
               }]}>
-                <Text style={[styles.initialsText, { color: colors.accent }]}>{getInitials()}</Text>
+                <Text style={[styles.initialsText, { color: colors.text }]}>{getInitials()}</Text>
               </View>
             )}
           </LinearGradient>
@@ -93,10 +93,10 @@ const Header = () => {
           activeOpacity={0.9}
         >
           <LinearGradient
-            colors={[colors.accentGlow, colors.accentDark]}
+            colors={[colors.primary, colors.primary]}
             style={[styles.balancePill, { 
-              borderColor: colors.accentDark,
-              shadowColor: colors.accentBright
+              borderColor: colors.border,
+              shadowColor: colors.shadow
             }]}
           >
             <Image
@@ -105,18 +105,18 @@ const Header = () => {
             />
             {isUpdating ? (
               <View style={styles.loaderContainer}>
-                <ActivityIndicator size="small" color={colors.accent} />
+                <ActivityIndicator size="small" color={colors.text} />
               </View>
             ) : (
-              <Text style={[styles.balanceText, { color: colors.accentDark }]}>
+              <Text style={[styles.balanceText, { color: colors.text }]}>
                 {balance?.toLocaleString() || "0"}
               </Text>
             )}
             <View style={[styles.addButton, { 
-              backgroundColor: colors.accent,
-              shadowColor: colors.accent
+              backgroundColor: colors.primary,
+              shadowColor: colors.shadow
             }]}>
-              <Text style={[styles.addButtonText, { color: colors.background }]}>+</Text>
+              <Text style={[styles.addButtonText, { color: colors.text }]}>+</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -128,13 +128,13 @@ const Header = () => {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={[colors.accentGlow, colors.accentDark]}
+            colors={[colors.primary, colors.primary]}
             style={[styles.serverButtonInner, { 
-              borderColor: colors.accentGlow,
-              shadowColor: colors.accentBright
+              borderColor: colors.border,
+              shadowColor: colors.shadow
             }]}
           >
-            <Server size={20} color={colors.accentDark} />
+            <Server size={20} color={colors.text} />
           </LinearGradient>
         </TouchableOpacity>
       </View>
