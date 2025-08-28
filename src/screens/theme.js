@@ -243,7 +243,7 @@ export const useThemeColors = () => {
     success: activeTheme?.success || '#10B981',
     warning: activeTheme?.warning || '#F59E0B',
     white: activeTheme?.white || '#FFFFFF',
-    backgroundLight: activeTheme?.backgroundLight || '#fdbc5e',
+    backgroundLight: activeTheme?.backgroundLight || '#0A0A0A',
   };
 };
 
@@ -261,5 +261,5 @@ export const colors = {
   success: '#10B981',
   warning: '#F59E0B',
   white: '#FFFFFF',
-  backgroundLight: '#fdbc5e',
+  backgroundLight: '#0A0A0A',
 };
