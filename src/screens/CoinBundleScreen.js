@@ -23,6 +23,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useThemeColors } from './theme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const PLACEMENT_ID = '2233';
 
@@ -201,6 +202,18 @@ const CoinBundleScreen = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Gradient Background */}
+      <LinearGradient 
+        colors={[
+          colors.backgroundLight + "B3", // 70% opacity
+          colors.backgroundLight + "80", // 50% opacity
+          colors.background + "FF",      // Dark background full opacity
+        ]}
+        start={{x: 0, y: 0}}    // Top Left
+        end={{x: 1, y: 1}}     
+        style={StyleSheet.absoluteFill} 
+      />
+      
       <Toast
         message={toastMessage}
         visible={toastVisible}
@@ -213,7 +226,7 @@ const CoinBundleScreen = () => {
       <View style={[styles.header, { 
         borderBottomColor: colors.border,
         borderBottomWidth: 1,
-        backgroundColor: colors.background
+        backgroundColor: colors.backgroundLight
       }]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <ArrowLeft size={24} color={colors.accent} />
@@ -261,9 +274,11 @@ const CoinBundleScreen = () => {
 
           {/* Info Container with proper styling */}
           <View style={[styles.infoContainer, { 
-            backgroundColor: colors.background,
+            backgroundColor: colors.card,
             borderColor: colors.border,
-            borderWidth: 1
+            borderWidth: 3,
+            borderRadius: 16,
+            
           }]}>
             <Text style={[styles.infoText, { color: colors.text }]}>
               • Purchases will be added to your account immediately

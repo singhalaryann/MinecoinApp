@@ -101,8 +101,8 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
     all: { emoji: '🎮', name: 'All', color: colors.accent },
     rank: { emoji: '👑', name: 'Ranks', color: colors.accent },
     keys: { emoji: '🔑', name: 'Keys', color: colors.warning },
-    companion: { emoji: '🐾', name: 'Companions', color: colors.primary },
-    asset: { emoji: '💎', name: 'Asset', color: colors.primary },
+    companion: { emoji: '🐾', name: 'Companions', color: colors.accent + "22" },
+    asset: { emoji: '💎', name: 'Asset', color: colors.accent + "22" },
   };
 
   return (
@@ -273,7 +273,7 @@ const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
       Error: {error}
     </Text>
     <TouchableOpacity 
-      style={[styles.retryButton, { backgroundColor: colors.primary, shadowColor: colors.shadow }]} 
+      style={[styles.retryButton, { backgroundColor: colors.accent + "22", shadowColor: colors.shadow }]} 
       onPress={onRetry}
     >
               <Text style={[styles.retryButtonText, { color: colors.white }]}>
@@ -599,6 +599,8 @@ const MainScreen = () => {
       console.log('🔄 Loading Firebase game assets...');
       const assets = await fetchGameAssets();
       
+      console.log('📦 Raw Firebase assets received:', assets.length);
+      
       const normalizedAssets = assets.map(asset => ({
         ...asset,
         section: asset.section || 'survival',
@@ -609,7 +611,13 @@ const MainScreen = () => {
       console.log('📊 Firebase Assets Loaded:', {
         total: normalizedAssets.length,
         tags: [...new Set(normalizedAssets.map(a => a.tag))],
-        sections: [...new Set(normalizedAssets.map(a => a.section))]
+        sections: [...new Set(normalizedAssets.map(a => a.section))],
+        sampleAsset: normalizedAssets[0] ? {
+          id: normalizedAssets[0].id,
+          title: normalizedAssets[0].title,
+          section: normalizedAssets[0].section,
+          tag: normalizedAssets[0].tag
+        } : null
       });
       
       if (normalizedAssets.length === 0) {
@@ -624,6 +632,7 @@ const MainScreen = () => {
         setSections(uniqueSections);
         
         console.log('🏷️ Permanent tags (never change):', tags);
+        console.log('📁 Sections extracted:', uniqueSections);
       }
     } catch (err) {
       console.error('❌ Error loading game assets:', err);
@@ -639,9 +648,15 @@ const MainScreen = () => {
     }
   }, [isNovaReady, loadGameAssets]);
 
+  // NEW: Always load Firebase assets on mount, regardless of Nova status
+  useEffect(() => {
+    console.log('🚀 Component mounted - loading Firebase assets immediately');
+    loadGameAssets();
+  }, []); // Empty dependency array means this runs once on mount
+
   // NEW: Combined filtering for both section and tag
   const filteredGames = useMemo(() => {
-    console.log('🔍 Filtering games:', { 
+    console.log('🔍 Filtering Firebase games:', { 
       selectedSection, 
       selectedTag,
       firebaseCount: gameAssets.length,
@@ -660,7 +675,7 @@ const MainScreen = () => {
       filtered = filtered.filter((g) => g.tag === selectedTag);
     }
     
-    console.log('✅ Filtered results:', filtered.length);
+    console.log('✅ Filtered Firebase results:', filtered.length);
     return filtered;
   }, [gameAssets, selectedSection, selectedTag]);
 
@@ -690,13 +705,20 @@ const MainScreen = () => {
     const hasNovaAssets = filteredNovaAssets.length > 0;
     const hasFirebaseAssets = filteredGames.length > 0;
     
+    console.log('🎯 Rendering content:', { 
+      hasNovaAssets, 
+      hasFirebaseAssets, 
+      firebaseCount: filteredGames.length,
+      novaCount: filteredNovaAssets.length 
+    });
+    
     if (!hasNovaAssets && !hasFirebaseAssets) {
       return <SimpleEmptyState selectedSection={selectedSection} selectedTag={selectedTag} colors={colors} />;
     }
     
     const content = [];
     
-    // Show Nova Dashboard assets first
+    // Show Nova Dashboard assets first (if any)
     if (hasNovaAssets) {
       console.log('🎯 Rendering Nova assets:', filteredNovaAssets.length);
       content.push(
@@ -720,9 +742,12 @@ const MainScreen = () => {
       );
     }
     
-    // Show Firebase assets
+    // Always show Firebase assets if they exist
     if (hasFirebaseAssets) {
+      console.log('🎯 Rendering Firebase assets:', filteredGames.length);
+      
       if (selectedSection === 'all') {
+        // Show all sections
         sections.forEach((section) => {
           const sectionGames = groupedGames[section];
           if (sectionGames.length === 0) return;
@@ -747,10 +772,11 @@ const MainScreen = () => {
           );
         });
       } else {
+        // Show filtered section
         content.push(
           <View key="filtered" style={styles.sectionGroup}>
             <SimpleSectionHeader
-              title="Game Assets"
+              title={`${selectedSection.charAt(0).toUpperCase() + selectedSection.slice(1)} Assets`}
               count={filteredGames.length}
               colors={colors}
             />
@@ -768,6 +794,7 @@ const MainScreen = () => {
       }
     }
     
+    console.log('✅ Final content sections:', content.length);
     return content;
   };
 
@@ -776,7 +803,7 @@ const MainScreen = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: staticColors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={staticColors.background} />
-        <LinearGradient colors={[staticColors.background, staticColors.card]} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[staticColors.backgroundLight, staticColors.background]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} colors={staticColors} />
         <NotificationBanner />
         <NovaLoadingState colors={staticColors} />
@@ -788,7 +815,7 @@ const MainScreen = () => {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={[colors.background, colors.card]} style={StyleSheet.absoluteFill} />
+        <LinearGradient colors={[colors.backgroundLight, colors.background]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} colors={colors} />
         <NotificationBanner />
         <SimpleLoadingState colors={colors} />
@@ -798,9 +825,9 @@ const MainScreen = () => {
 
   if (error) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={colors.gradientDark} style={StyleSheet.absoluteFill} />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backgroundLight + "CC" }]}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.backgroundLight + "CC"} />
+        <LinearGradient colors={[colors.backgroundLight + "CC", colors.backgroundLight + "CC"]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} colors={colors} />
         <NotificationBanner />
         <SimpleErrorState error={error} onRetry={loadGameAssets} colors={colors} />
@@ -809,11 +836,20 @@ const MainScreen = () => {
   }
 
   return (
-          <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.background} />
-        <LinearGradient colors={[colors.background, colors.card]} style={StyleSheet.absoluteFill} />
+          <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backgroundLight + "CC" }]}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.backgroundLight + "CC"} />
+        <LinearGradient colors={[
+             // 70% opacity
+            colors.backgroundLight + "B3", // 50% opacity
+            colors.backgroundLight + "20",
+            colors.background + "FF",      // Dark background full opacity
+          ]}
+          start={{x: 0, y: 0}}    // Top Left
+          end={{x: 1, y: 1}}     
+            style={StyleSheet.absoluteFill} />
 
-        <Header balance={balance} colors={colors} />
+<Header balance={balance} colors={colors} />
+        
         <NotificationBanner />
 
       <ScrollView
@@ -829,6 +865,8 @@ const MainScreen = () => {
           colors={colors}
         />
 
+        {/* Debug Info - Remove this after fixing */}
+      
         {/* NEW: Tags Filter */}
         <TagsFilter
           tags={tags}
@@ -1066,6 +1104,19 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 20,
+  },
+  debugContainer: {
+    marginTop: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    alignSelf: 'center',
+    borderWidth: 1,
+    borderColor: 'transparent', // Transparent border to allow background color
+  },
+  debugText: {
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
 

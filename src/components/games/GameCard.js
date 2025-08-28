@@ -85,57 +85,51 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
     const configs = {
       survival: {
         gradient: [colors.accent, colors.success],
-        shadowColor: colors.accent,
         borderColor: colors.accent,
-        bgColor: `${colors.success}26`, // 15% opacity using hex
+        bgColor: colors.success + '20',
         icon: '🌲',
         name: 'SURVIVAL',
       },
       lifesteal: {
-        gradient: [colors.error, colors.error],
-        shadowColor: colors.error,
+        gradient: [colors.error, colors.warning],
         borderColor: colors.error,
-        bgColor: `${colors.error}26`, // 15% opacity using hex
+        bgColor: colors.error + '20',
         icon: '⚔️',
         name: 'LIFESTEAL',
       },
       creative: {
-        gradient: [colors.primary, colors.accent],
-        shadowColor: colors.primary,
+        gradient: [colors.accent, colors.accent + "80"],
+        shadowColor: colors.accent + "22",
         borderColor: colors.border,
         bgColor: colors.card,
         icon: '🎨',
         name: 'CREATIVE',
       },
       pvp: {
-        gradient: [colors.warning, colors.warning],
-        shadowColor: colors.warning,
+        gradient: [colors.warning, colors.error],
         borderColor: colors.warning,
-        bgColor: `${colors.warning}26`, // 15% opacity using hex
+        bgColor: colors.warning + '20',
         icon: '⚡',
         name: 'PVP',
       },
       skyblock: {
-        gradient: [colors.primary, colors.primary],
-        shadowColor: colors.primary,
-        borderColor: colors.primary,
-        bgColor: `${colors.primary}26`, // 15% opacity using hex
+        gradient: [colors.accent + "22", colors.accent],
+        borderColor: colors.accent + "22",
+        bgColor: colors.accent + "22" + '20',
         icon: '☁️',
         name: 'SKYBLOCK',
       },
       prison: {
-        gradient: [colors.border, colors.border],
-        shadowColor: colors.border,
+        gradient: [colors.border, colors.text],
         borderColor: colors.border,
-        bgColor: `${colors.border}26`, // 15% opacity using hex
+        bgColor: colors.border + '20',
         icon: '🔒',
         name: 'PRISON',
       },
       default: {
-        gradient: [colors.accent, colors.accent],
-        shadowColor: colors.accent,
+        gradient: [colors.accent, colors.accent + "22"],
         borderColor: colors.accent,
-        bgColor: `${colors.accent}26`, // 15% opacity using hex
+        bgColor: colors.accent + '20',
         icon: '🎮',
         name: 'GAME',
       },
@@ -258,7 +252,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
 
       {/* Main Card Container */}
       <LinearGradient
-        colors={[colors.card, colors.background]}
+        colors={[colors.card,colors.card]}
         style={[
           styles.container,
           {
@@ -341,7 +335,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
               </Text>
               <View style={styles.passSection}>
                 <LinearGradient
-                  colors={[colors.card, colors.background]}
+                  colors={[colors.backgroundLight, colors.background]}
                   style={styles.passBadge}
                 >
                   <Text style={[styles.passIcon, { color: colors.accent }]}>🎮</Text>
@@ -393,7 +387,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
                   colors={sectionConfig.gradient}
                   style={styles.buyNowGradient}
                 >
-                  <View style={styles.buyNowContent}>
+                  <View style={[styles.buyNowContent,{backgroundColor:colors.accent}]}>
                     <Text style={[styles.buyNowText, { color: colors.white }]}>BUY NOW</Text>
                     <View style={[styles.buyNowPrice, { backgroundColor: `${colors.white}33` }]}>
                       <Text style={[styles.buyNowPriceText, { color: colors.white }]}>{game.price}</Text>
@@ -491,25 +485,17 @@ const styles = StyleSheet.create({
   },
   glowContainer: {
     position: 'absolute',
-    top: -4,
-    left: -4,
-    right: -4,
-    bottom: -4,
-    borderRadius: 28,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
+    top: -2,
+    left: -2,
+    right: -2,
+    bottom: -2,
+    borderRadius: 26,
   },
   container: {
     flexDirection: 'row',
-    borderRadius: 24,
-    borderWidth: 2,
+    borderRadius: 20,
+    borderWidth: 1,
     padding: 16,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -518,7 +504,7 @@ const styles = StyleSheet.create({
   leftSection: {
     position: 'relative',
     aspectRatio: 1,
-    borderRadius: 20,
+    borderRadius: 16,
     overflow: 'hidden',
     marginRight: 16,
   },
@@ -526,22 +512,22 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'relative',
-    borderRadius: 20,
+    borderRadius: 16,
     overflow: 'hidden',
   },
   imageGlowRing: {
     position: 'absolute',
-    top: -3,
-    left: -3,
-    right: -3,
-    bottom: -3,
-    borderRadius: 23,
+    top: -2,
+    left: -2,
+    right: -2,
+    bottom: -2,
+    borderRadius: 18,
     zIndex: 0,
   },
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 20,
+    borderRadius: 16,
     zIndex: 1,
   },
   imageOverlay: {
@@ -550,7 +536,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '40%',
-    borderRadius: 20,
+    borderRadius: 16,
     zIndex: 2,
   },
   tagsContainer: {
@@ -622,8 +608,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '900',
     letterSpacing: 0.8,
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
   },
   passSection: {
     alignSelf: 'flex-start',
@@ -719,10 +703,6 @@ const styles = StyleSheet.create({
   buyNowButton: {
     borderRadius: 16,
     overflow: 'hidden',
-    elevation: 6,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
   },
   buyNowGradient: {
     borderRadius: 16,

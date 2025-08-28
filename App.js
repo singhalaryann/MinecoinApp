@@ -78,7 +78,7 @@ const AppContent = () => {
           <SafeAreaProvider>
             <StatusBar
               barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
-              backgroundColor={colors.background}
+              backgroundColor={colors.backgroundLight + "CC"}
               translucent
             />
             <NavigationContainer>

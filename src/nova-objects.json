@@ -57,97 +57,94 @@
                     "type": "string",
                     "description": "White color",
                     "default": "#FFFFFF"
-                }
-            }
-        },
-        "assets-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the assets section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"},\"example-id-2\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
                 },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the assets section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "keys-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the keys section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
-                },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the keys section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "companion-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the companion section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
-                },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the companion section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "rank-section": {
-            "type": "Level",
-            "keys": {
-                "content": {
-                    "type": "text",
-                    "description": "The content of the rank section",
-                    "default": "{\"example-id\":{\"achievementText\":\"OPest Rank\",\"createdAt\":\"5 August 2025 at 21:49:25 UTC+5:30\",\"discount\":33,\"gameType\":\"Minecraft\",\"id\":\"zQ6loxbkrLzWzIL3Ldrq\",\"imageUrl\":\"https://ik.imagekit.io/ypvwcoywn3/download%20(11).png\",\"isNew\":true,\"originalPrice\":200000,\"price\":134000,\"section\":\"Survival\",\"title\":\"Aether Lord Rank\",\"updatedAt\":\"5 August 2025 at 21:55:26 UTC+5:30\"}}"
-                },
-                "order": {
-                    "type": "array",
-                    "description": "The order of the rank section",
-                    "default": ["example-id", "example-id-2"]
-                }
-            }
-        },
-        "default-section": {
-            "type": "Level",
-            "keys": {
-                "section": {
+                "backgroundLight": {
                     "type": "string",
-                    "description": "The section of the default section",
-                    "default": "assets"
+                    "description": "Light background color",
+                    "default": "#111827"
                 }
             }
+        },
+        "game-sections": {
+        "type": "Level",
+        "keys": {
+          "sections": {
+            "type": "array",
+            "description": "Available game sections for filtering",
+            "default": ["survival", "lifesteal", "creative", "pvp", "skyblock", "prison"]
+          },
+          "sectionConfigs": {
+            "type": "text",
+            "description": "Configuration for each game section with emojis and names",
+            "default": "{\"survival\":{\"emoji\":\"🌲\",\"name\":\"Survival\"},\"lifesteal\":{\"emoji\":\"⚔\",\"name\":\"Lifesteal\"},\"creative\":{\"emoji\":\"🎨\",\"name\":\"Creative\"},\"pvp\":{\"emoji\":\"⚡\",\"name\":\"PvP\"},\"skyblock\":{\"emoji\":\"☁\",\"name\":\"Skyblock\"},\"prison\":{\"emoji\":\"🔒\",\"name\":\"Prison\"}}"
+          },
+          "defaultSection": {
+            "type": "string",
+            "description": "Default selected section when app loads",
+            "default": "all"
+          }
         }
+      },
+      "game-assets": {
+        "type": "Level",
+        "keys": {
+          "content": {
+            "type": "text",
+            "description": "Game assets content structure - fetched from Firebase gamesAssets collection",
+            "default": "{}"
+          },
+          "assetStructure": {
+            "type": "text",
+            "description": "Expected structure of game assets. 'tag' key is used for automatic category.",
+            "default": "{\"id\":\"string\",\"title\":\"string\",\"section\":\"string\",\"price\":\"number\",\"originalPrice\":\"number\",\"discount\":\"number\",\"imageUrl\":\"string\",\"gameType\":\"string\",\"isNew\":\"boolean\",\"achievementText\":\"string\",\"tag\":\"string\"}"
+          },
+          "sections": {
+            "type": "array",
+            "description": "Available sections for game assets",
+            "default": ["survival", "lifesteal", "creative", "pvp", "skyblock", "prison"]
+          }
+        }
+      },
+      "app-config": {
+        "type": "Level",
+        "keys": {
+          "heroTitle": {
+            "type": "string",
+            "description": "Main hero title for the game assets screen",
+            "default": "GAME ASSETS"
+          },
+          "heroSubtitle": {
+            "type": "string",
+            "description": "Hero subtitle template",
+            "default": "Explore {count} premium assets"
+          },
+          "supportUrl": {
+            "type": "string",
+            "description": "Support Telegram URL",
+            "default": "https://t.me/xgamingclub"
+          },
+          "supportButtonText": {
+            "type": "string",
+            "description": "Support button text",
+            "default": "SUPPORT"
+          }
+        }
+      }
     },
     "experiences": {
-        "home": {
-            "description": "Home screen",
-            "objects": {
-                "ui-theme": true,
-                "default-section": true,
-                "assets-section": true,
-                "keys-section": true,
-                "companion-section": true,
-                "rank-section": true
-            }
-        },
-        "theme": {
-            "description": "Global theme configuration",
-            "objects": {
-                "ui-theme": true
-            }
+      "home": {
+        "description": "Home screen with game assets",
+        "objects": {
+          "game-sections": true,
+          "game-assets": true,
+          "app-config": true
         }
+      },
+      "theme": {
+        "description": "Global theme configuration",
+        "objects": {
+          "ui-theme": true
+        }
+      }
     }
-}
+  }

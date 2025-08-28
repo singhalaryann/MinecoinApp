@@ -76,7 +76,7 @@ const ProfileScreen = () => {
 
   return (
     <LinearGradient
-      colors={[colors.card, colors.background]}
+      colors={[colors.backgroundLight, colors.background]}
       style={styles.gradient}
     >
       <SafeAreaView style={styles.container}>
@@ -91,7 +91,7 @@ const ProfileScreen = () => {
         </View>
 
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={[styles.userInfoCard, { backgroundColor: colors.card, shadowColor: colors.shadow, borderColor: colors.border }]}>
+          <View style={[styles.userInfoCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <View style={styles.userInfoContent}>
               <View style={styles.avatarContainer}>
                 {user?.photoURL ? (
@@ -190,11 +190,7 @@ const styles = StyleSheet.create({
   },
   userInfoCard: {
     margin: 16,
-    borderRadius: 20,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 14,
-    elevation: 6,
+    borderRadius: 16,
     borderWidth: 1,
   },
   userInfoContent: {

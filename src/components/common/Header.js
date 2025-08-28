@@ -11,6 +11,7 @@ import { useThemeColors } from "../../screens/theme"; // Import the hook instead
 const Header = ({ onProfilePress, onBackPress, title, showBack = false, showProfile = true }) => {
   const { user } = useAuth();
   const { userData } = useUser();
+  const { balance = {} } = useUser();
   const navigation = useNavigation();
   const [showServerInfo, setShowServerInfo] = useState(false);
   
@@ -38,13 +39,20 @@ const Header = ({ onProfilePress, onBackPress, title, showBack = false, showProf
   };
 
   const isLoggedIn = !!user;
-  const balance = userData?.balance || 0;
+  
   const isUpdating = false; // You can add logic for this if needed
 
   return (
+    
     <LinearGradient
-      colors={[colors.card, colors.background]}
-      style={styles.mainContainer}
+ colors={[
+          
+          colors.backgroundLight + "FF",
+          colors.backgroundLight + "80", // 80% opacity
+        ]}
+        start={{x: 0, y: 0}}    // Top Left
+          end={{x: 1, y: 1}} 
+      style={[styles.mainContainer,styles.absoluteFill]}
     >
       <View style={styles.container}>
         {/* Profile */}
@@ -54,7 +62,7 @@ const Header = ({ onProfilePress, onBackPress, title, showBack = false, showProf
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={[colors.primary, colors.accent]}
+            colors={[colors.accent, colors.accent + "80"]}
             style={[styles.profileGlow, { shadowColor: colors.shadow }]}
           >
             {isLoggedIn && user?.photoURL ? (
@@ -86,7 +94,7 @@ const Header = ({ onProfilePress, onBackPress, title, showBack = false, showProf
           activeOpacity={0.9}
         >
           <LinearGradient
-            colors={[colors.card, colors.background]}
+            colors={[colors.backgroundLight, colors.background]}
             style={[styles.balancePill, { 
               borderColor: colors.border,
               shadowColor: colors.shadow
@@ -121,7 +129,7 @@ const Header = ({ onProfilePress, onBackPress, title, showBack = false, showProf
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={[colors.card, colors.background]}
+            colors={[colors.backgroundLight, colors.background]}
             style={[styles.serverButtonInner, { 
               borderColor: colors.border,
               shadowColor: colors.shadow

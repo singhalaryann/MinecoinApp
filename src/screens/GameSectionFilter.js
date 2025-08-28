@@ -12,18 +12,19 @@
  const GameSectionFilter = ({ sections, selectedSection, onSectionChange }) => {
    const colors = useThemeColors();
    
-   const sectionColors = {
-     'all': colors.accent,
-     'survival': colors.success,
-     'lifesteal': colors.error,
-     'creative': colors.primary,
-     'pvp': colors.warning,
-     'skyblock': colors.primary,
-     'prison': colors.border,
+   const sectionConfigs = {
+     'all': { color: colors.accent, icon: '🎮' },
+     'survival': { color: colors.success, icon: '🌲' },
+     'lifesteal': { color: colors.error, icon: '⚔️' },
+     'creative': { color: colors.accent + "22", icon: '🎨' },
+     'pvp': { color: colors.warning, icon: '⚡' },
+     'skyblock': { color: colors.accent + "22", icon: '☁️' },
+     'prison': { color: colors.border, icon: '🔒' },
    };
 
    return (
      <View style={styles.container}>
+       <Text style={[styles.filterTitle, { color: colors.text }]}>Filter by Game</Text>
        <ScrollView
          horizontal
          showsHorizontalScrollIndicator={false}
@@ -32,39 +33,64 @@
          <TouchableOpacity
            style={[
              styles.sectionButton,
-             { borderColor: colors.border },
-             selectedSection === 'all' && [styles.selectedButton, { backgroundColor: sectionColors.all }]
+             { 
+               borderColor: colors.border,
+               backgroundColor: colors.background,
+             },
+             selectedSection === 'all' && [
+               styles.selectedButton, 
+               { 
+                 backgroundColor: sectionConfigs.all.color,
+                 borderColor: sectionConfigs.all.color,
+               }
+             ]
            ]}
            onPress={() => onSectionChange('all')}
+           activeOpacity={0.8}
          >
+           <Text style={styles.sectionIcon}>{sectionConfigs.all.icon}</Text>
            <Text style={[
              styles.sectionText,
-             { color: colors.accent },
-             selectedSection === 'all' && [styles.selectedText, { color: colors.background }]
+             { color: colors.text },
+             selectedSection === 'all' && [styles.selectedText, { color: colors.white }]
            ]}>
              All Games
            </Text>
          </TouchableOpacity>
 
-         {sections.map((section) => (
-           <TouchableOpacity
-             key={section}
-             style={[
-               styles.sectionButton,
-               { borderColor: colors.border },
-               selectedSection === section && [styles.selectedButton, { backgroundColor: sectionColors[section.toLowerCase()] || colors.accent }]
-             ]}
-             onPress={() => onSectionChange(section)}
-           >
-             <Text style={[
-               styles.sectionText,
-               { color: colors.accent },
-               selectedSection === section && [styles.selectedText, { color: colors.background }]
-             ]}>
-               {section.charAt(0).toUpperCase() + section.slice(1)}
-             </Text>
-           </TouchableOpacity>
-         ))}
+         {sections.map((section) => {
+           const config = sectionConfigs[section.toLowerCase()] || sectionConfigs.all;
+           return (
+             <TouchableOpacity
+               key={section}
+               style={[
+                 styles.sectionButton,
+                 { 
+                   borderColor: colors.border,
+                   backgroundColor: colors.background,
+                 },
+                 selectedSection === section && [
+                   styles.selectedButton, 
+                   { 
+                     backgroundColor: config.color,
+                     borderColor: config.color,
+                   }
+                 ]
+               ]}
+               onPress={() => onSectionChange(section)}
+               activeOpacity={0.8}
+             >
+               <Text style={styles.sectionIcon}>{config.icon}</Text>
+               <Text style={[
+                 styles.sectionText,
+                 { color: colors.text },
+                 selectedSection === section && [styles.selectedText, { color: colors.white }]
+               ]}>
+                 {section.charAt(0).toUpperCase() + section.slice(1)}
+               </Text>
+             </TouchableOpacity>
+           );
+         })}
        </ScrollView>
      </View>
    );
@@ -73,22 +99,33 @@
  const styles = StyleSheet.create({
    container: {
      paddingVertical: 16,
-     paddingHorizontal: 16,
+     paddingHorizontal: 20,
+   },
+   filterTitle: {
+     fontSize: 16,
+     fontWeight: '600',
+     marginBottom: 12,
+     marginLeft: 8,
    },
    scrollContainer: {
      paddingHorizontal: 8,
    },
    sectionButton: {
-     paddingHorizontal: 20,
-     paddingVertical: 12,
-     borderRadius: 25,
+     flexDirection: 'row',
+     alignItems: 'center',
+     paddingHorizontal: 16,
+     paddingVertical: 10,
+     borderRadius: 20,
      marginHorizontal: 6,
      borderWidth: 1,
-     minWidth: 80,
-     alignItems: 'center',
+     minWidth: 100,
+     gap: 6,
    },
    selectedButton: {
-     elevation: 3,
+     borderWidth: 1,
+   },
+   sectionIcon: {
+     fontSize: 14,
    },
    sectionText: {
      fontSize: 14,
