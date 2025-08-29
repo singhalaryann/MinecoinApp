@@ -34,6 +34,8 @@ export const AuthProvider = ({ children }) => {
   const [fcmToken, setFcmToken] = useState("");
   // UPDATED: Simplified Nova loading state since we have theme caching
   const [isNovaReady, setIsNovaReady] = useState(false);
+  // NEW: Simple state to control theme source
+  const [useStaticTheme, setUseStaticTheme] = useState(true);
 
   const setupNotifications = async (userEmail) => {
     try {
@@ -67,24 +69,32 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log("🔄 Starting Nova setup process...");
       console.log("📝 Setting Nova user:", userData.userId);
+
       
+
       // Set Nova user first
       await setNovaUser(userData);
       console.log("✅ Nova user set successfully");
-      
+
       // Load experiences
       console.log("🔄 Loading Nova experiences...");
       await loadAllExperiences();
       console.log("✅ Nova experiences loaded");
-      
+
       // UPDATED: Shorter wait since theme caching will show theme immediately
       console.log("🔄 Short delay to ensure Nova is ready...");
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       console.log("🎉 Marking Nova as ready!");
       setIsNovaReady(true);
+      // Check if 'guest' is present anywhere in userId string
+      if (userData.userId && userData.userId.includes("guest")) {
+        setUseStaticTheme(true);
+      } else {
+        setUseStaticTheme(false);
+      }
       console.log("✅ Nova setup completed successfully!");
-      
+
     } catch (error) {
       console.error("❌ Nova setup failed:", error);
       console.log("⚠️ Marking Nova as ready anyway to prevent infinite loading");
@@ -171,6 +181,8 @@ export const AuthProvider = ({ children }) => {
           setUser(updatedUser);
           setIsLoggedIn(true);
           setHasMcVerification(firestoreData.hasMcVerified || false);
+          // NEW: Set theme to use Nova/cache when user is logged in
+          
 
           // UPDATED: Use new function to set Nova user and wait
           console.log("🔄 Setting up Nova for restored user...");
@@ -182,9 +194,10 @@ export const AuthProvider = ({ children }) => {
               coinBalance: firestoreData.coinBalance || 0,
             }
           });
-
+          
           await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
           setupNotifications(updatedUser.email);
+          //setUseStaticTheme(false);
         } else {
           console.log("❌ No Firestore data found for user");
           await AsyncStorage.removeItem("user");
@@ -285,6 +298,8 @@ export const AuthProvider = ({ children }) => {
       setUser(completeUserData);
       setIsLoggedIn(true);
       setHasMcVerification(firestoreData?.hasMcVerified || false);
+      // NEW: Set theme to use Nova/cache when user signs in
+     // setUseStaticTheme(false);
       
       // UPDATED: Use new function to set Nova user and wait
       console.log("🔄 Setting up Nova for signed in user...");
@@ -321,6 +336,8 @@ export const AuthProvider = ({ children }) => {
       // NEW: Reset Nova ready state and set guest user
       console.log("🔄 Resetting Nova state and setting guest user...");
       setIsNovaReady(false);
+      // NEW: Set theme to use static colors when user logs out
+
       await setNovaUserAndWait({
         userId: "guest_" + Date.now(),
         userProfile: { cohort: "guest" }
@@ -344,6 +361,8 @@ export const AuthProvider = ({ children }) => {
         fcmToken,
         // NEW: Expose Nova ready state
         isNovaReady,
+        // NEW: Expose theme control state
+        useStaticTheme,
       }}
     >
       {children}
