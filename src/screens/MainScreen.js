@@ -22,7 +22,7 @@ import { fetchGameAssets } from '../config/firebase';
 import { useUser } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
 import { useThemeColors, colors as staticColors } from './theme';
-import { useNovaExperience } from 'nova-react-sdk'; // NEW: Import Nova experience hook
+import { useNovaExperience } from 'nova-react-sdk';
 
 // Simple cache key for Nova assets
 const NOVA_ASSETS_CACHE_KEY = "nova_assets_cache";
@@ -61,13 +61,12 @@ const getCachedNovaAssets = async (userId) => {
 };
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 40;
+const CARD_WIDTH = width - 32;
 
 // ==================== COMPONENTS ====================
 
-// Simple Hero Section - UPDATED to show tag info
-const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedTag, filteredCount, colors }) => {
-  // NEW: Add tag text to subtitle
+// Improved Hero Section with better visual hierarchy
+const ModernGamingHero = React.memo(({ gameCount, selectedSection, selectedTag, filteredCount, colors }) => {
   const getFilterText = () => {
     let text = '';
     if (selectedTag !== 'all') {
@@ -81,36 +80,38 @@ const SimpleGamingHero = React.memo(({ gameCount, selectedSection, selectedTag, 
   };
 
   return (
-    <View style={[styles.heroContainer]}>
-      <Text style={[styles.heroTitle, { color: colors.accent, textShadowColor: colors.accent }]}>
-        GAME ASSETS
-      </Text>
-      <Text style={[styles.heroSubtitle, { color: colors.text }]}>
-        {selectedSection === 'all' && selectedTag === 'all'
-          ? `Explore ${gameCount} premium assets`
-          : `Showing ${filteredCount} ${getFilterText()}assets`
-        }
-      </Text>
-      <View style={[styles.heroDivider, { backgroundColor: colors.accent }]} />
+    <View style={styles.heroContainer}>
+      <View style={styles.heroContent}>
+        <Text style={[styles.heroTitle, { color: colors.accent }]}>
+          Game Assets
+        </Text>
+        <Text style={[styles.heroSubtitle, { color: colors.text }]}>
+          {selectedSection === 'all' && selectedTag === 'all'
+            ? `${gameCount} premium assets available`
+            : `${filteredCount} ${getFilterText()}assets found`
+          }
+        </Text>
+      </View>
+      <View style={[styles.heroAccent, { backgroundColor: colors.accent }]} />
     </View>
   );
 });
 
-// NEW: Tags Filter Component
-const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
+// Modern Tags Filter with improved visual design
+const ModernTagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
   console.log('🏷️ TagsFilter Render - Available tags:', tags, 'Selected:', selectedTag);
   
   const tagConfigs = {
-    all: { emoji: '🎮', name: 'All', color: colors.accent },
+    all: { emoji: '🎮', name: 'All Assets', color: colors.accent },
     rank: { emoji: '👑', name: 'Ranks', color: colors.accent },
     keys: { emoji: '🔑', name: 'Keys', color: colors.warning },
-    companion: { emoji: '🐾', name: 'Companions', color: colors.accent + "22" },
-    asset: { emoji: '💎', name: 'Asset', color: colors.accent + "22" },
+    companion: { emoji: '🐾', name: 'Companions', color: colors.success },
+    asset: { emoji: '💎', name: 'Assets', color: colors.primary },
   };
 
   return (
-    <View style={[styles.tagsContainer, { borderBottomColor: colors.border }]}>
-      <Text style={[styles.tagsLabel, { color: colors.text }]}>FILTER BY TYPE:</Text>
+    <View style={styles.tagsContainer}>
+      <Text style={[styles.tagsLabel, { color: colors.text }]}>Filter by Type</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -153,8 +154,8 @@ const TagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors }) => {
   );
 });
 
-// Clean Filter Bar - Sections
-const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChange, colors }) => {
+// Modern Filter Bar with improved spacing and design
+const ModernGamingFilter = React.memo(({ sections, selectedSection, onSectionChange, colors }) => {
   const sectionConfigs = {
     survival: { emoji: '🌲', name: 'Survival' },
     lifesteal: { emoji: '⚔️', name: 'Lifesteal' },
@@ -165,7 +166,7 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
   };
 
   return (
-    <View style={[styles.filterContainer, { borderBottomColor: colors.border }]}>
+    <View style={styles.filterContainer}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -228,66 +229,63 @@ const CleanGamingFilter = React.memo(({ sections, selectedSection, onSectionChan
   );
 });
 
-// Section Header
-const SimpleSectionHeader = React.memo(({ title, count, colors, isNova = false }) => {
+// Modern Section Header with improved layout
+const ModernSectionHeader = React.memo(({ title, count, colors, isNova = false }) => {
   return (
     <View style={styles.sectionHeaderContainer}>
       <View style={styles.sectionTitleRow}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
-          {title.toUpperCase()}
+          {title}
         </Text>
         {isNova && (
-                  <View style={[styles.novaBadge, { backgroundColor: colors.accent }]}>
-          <Text style={[styles.novaBadgeText, { color: colors.white }]}>NOVA</Text>
-        </View>
+          <View style={[styles.novaBadge, { backgroundColor: colors.accent }]}>
+            <Text style={[styles.novaBadgeText, { color: colors.white }]}>NOVA</Text>
+          </View>
         )}
       </View>
-              <Text style={[styles.sectionCount, { color: colors.text }]}>
-          {count} Assets
+      <View style={[styles.sectionCountBadge, { backgroundColor: colors.accent + '20' }]}>
+        <Text style={[styles.sectionCount, { color: colors.accent }]}>
+          {count}
         </Text>
+      </View>
     </View>
   );
 });
 
-// Loading State
-const SimpleLoadingState = React.memo(({ colors }) => (
+// Modern Loading State
+const ModernLoadingState = React.memo(({ colors }) => (
   <View style={styles.centeredContainer}>
-    <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={[styles.loadingText, { color: colors.text }]}>
-      Loading Assets...
-    </Text>
+    <View style={[styles.loadingContainer, { backgroundColor: colors.card }]}>
+      <ActivityIndicator size="large" color={colors.accent} />
+      <Text style={[styles.loadingText, { color: colors.text }]}>
+        Loading Assets...
+      </Text>
+    </View>
   </View>
 ));
 
-// Nova Loading State
-const NovaLoadingState = React.memo(({ colors }) => (
+// Modern Error State
+const ModernErrorState = React.memo(({ error, onRetry, colors }) => (
   <View style={styles.centeredContainer}>
-    <ActivityIndicator size="large" color={colors.accent} />
-    <Text style={[styles.loadingText, { color: colors.text }]}>
-      Loading Nova Dashboard...
-    </Text>
-  </View>
-));
-
-// Error State
-const SimpleErrorState = React.memo(({ error, onRetry, colors }) => (
-  <View style={styles.centeredContainer}>
-    <Text style={[styles.errorText, { color: colors.error }]}>
-      Error: {error}
-    </Text>
-    <TouchableOpacity 
-      style={[styles.retryButton, { backgroundColor: colors.accent + "22", shadowColor: colors.shadow }]} 
-      onPress={onRetry}
-    >
-              <Text style={[styles.retryButtonText, { color: colors.white }]}>
-          Retry
+    <View style={[styles.errorContainer, { backgroundColor: colors.card }]}>
+      <Text style={[styles.errorIcon, { color: colors.error }]}>⚠️</Text>
+      <Text style={[styles.errorText, { color: colors.text }]}>
+        {error}
+      </Text>
+      <TouchableOpacity 
+        style={[styles.retryButton, { backgroundColor: colors.accent }]} 
+        onPress={onRetry}
+      >
+        <Text style={[styles.retryButtonText, { color: colors.white }]}>
+          Try Again
         </Text>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   </View>
 ));
 
-// Empty State
-const SimpleEmptyState = React.memo(({ selectedSection, selectedTag, colors }) => {
+// Modern Empty State
+const ModernEmptyState = React.memo(({ selectedSection, selectedTag, colors }) => {
   const getEmptyMessage = () => {
     let message = 'No ';
     if (selectedTag !== 'all') {
@@ -303,9 +301,12 @@ const SimpleEmptyState = React.memo(({ selectedSection, selectedTag, colors }) =
 
   return (
     <View style={styles.centeredContainer}>
-      <Text style={[styles.emptyText, { color: colors.text }]}>
-        {getEmptyMessage()}
-      </Text>
+      <View style={[styles.emptyContainer, { backgroundColor: colors.card }]}>
+        <Text style={[styles.emptyIcon, { color: colors.text }]}>📦</Text>
+        <Text style={[styles.emptyText, { color: colors.text }]}>
+          {getEmptyMessage()}
+        </Text>
+      </View>
     </View>
   );
 });
@@ -333,20 +334,20 @@ const MainScreen = () => {
   // Animated Game Card - MOVED INSIDE to access colors
   const AnimatedGameCard = React.memo(({ game, index }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(20)).current;
+    const slideAnim = useRef(new Animated.Value(30)).current;
 
     useEffect(() => {
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 400,
-          delay: index * 50,
+          duration: 500,
+          delay: index * 80,
           useNativeDriver: true,
         }),
         Animated.timing(slideAnim, {
           toValue: 0,
-          duration: 400,
-          delay: index * 50,
+          duration: 500,
+          delay: index * 80,
           useNativeDriver: true,
         }),
       ]).start();
@@ -768,7 +769,7 @@ const MainScreen = () => {
     });
     
     if (!hasNovaAssets && !hasFirebaseAssets) {
-      return <SimpleEmptyState selectedSection={selectedSection} selectedTag={selectedTag} colors={colors} />;
+      return <ModernEmptyState selectedSection={selectedSection} selectedTag={selectedTag} colors={colors} />;
     }
     
     const content = [];
@@ -778,7 +779,7 @@ const MainScreen = () => {
       console.log('🎯 Rendering Nova assets:', filteredNovaAssets.length);
       content.push(
         <View key="nova-section" style={styles.sectionGroup}>
-          <SimpleSectionHeader
+          <ModernSectionHeader
             title="Featured Assets"
             count={filteredNovaAssets.length}
             colors={colors}
@@ -811,7 +812,7 @@ const MainScreen = () => {
           if (sectionGames && sectionGames.length > 0) {
             content.push(
               <View key={section} style={styles.sectionGroup}>
-                <SimpleSectionHeader
+                <ModernSectionHeader
                   title={section.charAt(0).toUpperCase() + section.slice(1)}
                   count={sectionGames.length}
                   colors={colors}
@@ -833,7 +834,7 @@ const MainScreen = () => {
         // Show filtered section
         content.push(
           <View key="filtered" style={styles.sectionGroup}>
-            <SimpleSectionHeader
+            <ModernSectionHeader
               title={`${selectedSection.charAt(0).toUpperCase() + selectedSection.slice(1)} Assets`}
               count={filteredGames.length}
               colors={colors}
@@ -864,7 +865,7 @@ const MainScreen = () => {
         <LinearGradient colors={[staticColors.backgroundLight, staticColors.background]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} colors={staticColors} />
         <NotificationBanner />
-        <NovaLoadingState colors={staticColors} />
+        <ModernLoadingState colors={staticColors} />
       </SafeAreaView>
     );
   }
@@ -876,46 +877,40 @@ const MainScreen = () => {
         <LinearGradient colors={[colors.backgroundLight, colors.background]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} colors={colors} />
         <NotificationBanner />
-        <SimpleLoadingState colors={colors} />
+        <ModernLoadingState colors={colors} />
       </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backgroundLight + "CC" }]}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.backgroundLight + "CC"} />
-        <LinearGradient colors={[colors.backgroundLight + "CC", colors.backgroundLight + "CC"]} style={StyleSheet.absoluteFill} />
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.background} />
+        <LinearGradient colors={[colors.backgroundLight, colors.background]} style={StyleSheet.absoluteFill} />
         <Header balance={balance} colors={colors} />
         <NotificationBanner />
-        <SimpleErrorState error={error} onRetry={loadGameAssets} colors={colors} />
+        <ModernErrorState error={error} onRetry={loadGameAssets} colors={colors} />
       </SafeAreaView>
     );
   }
 
   return (
-          <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.backgroundLight + "CC" }]}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.backgroundLight + "CC"} />
-        <LinearGradient colors={[
-             // 70% opacity
-            colors.backgroundLight + "B3", // 50% opacity
-            colors.backgroundLight + "20",
-            colors.background + "FF",      // Dark background full opacity
-          ]}
-          start={{x: 0, y: 0}}    // Top Left
-          end={{x: 1, y: 1}}     
-            style={StyleSheet.absoluteFill} />
-
-<Header balance={balance} colors={colors} />
-        
-        <NotificationBanner />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.background} />
+      <LinearGradient 
+        colors={[colors.backgroundLight, colors.background]}
+        style={StyleSheet.absoluteFill} 
+      />
+      
+      <Header balance={balance} colors={colors} />
+      <NotificationBanner />
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
-        <SimpleGamingHero
+        <ModernGamingHero
           gameCount={gameAssets.length + novaAssets.length}
           selectedSection={selectedSection}
           selectedTag={selectedTag}
@@ -923,17 +918,14 @@ const MainScreen = () => {
           colors={colors}
         />
 
-        {/* Debug Info - Remove this after fixing */}
-      
-        {/* NEW: Tags Filter */}
-        <TagsFilter
+        <ModernTagsFilter
           tags={tags}
           selectedTag={selectedTag}
           onTagChange={setSelectedTag}
           colors={colors}
         />
 
-        <CleanGamingFilter
+        <ModernGamingFilter
           sections={sections}
           selectedSection={selectedSection}
           onSectionChange={setSelectedSection}
@@ -945,18 +937,18 @@ const MainScreen = () => {
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* Support FAB */}
-              <TouchableOpacity
-          style={[styles.fab, { shadowColor: colors.shadow }]}
-          activeOpacity={0.8}
-          onPress={() => Linking.openURL('https://t.me/xgamingclub')}
-        >
-          <LinearGradient colors={[colors.accent, colors.accent]} style={styles.fabGradient}>
-            <Text style={[styles.fabText, { color: colors.white }]}>
-              SUPPORT
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
+      {/* Modern Support FAB */}
+      <TouchableOpacity
+        style={[styles.fab, { shadowColor: colors.shadow }]}
+        activeOpacity={0.8}
+        onPress={() => Linking.openURL('https://t.me/xgamingclub')}
+      >
+        <LinearGradient colors={[colors.accent, colors.accent + 'CC']} style={styles.fabGradient}>
+          <Text style={[styles.fabText, { color: colors.white }]}>
+            💬 Support
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -980,134 +972,182 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  loadingContainer: {
+    padding: 30,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
   loadingText: {
-    marginTop: 15,
+    marginTop: 20,
     fontSize: 16,
     fontWeight: '600',
+  },
+  errorContainer: {
+    padding: 30,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  errorIcon: {
+    fontSize: 48,
+    marginBottom: 16,
   },
   errorText: {
     fontSize: 16,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 24,
+    fontWeight: '500',
   },
   retryButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   retryButtonText: {
-    fontWeight: 'bold',
+    fontWeight: '700',
+    fontSize: 14,
+  },
+  emptyContainer: {
+    padding: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 16,
   },
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
+    fontWeight: '500',
   },
 
   // Hero Section
   heroContainer: {
     paddingHorizontal: 20,
     paddingVertical: 25,
-    marginBottom: 10,
+    marginBottom: 5,
+  },
+  heroContent: {
+    alignItems: 'center',
+    marginBottom: 13,
   },
   heroTitle: {
-    fontSize: 28,
-    fontWeight: '900',
-    letterSpacing: 1.5,
-    marginBottom: 8,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 8,
+    fontSize: 32,
+    fontWeight: '800',
+    letterSpacing: 1,
+    marginBottom: 5,
+    textAlign: 'center',
   },
   heroSubtitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    opacity: 0.85,
-    marginBottom: 15,
+    fontSize: 16,
+    fontWeight: '500',
+    opacity: 0.8,
+    textAlign: 'center',
+    lineHeight: 22,
   },
-  heroDivider: {
-    width: 170,
-    height: 3,
+  heroAccent: {
+    width: 80,
+    height: 4,
     borderRadius: 2,
+    alignSelf: 'center',
   },
 
-  // NEW: Tags Filter Styles
+  // Tags Filter Styles
   tagsContainer: {
-    marginBottom: 15,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
+    marginBottom: 13,
+    paddingHorizontal: 24,
   },
   tagsLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    marginLeft: 20,
-    marginBottom: 10,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 13,
+    opacity: 0.8,
   },
   tagsScrollContent: {
-    paddingHorizontal: 20,
-    gap: 8,
+    gap: 10,
   },
   tagButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 18,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
     borderWidth: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   tagButtonActive: {
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   tagButtonText: {
-    fontWeight: '700',
-    fontSize: 12,
+    fontWeight: '600',
+    fontSize: 13,
   },
 
   // Filter Bar
   filterContainer: {
-    marginBottom: 20,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
+    marginBottom: 24,
+    paddingHorizontal: 20,
   },
   filterScrollContent: {
-    paddingHorizontal: 20,
     gap: 10,
   },
   filterButton: {
     paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
     borderRadius: 20,
     borderWidth: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   filterButtonActive: {
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.7,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
     shadowRadius: 8,
+    elevation: 6,
   },
   filterButtonText: {
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: 13,
   },
   filterButtonTextActive: {},
 
   // Game Cards
   gamesList: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 21,
   },
   gameCard: {},
 
   // Section Headers
   sectionGroup: {
-    marginBottom: 30,
+    marginBottom: 40,
   },
   sectionHeaderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 21,
     marginBottom: 15,
   },
   sectionTitleRow: {
@@ -1116,20 +1156,25 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    letterSpacing: 1,
+    fontSize: 22,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  sectionCountBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 13,
   },
   sectionCount: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   
-  // NEW: Nova Badge
+  // Nova Badge
   novaBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   novaBadgeText: {
     fontSize: 10,
@@ -1140,41 +1185,28 @@ const styles = StyleSheet.create({
   // FAB
   fab: {
     position: 'absolute',
-    right: 20,
-    bottom: Platform.OS === 'ios' ? 30 : 20,
+    right: 21,
+    bottom: Platform.OS === 'ios' ? 34 : 24,
     borderRadius: 25,
     overflow: 'hidden',
     elevation: 8,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   fabGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
   },
   fabText: {
-    fontWeight: '800',
+    fontWeight: '700',
     fontSize: 14,
     letterSpacing: 0.5,
   },
   bottomSpacer: {
-    height: 20,
-  },
-  debugContainer: {
-    marginTop: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    alignSelf: 'center',
-    borderWidth: 1,
-    borderColor: 'transparent', // Transparent border to allow background color
-  },
-  debugText: {
-    fontSize: 12,
-    fontWeight: '600',
+    height: 40,
   },
 });
 

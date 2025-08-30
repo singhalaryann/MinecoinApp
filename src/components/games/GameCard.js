@@ -15,7 +15,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useUser } from '../../context/UserContext';
 import InsufficientBalance from './InsufficientBalanceModal';
 import { updateUserBalance, savePurchaseHistory } from '../../config/firebase';
-import { useThemeColors } from '../../screens/theme'; // Import the hook instead of static colors
+import { useThemeColors } from '../../screens/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -50,12 +50,12 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
       Animated.sequence([
         Animated.timing(glowAnim, {
           toValue: 1,
-          duration: 2000,
+          duration: 3000,
           useNativeDriver: true,
         }),
         Animated.timing(glowAnim, {
           toValue: 0,
-          duration: 2000,
+          duration: 3000,
           useNativeDriver: true,
         }),
       ])
@@ -66,13 +66,13 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
       Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.05,
-            duration: 1000,
+            toValue: 1.02,
+            duration: 1500,
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: 1500,
             useNativeDriver: true,
           }),
         ])
@@ -86,50 +86,49 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
       survival: {
         gradient: [colors.accent, colors.success],
         borderColor: colors.accent,
-        bgColor: colors.success + '20',
+        bgColor: colors.success + '15',
         icon: '🌲',
         name: 'SURVIVAL',
       },
       lifesteal: {
         gradient: [colors.error, colors.warning],
         borderColor: colors.error,
-        bgColor: colors.error + '20',
+        bgColor: colors.error + '15',
         icon: '⚔️',
         name: 'LIFESTEAL',
       },
       creative: {
-        gradient: [colors.accent, colors.accent + "80"],
-        shadowColor: colors.accent + "22",
-        borderColor: colors.border,
-        bgColor: colors.card,
+        gradient: [colors.primary, colors.accent],
+        borderColor: colors.primary,
+        bgColor: colors.primary + '15',
         icon: '🎨',
         name: 'CREATIVE',
       },
       pvp: {
         gradient: [colors.warning, colors.error],
         borderColor: colors.warning,
-        bgColor: colors.warning + '20',
+        bgColor: colors.warning + '15',
         icon: '⚡',
         name: 'PVP',
       },
       skyblock: {
-        gradient: [colors.accent + "22", colors.accent],
-        borderColor: colors.accent + "22",
-        bgColor: colors.accent + "22" + '20',
+        gradient: [colors.accent, colors.primary],
+        borderColor: colors.accent,
+        bgColor: colors.accent + '15',
         icon: '☁️',
         name: 'SKYBLOCK',
       },
       prison: {
         gradient: [colors.border, colors.text],
         borderColor: colors.border,
-        bgColor: colors.border + '20',
+        bgColor: colors.border + '15',
         icon: '🔒',
         name: 'PRISON',
       },
       default: {
-        gradient: [colors.accent, colors.accent + "22"],
+        gradient: [colors.accent, colors.primary],
         borderColor: colors.accent,
-        bgColor: colors.accent + '20',
+        bgColor: colors.accent + '15',
         icon: '🎮',
         name: 'GAME',
       },
@@ -140,7 +139,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
   const handleCardPress = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
-        toValue: 0.95,
+        toValue: 0.98,
         duration: 100,
         useNativeDriver: true,
       }),
@@ -220,12 +219,13 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
   };
 
   const cardWidth = style?.width || SCREEN_WIDTH - 32;
-  const imageWidth = cardWidth * 0.32;
+  const imageWidth = cardWidth * 0.35;
+  const imageHeight = cardWidth * 0.57; // Square aspect ratio for better fit
   const sectionConfig = getSectionConfig(game.section);
 
   const glowOpacity = glowAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.3, 0.8],
+    outputRange: [0.2, 0.6],
   });
 
   return (
@@ -234,51 +234,30 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
         styles.cardWrapper,
         {
           transform: [{ scale: scaleAnim }, { scale: pulseAnim }],
-          shadowColor: sectionConfig.shadowColor,
         },
         style,
       ]}
     >
-      {/* Gaming Glow Effect */}
-      <Animated.View
-        style={[
-          styles.glowContainer,
-          {
-            opacity: glowOpacity,
-            shadowColor: sectionConfig.shadowColor,
-          },
-        ]}
-      />
-
       {/* Main Card Container */}
-      <LinearGradient
-        colors={[colors.card,colors.card]}
-        style={[
-          styles.container,
-          {
-            borderColor: sectionConfig.borderColor,
-            shadowColor: sectionConfig.shadowColor,
-          },
-        ]}
-      >
+      <View style={[styles.container, { backgroundColor: colors.card }]}>
         {/* Left Section - Gaming Image */}
-        <View style={[styles.leftSection, { width: imageWidth }]}>
+        <View style={[styles.leftSection, { width: imageWidth, height: imageHeight }]}>
           <View style={styles.imageContainer}>
             {/* Image Glow Ring */}
             <LinearGradient
-              colors={[sectionConfig.gradient[0] + '40', 'transparent', sectionConfig.gradient[1] + '40']}
+              colors={[sectionConfig.gradient[0] + '30', 'transparent', sectionConfig.gradient[1] + '30']}
               style={styles.imageGlowRing}
             />
 
             <Image
               source={game.imageUrl ? { uri: game.imageUrl } : require('../../../assets/bat.png')}
-              style={[styles.image, { backgroundColor: colors.card }]}
+              style={[styles.image, { backgroundColor: colors.card, width: imageWidth, height: imageHeight }]}
               resizeMode="cover"
             />
 
             {/* Gaming Overlay */}
             <LinearGradient
-              colors={['transparent', `${colors.background}CC`]} // CC = 80% opacity
+              colors={['transparent', `${colors.background}80`]}
               style={styles.imageOverlay}
             />
           </View>
@@ -289,12 +268,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
             {showSection && game.section && (
               <LinearGradient
                 colors={sectionConfig.gradient}
-                style={[
-                  styles.sectionTag,
-                  {
-                    shadowColor: sectionConfig.shadowColor,
-                  },
-                ]}
+                style={styles.sectionTag}
               >
                 <Text style={styles.sectionIcon}>{sectionConfig.icon}</Text>
                 <Text style={[styles.sectionTagText, { color: colors.white }]}>{sectionConfig.name}</Text>
@@ -303,20 +277,17 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
 
             {/* Discount Tag */}
             {game.discount > 0 && (
-              <LinearGradient
-                colors={[colors.error, colors.error]}
-                style={[styles.tag, styles.discountTag, { shadowColor: colors.error }]}
-              >
+              <View style={[styles.tag, styles.discountTag, { backgroundColor: colors.error }]}>
                 <Text style={styles.tagIcon}>🔥</Text>
                 <Text style={[styles.tagText, { color: colors.white }]}>-{game.discount}%</Text>
-              </LinearGradient>
+              </View>
             )}
 
             {/* New Tag */}
             {game.isNew && (
               <LinearGradient
                 colors={sectionConfig.gradient}
-                style={[styles.tag, styles.newTag]}
+                style={styles.tag}
               >
                 <Text style={styles.tagIcon}>✨</Text>
                 <Text style={[styles.tagText, { color: colors.white }]}>NEW</Text>
@@ -329,18 +300,13 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
         <View style={styles.rightSection}>
           {/* Gaming Header */}
           <View style={styles.gameHeader}>
-            <View style={styles.titleSection}>
-              <Text style={[styles.gameTitle, { color: colors.accent }]} numberOfLines={1} ellipsizeMode="tail">
-                {game.title}
-              </Text>
-              <View style={styles.passSection}>
-                <LinearGradient
-                  colors={[colors.backgroundLight, colors.background]}
-                  style={styles.passBadge}
-                >
-                  <Text style={[styles.passIcon, { color: colors.accent }]}>🎮</Text>
-                  <Text style={[styles.passText, { color: colors.accent }]}>PREMIUM PASS</Text>
-                </LinearGradient>
+            <Text style={[styles.gameTitle, { color: colors.text }]} numberOfLines={2} ellipsizeMode="tail">
+              {game.title}
+            </Text>
+            <View style={styles.passSection}>
+              <View style={[styles.passBadge, { backgroundColor: colors.accent + '20', borderColor: colors.accent }]}>
+                <Text style={[styles.passIcon, { color: colors.accent }]}>🎮</Text>
+                <Text style={[styles.passText, { color: colors.accent }]}>PREMIUM</Text>
               </View>
             </View>
           </View>
@@ -368,9 +334,9 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
 
           {/* Error Display */}
           {error && (
-            <View style={[styles.errorContainer, { backgroundColor: colors.error, borderColor: colors.error }]}>
+            <View style={[styles.errorContainer, { backgroundColor: colors.error + '20', borderColor: colors.error }]}>
               <Text style={styles.errorIcon}>⚠️</Text>
-              <Text style={[styles.errorText, { color: colors.white }]}>{error}</Text>
+              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
             </View>
           )}
 
@@ -387,9 +353,9 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
                   colors={sectionConfig.gradient}
                   style={styles.buyNowGradient}
                 >
-                  <View style={[styles.buyNowContent,{backgroundColor:colors.accent}]}>
+                  <View style={styles.buyNowContent}>
                     <Text style={[styles.buyNowText, { color: colors.white }]}>BUY NOW</Text>
-                    <View style={[styles.buyNowPrice, { backgroundColor: `${colors.white}33` }]}>
+                    <View style={[styles.buyNowPrice, { backgroundColor: colors.white + '20' }]}>
                       <Text style={[styles.buyNowPriceText, { color: colors.white }]}>{game.price}</Text>
                       <Image source={require('../../../assets/rupee.png')} style={styles.buyNowIcon} />
                     </View>
@@ -408,12 +374,9 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
                       activeOpacity={0.7}
                       disabled={purchasing}
                     >
-                      <LinearGradient
-                        colors={[colors.accent, colors.accent]}
-                        style={styles.quantityButtonGradient}
-                      >
+                      <View style={[styles.quantityButtonGradient, { backgroundColor: colors.accent }]}>
                         <Text style={[styles.quantityButtonText, { color: colors.white }]}>−</Text>
-                      </LinearGradient>
+                      </View>
                     </TouchableOpacity>
 
                     <View style={styles.quantityDisplay}>
@@ -426,12 +389,9 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
                       activeOpacity={0.7}
                       disabled={purchasing}
                     >
-                      <LinearGradient
-                        colors={[colors.accent, colors.accent]}
-                        style={styles.quantityButtonGradient}
-                      >
+                      <View style={[styles.quantityButtonGradient, { backgroundColor: colors.accent }]}>
                         <Text style={[styles.quantityButtonText, { color: colors.white }]}>+</Text>
-                      </LinearGradient>
+                      </View>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -449,7 +409,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
                     activeOpacity={0.8}
                   >
                     <LinearGradient
-                      colors={purchasing ? [colors.error, colors.error] : [colors.accent, colors.accent]}
+                      colors={purchasing ? [colors.error, colors.error] : sectionConfig.gradient}
                       style={styles.confirmButtonGradient}
                     >
                       {purchasing ? (
@@ -464,16 +424,16 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
             )}
           </View>
         </View>
+      </View>
 
-        <InsufficientBalance
-          visible={showInsufficientBalance}
-          onClose={() => {
-            setShowInsufficientBalance(false);
-            setShowBuyButton(false);
-            setQuantity(1);
-          }}
-        />
-      </LinearGradient>
+      <InsufficientBalance
+        visible={showInsufficientBalance}
+        onClose={() => {
+          setShowInsufficientBalance(false);
+          setShowBuyButton(false);
+          setQuantity(1);
+        }}
+      />
     </Animated.View>
   );
 };
@@ -482,29 +442,26 @@ const styles = StyleSheet.create({
   cardWrapper: {
     marginVertical: 6,
     position: 'relative',
-  },
-  glowContainer: {
-    position: 'absolute',
-    top: -2,
-    left: -2,
-    right: -2,
-    bottom: -2,
-    borderRadius: 26,
+    alignSelf: 'stretch',
   },
   container: {
     flexDirection: 'row',
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 16,
+    borderRadius: 24,
+    padding: 18,
     position: 'relative',
     overflow: 'hidden',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+    minHeight: 120,
   },
 
   // Left Section - Gaming Image
   leftSection: {
     position: 'relative',
-    aspectRatio: 1,
-    borderRadius: 16,
+    height: '100%',
+    borderRadius: 20,
     overflow: 'hidden',
     marginRight: 16,
   },
@@ -512,23 +469,26 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'relative',
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageGlowRing: {
     position: 'absolute',
-    top: -2,
-    left: -2,
-    right: -2,
-    bottom: -2,
-    borderRadius: 18,
+    top: -3,
+    left: -3,
+    right: -3,
+    bottom: -3,
+    borderRadius: 23,
     zIndex: 0,
   },
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 16,
+    borderRadius: 20,
     zIndex: 1,
+    alignSelf: 'center',
   },
   imageOverlay: {
     position: 'absolute',
@@ -536,59 +496,56 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '40%',
-    borderRadius: 16,
+    borderRadius: 20,
     zIndex: 2,
   },
   tagsContainer: {
     position: 'absolute',
-    top: 8,
-    left: 8,
-    gap: 6,
+    top: 6,
+    left: 6,
+    gap: 5,
     zIndex: 3,
   },
   sectionTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 14,
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.3,
     shadowRadius: 6,
-    elevation: 6,
+    elevation: 4,
   },
   sectionIcon: {
-    fontSize: 12,
-    marginRight: 4,
+    fontSize: 11,
+    marginRight: 3,
   },
   sectionTagText: {
-    fontSize: 10,
-    fontWeight: '900',
+    fontSize: 9,
+    fontWeight: '800',
     letterSpacing: 0.5,
   },
   tag: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 10,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 3,
   },
   discountTag: {
-    // shadowColor will be set dynamically
-  },
-  newTag: {
-    // shadowColor will be set dynamically
+    // backgroundColor will be set dynamically
   },
   tagIcon: {
-    fontSize: 10,
-    marginRight: 4,
+    fontSize: 9,
+    marginRight: 2,
   },
   tagText: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: '800',
     letterSpacing: 0.3,
   },
@@ -597,25 +554,26 @@ const styles = StyleSheet.create({
   rightSection: {
     flex: 1,
     justifyContent: 'space-between',
+    paddingLeft: 2,
   },
   gameHeader: {
-    marginBottom: 10,
-  },
-  titleSection: {
-    gap: 8,
+    marginBottom: 14,
   },
   gameTitle: {
     fontSize: 18,
-    fontWeight: '900',
-    letterSpacing: 0.8,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    lineHeight: 22,
+    marginBottom: 10,
   },
   passSection: {
     alignSelf: 'flex-start',
+    marginTop: 8,
   },
   passBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
@@ -625,32 +583,37 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   passText: {
-    fontSize: 10,
-    fontWeight: '800',
+    fontSize: 9,
+    fontWeight: '700',
     letterSpacing: 0.5,
   },
   gameDescription: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 16,
     marginBottom: 12,
     fontWeight: '500',
+    opacity: 0.8,
   },
   gameStats: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
     paddingVertical: 8,
-    paddingHorizontal: 4,
+    paddingHorizontal: 6,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    borderRadius: 12,
   },
   statItem: {
     flex: 1,
     alignItems: 'center',
+    paddingHorizontal: 2,
   },
   statLabel: {
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: 9,
+    fontWeight: '600',
     letterSpacing: 0.5,
     marginBottom: 4,
+    opacity: 0.7,
   },
   statValue: {
     flexDirection: 'row',
@@ -658,22 +621,23 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   priceText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
     letterSpacing: 0.3,
   },
   priceIcon: {
-    width: 14,
-    height: 14,
+    width: 12,
+    height: 12,
   },
   statDivider: {
     width: 1,
     height: 24,
-    marginHorizontal: 12,
+    marginHorizontal: 14,
+    opacity: 0.3,
   },
   statValueText: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 11,
+    fontWeight: '700',
     letterSpacing: 0.5,
   },
 
@@ -683,15 +647,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 8,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 12,
     borderWidth: 1,
   },
   errorIcon: {
-    fontSize: 14,
-    marginRight: 6,
+    fontSize: 12,
+    marginRight: 4,
   },
   errorText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     flex: 1,
   },
@@ -703,6 +667,10 @@ const styles = StyleSheet.create({
   buyNowButton: {
     borderRadius: 16,
     overflow: 'hidden',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buyNowGradient: {
     borderRadius: 16,
@@ -715,25 +683,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   buyNowText: {
-    fontSize: 15,
-    fontWeight: '900',
-    letterSpacing: 1,
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.8,
   },
   buyNowPrice: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
     paddingVertical: 4,
-    borderRadius: 10,
+    borderRadius: 8,
   },
   buyNowPriceText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '800',
   },
   buyNowIcon: {
-    width: 12,
-    height: 12,
+    width: 10,
+    height: 10,
   },
 
   // Purchase Section
@@ -741,11 +709,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   quantitySection: {
-    gap: 8,
+    gap: 6,
   },
   quantityLabel: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 11,
+    fontWeight: '700',
     letterSpacing: 0.5,
   },
   quantityControls: {
@@ -762,18 +730,19 @@ const styles = StyleSheet.create({
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 20,
   },
   quantityButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '900',
-    lineHeight: 16,
+    lineHeight: 14,
   },
   quantityDisplay: {
     minWidth: 32,
     alignItems: 'center',
   },
   quantityText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '900',
     letterSpacing: 0.3,
   },
@@ -781,24 +750,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 8,
   },
   totalSection: {
     alignItems: 'flex-start',
+    marginRight: 6,
   },
   totalLabel: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 10,
+    fontWeight: '600',
     letterSpacing: 0.5,
     marginBottom: 2,
+    opacity: 0.7,
   },
   totalValue: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
     letterSpacing: 0.3,
   },
   confirmButton: {
     borderRadius: 14,
     overflow: 'hidden',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   confirmButtonDisabled: {
     opacity: 0.6,
@@ -808,8 +784,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   confirmButtonText: {
-    fontSize: 13,
-    fontWeight: '900',
+    fontSize: 12,
+    fontWeight: '800',
     letterSpacing: 0.8,
   },
 });
