@@ -84,7 +84,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
   const getSectionConfig = (section) => {
     const configs = {
       survival: {
-        gradient: [colors.accent, colors.success],
+        gradient: [colors.accent, colors.accent],
         borderColor: colors.accent,
         bgColor: colors.success + '15',
         icon: '🌲',
@@ -98,9 +98,9 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
         name: 'LIFESTEAL',
       },
       creative: {
-        gradient: [colors.primary, colors.accent],
-        borderColor: colors.primary,
-        bgColor: colors.primary + '15',
+        gradient: [colors.accent + "80", colors.accent],
+        borderColor: colors.accent + "80",
+        bgColor: colors.accent + "80",
         icon: '🎨',
         name: 'CREATIVE',
       },
@@ -112,7 +112,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
         name: 'PVP',
       },
       skyblock: {
-        gradient: [colors.accent, colors.primary],
+        gradient: [colors.accent, colors.accent + "80"],
         borderColor: colors.accent,
         bgColor: colors.accent + '15',
         icon: '☁️',
@@ -126,7 +126,7 @@ const GameCard = ({ game, onPress, style, showSection = false, colors: propColor
         name: 'PRISON',
       },
       default: {
-        gradient: [colors.accent, colors.primary],
+        gradient: [colors.accent, colors.accent + "80"],
         borderColor: colors.accent,
         bgColor: colors.accent + '15',
         icon: '🎮',

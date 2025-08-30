@@ -106,7 +106,7 @@ const ModernTagsFilter = React.memo(({ tags, selectedTag, onTagChange, colors })
     rank: { emoji: '👑', name: 'Ranks', color: colors.accent },
     keys: { emoji: '🔑', name: 'Keys', color: colors.warning },
     companion: { emoji: '🐾', name: 'Companions', color: colors.success },
-    asset: { emoji: '💎', name: 'Assets', color: colors.primary },
+    asset: { emoji: '💎', name: 'Assets', color: colors.accent + "80" },
   };
 
   return (
