@@ -12,6 +12,9 @@
  const GameSectionFilter = ({ sections, selectedSection, onSectionChange }) => {
    const colors = useThemeColors();
    
+   // Ensure we have sections to work with, fallback to defaults if empty
+   const sectionsToUse = sections && sections.length > 0 ? sections : ['survival', 'lifesteal', 'creative', 'pvp', 'skyblock', 'prison'];
+   
    const sectionConfigs = {
      'all': { color: colors.accent, icon: '🎮' },
      'survival': { color: colors.success, icon: '🌲' },
@@ -58,7 +61,7 @@
            </Text>
          </TouchableOpacity>
 
-         {sections.map((section) => {
+         {sectionsToUse.map((section) => {
            const config = sectionConfigs[section.toLowerCase()] || sectionConfigs.all;
            return (
              <TouchableOpacity

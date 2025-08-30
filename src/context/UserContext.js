@@ -21,7 +21,7 @@ export const UserProvider = ({ children }) => {
     isInitialMount.current = false;
   }  
   
-  const { updateUserProfile } = useNova();
+  const { updateUserProfile, trackEvent } = useNova();
   const { isLoggedIn, user } = useAuth();
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
@@ -212,6 +212,20 @@ export const UserProvider = ({ children }) => {
   
       setTransactions(prev => [...prev, transaction]);
       console.log("Purchase transaction recorded successfully");
+      
+      // Track purchase transaction event
+      try {
+        await trackEvent("purchase_transaction_recorded", {
+          user_id: user.email,
+          amount: amount,
+          product_id: productDetails.productId || productDetails.vendorProductId,
+          product_name: productDetails.name || 'Unknown Bundle',
+          transaction_id: transaction.id,
+          timestamp: transaction.timestamp
+        });
+      } catch (error) {
+        console.error("Failed to track purchase transaction event:", error);
+      }
     } catch (error) {
       console.error("Error recording purchase transaction:", error);
       throw error;
@@ -295,9 +309,34 @@ export const UserProvider = ({ children }) => {
         console.error("Nova updateUserProfile failed:", error);
       }
 
+      // Track MC verification event
+      try {
+        await trackEvent("mc_verification_completed", {
+          user_id: user.email,
+          mc_username: username,
+          has_uuid: !!playerData.uuid,
+          timestamp: new Date().toISOString()
+        });
+      } catch (error) {
+        console.error("Failed to track MC verification event:", error);
+      }
+
       return true;
     } catch (error) {
       console.error("Error updating MC credentials:", error);
+      
+      // Track MC verification error event
+      try {
+        await trackEvent("mc_verification_error", {
+          user_id: user.email,
+          mc_username: username,
+          error_message: error.message,
+          timestamp: new Date().toISOString()
+        });
+      } catch (trackError) {
+        console.error("Failed to track MC verification error event:", trackError);
+      }
+      
       return false;
     }
   };
@@ -315,13 +354,6 @@ export const UserProvider = ({ children }) => {
     console.log(code);
         const { Timestamp } = require('firebase/firestore');
     const tyronUserRef = doc(db, "users", "tyrongamess@gmail.com");
-//    const tyronUserSnap = await getDoc(tyronUserRef);
-//
-//    //if (!tyronUserSnap.exists()) throw new Error("Tyron user not found");
-//
-//    const tyronUserData = tyronUserSnap.data();
-//    const currentBalance = tyronUserData.coinBalance || 0;
-//    const newBalance = currentBalance + tax;
 
     await updateDoc(tyronUserRef, {
 
@@ -332,7 +364,6 @@ export const UserProvider = ({ children }) => {
         timestamp: new Date().toISOString()
       })
     });
-
 
         await Promise.all([
           setDoc(doc(db, "giftCards", code), {
@@ -346,6 +377,21 @@ export const UserProvider = ({ children }) => {
           }),
 
         ]);
+        
+        // Track gift card generation event
+        try {
+          await trackEvent("gift_card_generated", {
+            user_id: user.email,
+            original_amount: amount,
+            net_amount: netAmount,
+            tax_amount: tax,
+            gift_card_code: code,
+            timestamp: new Date().toISOString()
+          });
+        } catch (error) {
+          console.error("Failed to track gift card generation event:", error);
+        }
+        
     setTimeout(async () => {
           // Get the gift card document and check if it's still unclaimed
           const giftCardRef = doc(db, "giftCards", code);
@@ -369,12 +415,39 @@ export const UserProvider = ({ children }) => {
             });
 
             console.log(`Gift card ${code} auto claimed by ${user.email} and amount ${netAmountFromCard} added to their balance.`);
+            
+            // Track auto-claim event
+            try {
+              await trackEvent("gift_card_auto_claimed", {
+                user_id: user.email,
+                gift_card_code: code,
+                claimed_amount: netAmountFromCard,
+                claim_type: "auto_claim",
+                time_to_claim: "3_hours",
+                timestamp: new Date().toISOString()
+              });
+            } catch (error) {
+              console.error("Failed to track gift card auto-claim event:", error);
+            }
           }
         }, 3 * 60 * 60 * 1000);  // 3 hours in milliseconds
 
         return { code, netAmount };
       } catch (error) {
         console.error("Gift card generation failed:", error);
+        
+        // Track gift card generation error event
+        try {
+          await trackEvent("gift_card_generation_error", {
+            user_id: user.email,
+            amount: amount,
+            error_message: error.message,
+            timestamp: new Date().toISOString()
+          });
+        } catch (trackError) {
+          console.error("Failed to track gift card generation error event:", trackError);
+        }
+        
         throw error;
       }
     }, [user, balance, subtractBalance]);
@@ -391,7 +464,6 @@ const claimGiftCode = useCallback(async (code) => {
 
     const giftCardData = giftCardDoc.data();
     if (giftCardData.isClaimed) throw new Error("Gift code already claimed");
-    //if (giftCardData.createdBy === user.email) throw new Error("Cannot claim your own code");
 
     const { Timestamp } = require("firebase/firestore");
 
@@ -401,12 +473,39 @@ const claimGiftCode = useCallback(async (code) => {
         claimedBy: user.email,
         claimedAt: Timestamp.now()
       }),
-      //addBalance(giftCardData.netAmount)
     ]);
+
+    // Track gift card claim event
+    try {
+      await trackEvent("gift_card_claimed", {
+        user_id: user.email,
+        gift_card_code: formattedCode,
+        claimed_amount: giftCardData.netAmount,
+        original_amount: giftCardData.originalAmount,
+        tax_amount: giftCardData.tax,
+        claim_type: "manual_claim",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Failed to track gift card claim event:", error);
+    }
 
     return { success: true, amount: giftCardData.netAmount };
   } catch (error) {
     console.error("Gift code claim failed:", error);
+    
+    // Track gift card claim error event
+    try {
+      await trackEvent("gift_card_claim_error", {
+        user_id: user.email,
+        gift_card_code: code,
+        error_message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    } catch (trackError) {
+      console.error("Failed to track gift card claim error event:", trackError);
+    }
+    
     return { success: false, message: error.message };
   }
 }, [user, addBalance]);
@@ -468,9 +567,39 @@ const claimGiftCode = useCallback(async (code) => {
 
         setBalance(newBalance);
         setTransactions((prev) => [...prev, newTransaction]);
+        
+        // Track purchase event
+        try {
+          await trackEvent("game_purchase_completed", {
+            user_id: user.email,
+            amount: amount,
+            new_balance: newBalance,
+            item_details: itemDetails,
+            transaction_id: newTransaction.id,
+            mc_username: mcCredentials.username,
+            timestamp: newTransaction.timestamp
+          });
+        } catch (error) {
+          console.error("Failed to track purchase event:", error);
+        }
+        
         return true;
       } catch (error) {
         console.error("Purchase failed:", error);
+        
+        // Track purchase error event
+        try {
+          await trackEvent("game_purchase_error", {
+            user_id: user.email,
+            amount: amount,
+            item_details: itemDetails,
+            error_message: error.message,
+            timestamp: new Date().toISOString()
+          });
+        } catch (trackError) {
+          console.error("Failed to track purchase error event:", trackError);
+        }
+        
         throw error;
       }
     },
@@ -536,11 +665,39 @@ const subtractBalance = useCallback(async (amount) => {
       console.error("Nova updateUserProfile failed:", error);
     }
 
+    // Track balance subtraction event
+    try {
+      await trackEvent("balance_subtracted", {
+        user_id: user.email,
+        amount: amount,
+        previous_balance: currentBalance,
+        new_balance: newBalance,
+        reason: "app_events",
+        mc_username: mcCredentials.username,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Failed to track balance subtraction event:", error);
+    }
+
     console.log(`Subtracted ${amount} coins of user ${user.email}`);
     await refreshBalance();
     return true;
   } catch (error) {
     console.error("Failed to subtract coins:", error);
+    
+    // Track balance subtraction error event
+    try {
+      await trackEvent("balance_subtraction_error", {
+        user_id: user.email,
+        amount: amount,
+        error_message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    } catch (trackError) {
+      console.error("Failed to track balance subtraction error event:", trackError);
+    }
+    
     return false;
   }
 }, [user, mcCredentials]);
@@ -573,11 +730,38 @@ const addBalance = useCallback(async (amount) => {
       console.error("Nova updateUserProfile failed:", error);
     }
     
+    // Track balance addition event
+    try {
+      await trackEvent("balance_added", {
+        user_id: user.email,
+        amount: amount,
+        previous_balance: currentBalance,
+        new_balance: newBalance,
+        mc_username: mcCredentials.username,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Failed to track balance addition event:", error);
+    }
+    
     console.log(`Added ${amount} coins coins of user ${user.email}`);
     await refreshBalance();
     return true;
   } catch (error) {
     console.error("Failed to add coins:", error);
+    
+    // Track balance addition error event
+    try {
+      await trackEvent("balance_addition_error", {
+        user_id: user.email,
+        amount: amount,
+        error_message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    } catch (trackError) {
+      console.error("Failed to track balance addition error event:", trackError);
+    }
+    
     return false;
   }
 }, [balance, user, mcCredentials]);
@@ -621,9 +805,38 @@ const addCoins = useCallback(
         console.error("Nova updateUserProfile failed:", error);
       }
       
+      // Track coin bundle purchase event
+      try {
+        await trackEvent("coin_bundle_purchased", {
+          user_id: user.email,
+          amount: amount,
+          new_balance: newBalance,
+          product_details: productDetails,
+          transaction_id: transaction.id,
+          mc_username: mcCredentials.username,
+          timestamp: transaction.timestamp
+        });
+      } catch (error) {
+        console.error("Failed to track coin bundle purchase event:", error);
+      }
+      
       return true;
     } catch (error) {
       console.error("Failed to add coins:", error);
+      
+      // Track coin bundle purchase error event
+      try {
+        await trackEvent("coin_bundle_purchase_error", {
+          user_id: user.email,
+          amount: amount,
+          product_details: productDetails,
+          error_message: error.message,
+          timestamp: new Date().toISOString()
+        });
+      } catch (trackError) {
+        console.error("Failed to track coin bundle purchase error event:", trackError);
+      }
+      
       throw error;
     }
   },

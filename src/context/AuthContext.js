@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
   console.log("AuthProvider initialized");
   
   // UPDATED: Get both setUser and loadAllExperiences from Nova
-  const { setUser: setNovaUser, loadAllExperiences } = useNova();
+  const { setUser: setNovaUser, loadAllExperiences, trackEvent } = useNova();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [hasMcVerification, setHasMcVerification] = useState(false);
@@ -181,8 +181,6 @@ export const AuthProvider = ({ children }) => {
           setUser(updatedUser);
           setIsLoggedIn(true);
           setHasMcVerification(firestoreData.hasMcVerified || false);
-          // NEW: Set theme to use Nova/cache when user is logged in
-          
 
           // UPDATED: Use new function to set Nova user and wait
           console.log("🔄 Setting up Nova for restored user...");
@@ -197,7 +195,32 @@ export const AuthProvider = ({ children }) => {
           
           await AsyncStorage.setItem("user", JSON.stringify(updatedUser));
           setupNotifications(updatedUser.email);
-          //setUseStaticTheme(false);
+          
+          // Track daily reward event AFTER Nova user is set
+          if (firestoreData.hasMcVerified && firestoreData.coinBalance > (firestoreData.coinBalance - 20)) {
+            try {
+              await trackEvent("daily_reward_claimed", {
+                user_id: updatedUser.email,
+                reward_amount: 20,
+                new_balance: firestoreData.coinBalance,
+                source: "session_restoration"
+              });
+            } catch (error) {
+              console.error("Failed to track daily reward event:", error);
+            }
+          }
+          
+          // Track session restoration event AFTER Nova user is set
+          try {
+            await trackEvent("session_restored", {
+              user_id: updatedUser.email,
+              has_mc_verified: firestoreData.hasMcVerified || false,
+              coin_balance: firestoreData.coinBalance || 0,
+              restoration_method: "async_storage"
+            });
+          } catch (error) {
+            console.error("Failed to track session restoration event:", error);
+          }
         } else {
           console.log("❌ No Firestore data found for user");
           await AsyncStorage.removeItem("user");
@@ -206,20 +229,44 @@ export const AuthProvider = ({ children }) => {
         console.log("ℹ️ No stored user session found");
         // NEW: Set Nova guest user for non-logged in users
         console.log("🔄 Setting up Nova guest user...");
+        const guestUserId = "guest_" + Date.now();
         await setNovaUserAndWait({
-          userId: "guest_" + Date.now(),
+          userId: guestUserId,
           userProfile: { cohort: "guest" }
         });
+        
+        // Track guest user creation event AFTER Nova user is set
+        try {
+          await trackEvent("guest_user_created", {
+            user_id: guestUserId,
+            creation_reason: "no_stored_session"
+          });
+        } catch (error) {
+          console.error("Failed to track guest user creation event:", error);
+        }
       }
     } catch (error) {
       console.error("❌ Error restoring user:", error);
       await AsyncStorage.removeItem("user");
       // NEW: Set Nova guest user on error
       console.log("🔄 Setting up Nova guest user due to error...");
+      const errorGuestUserId = "guest_" + Date.now();
       await setNovaUserAndWait({
-        userId: "guest_" + Date.now(),
+        userId: errorGuestUserId,
         userProfile: { cohort: "guest" }
       });
+      
+      // Track error event AFTER Nova user is set
+      try {
+        await trackEvent("session_restoration_error", {
+          user_id: errorGuestUserId,
+          error_message: error.message,
+          error_stack: error.stack,
+          fallback_action: "guest_user_created"
+        });
+      } catch (trackError) {
+        console.error("Failed to track error event:", trackError);
+      }
     }
   };
 
@@ -298,8 +345,6 @@ export const AuthProvider = ({ children }) => {
       setUser(completeUserData);
       setIsLoggedIn(true);
       setHasMcVerification(firestoreData?.hasMcVerified || false);
-      // NEW: Set theme to use Nova/cache when user signs in
-     // setUseStaticTheme(false);
       
       // UPDATED: Use new function to set Nova user and wait
       console.log("🔄 Setting up Nova for signed in user...");
@@ -314,10 +359,74 @@ export const AuthProvider = ({ children }) => {
       
       setupNotifications(userData.email);
       
+      // Track events AFTER Nova user is set
+      if (!firestoreData) {
+        // Track new user sign up event
+        try {
+          await trackEvent("new_user_signup", {
+            user_id: userData.email,
+            display_name: userData.displayName,
+            signup_method: "google",
+            timestamp: new Date().toISOString()
+          });
+        } catch (error) {
+          console.error("Failed to track new user signup event:", error);
+        }
+      } else {
+        // Track returning user sign in event
+        try {
+          await trackEvent("returning_user_signin", {
+            user_id: userData.email,
+            display_name: userData.displayName,
+            signin_method: "google",
+            has_mc_verified: firestoreData.hasMcVerified || false,
+            coin_balance: firestoreData.coinBalance || 0,
+            timestamp: new Date().toISOString()
+          });
+        } catch (error) {
+          console.error("Failed to track returning user signin event:", error);
+        }
+      }
+      
+      // Track daily reward event if given
+      if (firestoreData && firestoreData.hasMcVerified && firestoreData.coinBalance > (firestoreData.coinBalance - 15)) {
+        try {
+          await trackEvent("daily_reward_claimed", {
+            user_id: userData.email,
+            reward_amount: 15,
+            new_balance: firestoreData.coinBalance,
+            source: "signin_reward"
+          });
+        } catch (error) {
+          console.error("Failed to track daily reward event:", error);
+        }
+      }
+      
       console.log("🎉 Sign in process completed successfully!");
       return true;
     } catch (error) {
       console.error("❌ Google Sign-In error:", error);
+      
+      // For signin errors, we can't track with user context, so we'll track as guest
+      // This is a limitation but ensures we don't break the Nova SDK requirement
+      try {
+        // Set a temporary guest user to track the error
+        const tempGuestId = "guest_" + Date.now();
+        await setNovaUserAndWait({
+          userId: tempGuestId,
+          userProfile: { cohort: "guest", error_context: "signin_failure" }
+        });
+        
+        await trackEvent("signin_error", {
+          user_id: tempGuestId,
+          error_message: error.message,
+          signin_method: "google",
+          timestamp: new Date().toISOString()
+        });
+      } catch (trackError) {
+        console.error("Failed to track signin error event:", trackError);
+      }
+      
       return false;
     }
   };
@@ -325,9 +434,10 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       console.log("🔄 Starting sign out process");
+      
       await firebaseSignOutUser();
       
-      await AsyncStorage.clear();
+      
       setUser(null);
       setIsLoggedIn(false);
       setHasMcVerification(false);
@@ -336,16 +446,43 @@ export const AuthProvider = ({ children }) => {
       // NEW: Reset Nova ready state and set guest user
       console.log("🔄 Resetting Nova state and setting guest user...");
       setIsNovaReady(false);
-      // NEW: Set theme to use static colors when user logs out
+      await AsyncStorage.clear();
 
+      const guestUserId = "guest_" + Date.now();
       await setNovaUserAndWait({
-        userId: "guest_" + Date.now(),
+        userId: guestUserId,
         userProfile: { cohort: "guest" }
       });
+      
+      // Track sign out event AFTER Nova guest user is set
+      if (user && user.email) {
+        try {
+          await trackEvent("user_signout", {
+            user_id: user.email,
+            signout_method: "manual",
+            session_duration: Date.now() - (user.lastSignInTime || Date.now()),
+            timestamp: new Date().toISOString()
+          });
+        } catch (error) {
+          console.error("Failed to track signout event:", error);
+        }
+      }
       
       console.log("✅ Sign out completed successfully");
     } catch (error) {
       console.error("❌ Sign-out error:", error);
+      
+      // Track sign out error event AFTER Nova guest user is set
+      try {
+        await trackEvent("signout_error", {
+          user_id: guestUserId,
+          error_message: error.message,
+          timestamp: new Date().toISOString()
+        });
+      } catch (trackError) {
+        console.error("Failed to track signout error event:", trackError);
+      }
+      
       throw error;
     }
   };

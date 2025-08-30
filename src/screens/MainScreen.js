@@ -27,6 +27,9 @@ import { useNovaExperience } from 'nova-react-sdk'; // NEW: Import Nova experien
 // Simple cache key for Nova assets
 const NOVA_ASSETS_CACHE_KEY = "nova_assets_cache";
 
+// Default sections that are always available
+const DEFAULT_SECTIONS = ['survival', 'lifesteal', 'creative', 'pvp', 'skyblock', 'prison'];
+
 // Simple cache functions
 const cacheNovaAssets = async (assets, userId) => {
   try {
@@ -373,7 +376,7 @@ const MainScreen = () => {
   useEffect(() => {
     if (!isNovaReady) {
       setNovaAssets([]);
-      setSections([]); // Also clear sections immediately
+      setSections(DEFAULT_SECTIONS); // Reset to default sections
     }
   }, [isNovaReady]);
 
@@ -383,7 +386,7 @@ const MainScreen = () => {
     if (!user) {
       // IMMEDIATE CLEAR: Clear Nova data instantly on logout
       setNovaAssets([]);
-      setSections([]);
+      setSections(DEFAULT_SECTIONS); // Reset to default sections
       setLoading(false); // Stop any loading state
       
       // Clear Nova cache immediately to prevent loading flash
@@ -418,6 +421,15 @@ const MainScreen = () => {
             tag: asset.tag || 'assets',
             isNova: false
           }));
+          
+          // If Nova has no assets, ensure all Firebase assets have valid sections
+          if (novaAssets.length === 0) {
+            normalizedAssets.forEach(asset => {
+              if (!asset.section || !DEFAULT_SECTIONS.includes(asset.section)) {
+                asset.section = 'survival'; // Assign to default section
+              }
+            });
+          }
           
           console.log('📊 Firebase Assets Force Loaded:', {
             total: normalizedAssets.length,
@@ -456,7 +468,7 @@ const MainScreen = () => {
   const [error, setError] = useState(null);
   const [gameAssets, setGameAssets] = useState([]);
   const [novaAssets, setNovaAssets] = useState([]); // NEW: Nova dashboard assets
-  const [sections, setSections] = useState([]);
+  const [sections, setSections] = useState(DEFAULT_SECTIONS); // Initialize with default sections
   const [tags, setTags] = useState(['all', 'asset', 'companion', 'keys', 'rank']); // PERMANENT tags
   const [selectedSection, setSelectedSection] = useState('all');
   const [selectedTag, setSelectedTag] = useState('all'); // NEW: Selected tag filter
@@ -573,18 +585,26 @@ const MainScreen = () => {
       });
       
       // Extract sections from Nova assets (tags are already persistent)
-      const uniqueSections = [...new Set(combinedNovaAssets.map(g => g.section).filter(Boolean))].sort();
-      
-      // Only update sections if changed
-      setSections(prevSections => {
-        const prevSectionsString = JSON.stringify(prevSections);
-        const newSectionsString = JSON.stringify(uniqueSections);
+      // Only update sections if Nova has assets, otherwise keep default sections
+      if (combinedNovaAssets.length > 0) {
+        const uniqueSections = [...new Set(combinedNovaAssets.map(g => g.section).filter(Boolean))].sort();
         
-        if (prevSectionsString !== newSectionsString) {
-          return uniqueSections;
-        }
-        return prevSections;
-      });
+        // Only update sections if changed
+        setSections(prevSections => {
+          const prevSectionsString = JSON.stringify(prevSections);
+          const newSectionsString = JSON.stringify(uniqueSections);
+          
+          if (prevSectionsString !== newSectionsString) {
+            return uniqueSections;
+          }
+          return prevSections;
+        });
+      } else {
+        // If Nova has no assets, ensure default sections are preserved
+        // This ensures Firebase assets are always displayed with proper section grouping
+        setSections(DEFAULT_SECTIONS);
+        console.log('🔄 Nova has no assets - using default sections for Firebase assets');
+      }
       
       // Tags are persistent - don't change them
       console.log('🏷️ Keeping persistent tags:', tags);
@@ -603,10 +623,19 @@ const MainScreen = () => {
       
       const normalizedAssets = assets.map(asset => ({
         ...asset,
-        section: asset.section || 'survival',
+        section: asset.section || 'survival', // Default to survival if no section
         tag: asset.tag || 'assets', // NEW: Ensure tag field exists
         isNova: false
       }));
+      
+      // If Nova has no assets, ensure all Firebase assets have valid sections
+      if (novaAssets.length === 0) {
+        normalizedAssets.forEach(asset => {
+          if (!asset.section || !DEFAULT_SECTIONS.includes(asset.section)) {
+            asset.section = 'survival'; // Assign to default section
+          }
+        });
+      }
       
       console.log('📊 Firebase Assets Loaded:', {
         total: normalizedAssets.length,
@@ -625,11 +654,18 @@ const MainScreen = () => {
       } else {
         setGameAssets(normalizedAssets);
         
-        // Extract unique sections
+        // Extract unique sections from Firebase assets
         const uniqueSections = [
           ...new Set(normalizedAssets.map((g) => g.section).filter(Boolean))
         ].sort();
-        setSections(uniqueSections);
+        
+        // If Nova has no assets, use Firebase sections or default sections
+        if (novaAssets.length === 0) {
+          // Use Firebase sections if available, otherwise use default sections
+          const finalSections = uniqueSections.length > 0 ? uniqueSections : DEFAULT_SECTIONS;
+          setSections(finalSections);
+          console.log('🏷️ Using Firebase sections or defaults:', finalSections);
+        }
         
         console.log('🏷️ Permanent tags (never change):', tags);
         console.log('📁 Sections extracted:', uniqueSections);
@@ -660,7 +696,9 @@ const MainScreen = () => {
       selectedSection, 
       selectedTag,
       firebaseCount: gameAssets.length,
-      novaCount: novaAssets.length 
+      novaCount: novaAssets.length,
+      availableSections: sections,
+      defaultSections: DEFAULT_SECTIONS
     });
     
     let filtered = [...gameAssets];
@@ -677,7 +715,7 @@ const MainScreen = () => {
     
     console.log('✅ Filtered Firebase results:', filtered.length);
     return filtered;
-  }, [gameAssets, selectedSection, selectedTag]);
+  }, [gameAssets, selectedSection, selectedTag, sections]);
 
   // NEW: Filter Nova assets based on selected tag
   const filteredNovaAssets = useMemo(() => {
@@ -695,10 +733,27 @@ const MainScreen = () => {
       gamesToGroup = gamesToGroup.filter((g) => g.tag === selectedTag);
     }
     
-    return sections.reduce((acc, section) => {
+    // Ensure we have sections to group by
+    const sectionsToUse = sections.length > 0 ? sections : DEFAULT_SECTIONS;
+    
+    console.log('📁 Grouping games by sections:', {
+      totalGames: gamesToGroup.length,
+      availableSections: sectionsToUse,
+      sectionsFromState: sections,
+      usingDefaultSections: sections.length === 0
+    });
+    
+    const grouped = sectionsToUse.reduce((acc, section) => {
       acc[section] = gamesToGroup.filter((g) => g.section === section);
       return acc;
     }, {});
+    
+    console.log('✅ Grouped games result:', Object.keys(grouped).map(section => ({
+      section,
+      count: grouped[section].length
+    })));
+    
+    return grouped;
   }, [gameAssets, sections, selectedTag]);
 
   const renderGameContent = () => {
@@ -746,30 +801,33 @@ const MainScreen = () => {
     if (hasFirebaseAssets) {
       console.log('🎯 Rendering Firebase assets:', filteredGames.length);
       
+      // Ensure we have sections to work with
+      const sectionsToRender = sections.length > 0 ? sections : DEFAULT_SECTIONS;
+      
       if (selectedSection === 'all') {
         // Show all sections
-        sections.forEach((section) => {
+        sectionsToRender.forEach((section) => {
           const sectionGames = groupedGames[section];
-          if (sectionGames.length === 0) return;
-          
-          content.push(
-            <View key={section} style={styles.sectionGroup}>
-              <SimpleSectionHeader
-                title={section.charAt(0).toUpperCase() + section.slice(1)}
-                count={sectionGames.length}
-                colors={colors}
-              />
-              <View style={styles.gamesList}>
-                {sectionGames.map((game, index) => (
-                  <AnimatedGameCard
-                    key={game.id}
-                    game={game}
-                    index={index}
-                  />
-                ))}
+          if (sectionGames && sectionGames.length > 0) {
+            content.push(
+              <View key={section} style={styles.sectionGroup}>
+                <SimpleSectionHeader
+                  title={section.charAt(0).toUpperCase() + section.slice(1)}
+                  count={sectionGames.length}
+                  colors={colors}
+                />
+                <View style={styles.gamesList}>
+                  {sectionGames.map((game, index) => (
+                    <AnimatedGameCard
+                      key={game.id}
+                      game={game}
+                      index={index}
+                    />
+                  ))}
+                </View>
               </View>
-            </View>
-          );
+            );
+          }
         });
       } else {
         // Show filtered section
