@@ -2,7 +2,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { initializeAuth, getReactNativePersistence, GoogleAuthProvider, signInWithCredential, signOut } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, collection, getDocs, updateDoc, arrayUnion, getDoc, query, orderBy, limit } from "firebase/firestore";
+import { getFirestore, doc, setDoc, collection, getDocs, updateDoc, arrayUnion, getDoc, query, orderBy, limit, addDoc, serverTimestamp, increment } from "firebase/firestore"; // ADDED addDoc/serverTimestamp/increment
 
 const firebaseConfig = {
   apiKey: "AIzaSyBeRGbmPSSpNvfHSxYvBox8XWWgTE7U7OA",
@@ -292,6 +292,45 @@ const fetchGameEvents = async () => {
   }
 };
 
+// ADDED: Deduct coins safely
+const deductUserCoins = async (email, amount) => {
+  const userRef = doc(db, 'users', email);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) throw new Error('User not found');
+  const current = snap.data().coinBalance || 0;
+  if (current < amount) throw new Error('Insufficient coins');
+  await updateDoc(userRef, { coinBalance: current - amount });
+  return current - amount;
+};
+
+// ADDED: Create ticket doc
+const createTicket = async (eventId, userEmail, formData) => {
+  const ref = await addDoc(collection(db, 'tickets'), {
+    eventId,
+    userEmail,
+    upiName: formData.upiName,
+    discordName: formData.discordName,
+    status: 'paid',
+    createdAt: serverTimestamp(),
+  });
+  return ref.id;
+};
+
+// ADDED: Increment event ticketsSold
+const incrementEventTickets = async (eventId) => {
+  const eventRef = doc(db, 'gameEvents', eventId);
+  await updateDoc(eventRef, { ticketsSold: increment(1) });
+};
+
+// ADDED: Add transaction record (top-level collection)
+const addTransaction = async (userEmail, data) => {
+  await addDoc(collection(db, 'transactions'), {
+    userEmail,
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+};
+
 export {
   auth,
   db,
@@ -310,4 +349,8 @@ export {
   getLatestNotification, // Add new export
   checkMaintenanceMode,  // NEW: Export maintenance check
   fetchGameEvents, // Add this new export
+  deductUserCoins, // ADDED
+  createTicket, // ADDED
+  incrementEventTickets, // ADDED
+  addTransaction, // ADDED
 };

@@ -7,6 +7,10 @@ import CoinBundleScreen from '../screens/CoinBundleScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 // import CheckoutScreen from '../screens/CheckoutScreen';
 import { useThemeColors } from '../screens/theme';
+// Events screens
+import EventsListScreen from '../screens/EventsListScreen';
+import EventDetailScreen from '../screens/EventDetailScreen';
+import BuyTicketScreen from '../screens/BuyTicketScreen';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +30,9 @@ const AppNavigator = () => {
       <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} />
       <Stack.Screen name="CoinBundle" component={CoinBundleScreen} />
       {/* <Stack.Screen name="Checkout" component={CheckoutScreen} /> */}
+      <Stack.Screen name="EventsList" component={EventsListScreen} />
+      <Stack.Screen name="EventDetail" component={EventDetailScreen} />
+      <Stack.Screen name="BuyTicket" component={BuyTicketScreen} />
     </Stack.Navigator>
   );
 };

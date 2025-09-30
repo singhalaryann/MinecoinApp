@@ -13,6 +13,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native'; // ADDED
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from '../components/common/Header';
@@ -314,6 +315,7 @@ const ModernEmptyState = React.memo(({ selectedSection, selectedTag, colors }) =
 // ==================== MAIN COMPONENT ====================
 
 const MainScreen = () => {
+  const navigation = useNavigation(); // ADDED
   // Get live theme colors from Nova dashboard
   const themeColors = useThemeColors();
   
@@ -910,6 +912,16 @@ const MainScreen = () => {
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* ADDED: Quick entry to PvP Events */}
+        <TouchableOpacity
+          style={{ marginHorizontal: 21, marginBottom: 16, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, shadowColor: colors.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 }}
+          onPress={() => navigation.navigate('EventsList')}
+          activeOpacity={0.85}
+        >
+          <Text style={{ color: colors.text, fontWeight: '800', fontSize: 16 }}>⚡ PvP Events</Text>
+          <Text style={{ color: colors.text + 'B3', marginTop: 4, fontSize: 12 }}>Browse and join tournaments</Text>
+        </TouchableOpacity>
+
         <ModernGamingHero
           gameCount={gameAssets.length + novaAssets.length}
           selectedSection={selectedSection}
