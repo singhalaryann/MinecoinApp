@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +14,7 @@ import { adapty } from 'react-native-adapty';
 import { createPaywallView } from '@adapty/react-native-ui';
 import { useAuth } from '../context/AuthContext';
 import { useUser } from '../context/UserContext';
-import { ArrowLeft } from 'lucide-react-native';
+import { ChevronLeft } from 'lucide-react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import Animated, {
@@ -64,7 +65,7 @@ const Toast = ({ message, visible, onHide, onComplete, colors }) => {
 const CoinBundleScreen = () => {
   const navigation = useNavigation();
   const { isLoggedIn } = useAuth();
-  const { hasMcVerified, addCoins, isUpdating } = useUser();
+  const { hasMcVerified, addCoins, isUpdating, balance } = useUser();
   const colors = useThemeColors();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -222,17 +223,36 @@ const CoinBundleScreen = () => {
         colors={colors}
       />
       
-      {/* Header with proper border */}
-      <View style={[styles.header, { 
-        borderBottomColor: colors.border,
-        borderBottomWidth: 1,
-        backgroundColor: colors.backgroundLight
-      }]}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <ArrowLeft size={24} color={colors.accent} />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: colors.accent }]}>Get Coins</Text>
-      </View>
+      {/* Custom CoinBundle Header */}
+      <SafeAreaView  style={[styles.header, { backgroundColor: colors.background }]}>
+        <LinearGradient
+          colors={[colors.backgroundLight + "FF", colors.backgroundLight + "80"]}
+          style={styles.headerGradient}
+        >
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+              <ChevronLeft size={24} color={colors.text} />
+            </TouchableOpacity>
+            
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Get Coins</Text>
+            
+            <TouchableOpacity onPress={() => navigation.navigate('CoinBundle')} style={styles.walletButton}>
+              <LinearGradient
+                colors={[colors.backgroundLight, colors.background]}
+                style={[styles.walletPill, { borderColor: colors.border }]}
+              >
+                <View style={styles.walletContent}>
+                  <Image
+                    source={require("../../assets/rupee.png")}
+                    style={styles.coinIcon}
+                  />
+                  <Text style={[styles.walletText, { color: colors.accent }]}>{balance?.toLocaleString() || "0"}</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
 
       <ScrollView
         style={styles.scrollView}
@@ -306,21 +326,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  backButton: {
-    marginRight: 16,
-    padding: 8,
-    borderRadius: 8,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-  },
+  header: { paddingBottom: 0 },
+  headerGradient: { paddingHorizontal: 16, paddingVertical: 12 },
+  headerContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  backButton: { padding: 8 },
+  headerTitle: { fontSize: 18, fontWeight: '800', flex: 1, textAlign: 'center' },
+  walletButton: { borderRadius: 20, overflow: 'hidden' },
+  walletPill: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, minWidth: 80 },
+  walletContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  walletText: { fontSize: 14, fontWeight: '700', marginLeft: 6 },
+  coinIcon: { width: 18, height: 18 },
   scrollView: {
     flex: 1,
   },

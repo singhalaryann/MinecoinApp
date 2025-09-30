@@ -100,19 +100,21 @@ const Header = ({ onProfilePress, onBackPress, title, showBack = false, showProf
               shadowColor: colors.shadow
             }]}
           >
-            <Image
-              source={require("../../../assets/rupee.png")}
-              style={styles.coinIcon}
-            />
-            {isUpdating ? (
-              <View style={styles.loaderContainer}>
-                <ActivityIndicator size="small" color={colors.accent} />
-              </View>
-            ) : (
-              <Text style={[styles.balanceText, { color: colors.accent }]}>
-                {balance?.toLocaleString() || "0"}
-              </Text>
-            )}
+            <View style={styles.walletContent}>
+              <Image
+                source={require("../../../assets/rupee.png")}
+                style={styles.coinIcon}
+              />
+              {isUpdating ? (
+                <View style={styles.loaderContainer}>
+                  <ActivityIndicator size="small" color={colors.accent} />
+                </View>
+              ) : (
+                <Text style={[styles.balanceText, { color: colors.accent }]}>
+                  {balance?.toLocaleString() || "0"}
+                </Text>
+              )}
+            </View>
             <View style={[styles.addButton, { 
               backgroundColor: colors.accent,
               shadowColor: colors.shadow
@@ -212,12 +214,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowRadius: 6,
     elevation: 4,
-    gap: 7,
+    gap: 8, // UPDATED: Better spacing between wallet content and + button
+  },
+  walletContent: { // ADDED: Container for proper alignment
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   coinIcon: {
-    width: 20,
-    height: 20,
+    width: 18, // UPDATED: Consistent with Events screens
+    height: 18, // UPDATED: Consistent with Events screens
     resizeMode: "contain",
+    marginRight: 6, // ADDED: Better spacing
   },
   loaderContainer: {
     width: 60,
@@ -225,8 +233,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   balanceText: {
-    fontSize: 17,
-    fontWeight: "800",
+    fontSize: 14, // UPDATED: Consistent with Events screens
+    fontWeight: "700", // UPDATED: Consistent with Events screens
     letterSpacing: 0.5,
   },
   addButton: {

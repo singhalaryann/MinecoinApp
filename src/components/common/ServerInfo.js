@@ -21,24 +21,51 @@ const ServerInfo = ({ visible, onClose }) => {
   const colors = useThemeColors();
   const [copiedJava, setCopiedJava] = useState(false);
   const [copiedBedrock, setCopiedBedrock] = useState(false);
+  // UPDATED: Added internal state to control animation timing
+  const [isAnimating, setIsAnimating] = useState(false);
   const [scale] = useState(new Animated.Value(0));
+  const [opacity] = useState(new Animated.Value(0));
+
+  // UPDATED: Professional animation speeds matching modern app standards
+  const handleClose = () => {
+    setIsAnimating(true);
+    // Professional closing animation - smooth but not too slow
+    Animated.parallel([
+      Animated.timing(scale, {
+        toValue: 0,
+        duration: 400, // Professional speed - smooth but responsive
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 400, // Professional speed - smooth but responsive
+        useNativeDriver: true,
+      })
+    ]).start(() => {
+      // Only call onClose after animation completes
+      setIsAnimating(false);
+      onClose();
+    });
+  };
 
   React.useEffect(() => {
     if (visible) {
-      Animated.spring(scale, {
-        toValue: 1,
-        useNativeDriver: true,
-        bounciness: 8,
-        speed: 12,
-      }).start();
-    } else {
-      Animated.timing(scale, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
+      // UPDATED: Professional opening animation - smooth and elegant
+      Animated.parallel([
+        Animated.spring(scale, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 100, // Professional spring tension
+          friction: 8,  // Professional spring friction
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 350, // Professional opening speed
+          useNativeDriver: true,
+        })
+      ]).start();
     }
-  }, [visible, scale]);
+  }, [visible, scale, opacity]);
 
   const handleCopy = async (text, type) => {
     try {
@@ -59,22 +86,25 @@ const ServerInfo = ({ visible, onClose }) => {
     }
   };
 
+  // UPDATED: Combined scale and opacity animations for smoother effect
   const animatedStyle = {
     transform: [{ scale }],
+    opacity: opacity,
   };
 
   return (
     <Modal
       animationType="none"
       transparent
-      visible={visible}
-      onRequestClose={onClose}
+      visible={visible || isAnimating}
+      onRequestClose={handleClose}
     >
-      <View style={styles.overlay}>
+      {/* UPDATED: Added animated overlay for smoother background fade effect */}
+      <Animated.View style={[styles.overlay, { opacity: opacity }]}>
         <Animated.View style={[styles.container, animatedStyle, { backgroundColor: colors.card, shadowColor: colors.shadow }]}>
           <View style={styles.header}>
             <Text style={[styles.title, { color: colors.accent }]}>Server Details</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <TouchableOpacity onPress={handleClose} style={styles.closeBtn}>
               <X size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
@@ -129,7 +159,7 @@ const ServerInfo = ({ visible, onClose }) => {
           </View>
           <View style={[styles.divider, { backgroundColor: colors.accent }]} />
         </Animated.View>
-      </View>
+      </Animated.View>
     </Modal>
   );
 };
