@@ -3,12 +3,16 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'rea
 import { useThemeColors } from './theme';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext'; // ADDED
+import { useAuth } from '../context/AuthContext';
+import { ChevronLeft } from 'lucide-react-native'; // ADDED: proper back icon
+import { useUser } from '../context/UserContext'; // ADDED: for wallet
+import { LinearGradient } from 'expo-linear-gradient'; // ADDED: for header gradient
 
 const EventDetailScreen = ({ route }) => {
   const colors = useThemeColors();
   const nav = useNavigation();
-  const { user } = useAuth(); // ADDED
+  const { user } = useAuth();
+  const { balance } = useUser(); // ADDED: for wallet display
   const { event } = route.params || {};
 
   if (!event) {
@@ -23,16 +27,35 @@ const EventDetailScreen = ({ route }) => {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={styles.content}>
-      <SafeAreaView edges={["top"]} style={[styles.header, { borderColor: colors.border, backgroundColor: colors.background }]}> 
-        <View style={styles.headerInner}> 
-          <TouchableOpacity onPress={() => nav.goBack()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={{ color: colors.text, fontWeight: '800', fontSize: 18 }}>←</Text>
-          </TouchableOpacity>
-          <Text style={{ color: colors.text, fontWeight: '800', fontSize: 16 }} numberOfLines={1}>{event.title}</Text>
-          <TouchableOpacity onPress={() => nav.navigate('CoinBundle')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={{ color: colors.accent, fontWeight: '800', fontSize: 18 }}>💰</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Custom Events Header */}
+      <SafeAreaView edges={["top"]} style={[styles.header, { backgroundColor: colors.background }]}>
+        <LinearGradient
+          colors={[colors.backgroundLight + "FF", colors.backgroundLight + "80"]}
+          style={styles.headerGradient}
+        >
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => nav.goBack()} style={styles.backButton}>
+              <ChevronLeft size={24} color={colors.text} />
+            </TouchableOpacity>
+            
+            <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>{event.title}</Text>
+            
+            <TouchableOpacity onPress={() => nav.navigate('CoinBundle')} style={styles.walletButton}>
+              <LinearGradient
+                colors={[colors.backgroundLight, colors.background]}
+                style={[styles.walletPill, { borderColor: colors.border }]}
+              >
+                <View style={styles.walletContent}>
+                  <Image
+                    source={require("../../assets/rupee.png")}
+                    style={styles.coinIcon}
+                  />
+                  <Text style={[styles.walletText, { color: colors.accent }]}>{balance?.toLocaleString() || "0"}</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
       </SafeAreaView>
 
       {event.bannerImageUrl || event.kitImageUrl ? (
@@ -79,18 +102,26 @@ const EventDetailScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16 },
-  header: { borderBottomWidth: 1, paddingVertical: 12, marginBottom: 8 },
-  headerInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: 680, alignSelf: 'center', paddingHorizontal: 16 },
-  banner: { width: '100%', height: 180, borderRadius: 12, marginBottom: 12 },
+  header: { paddingBottom: 0 },
+  headerGradient: { paddingHorizontal: 16, paddingVertical: 12 },
+  headerContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  backButton: { padding: 8 },
+  headerTitle: { fontSize: 18, fontWeight: '800', flex: 1, textAlign: 'center' },
+  walletButton: { borderRadius: 20, overflow: 'hidden' },
+  walletPill: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, minWidth: 80 }, // UPDATED: Better padding, min width for responsiveness
+  walletContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }, // ADDED: Container for proper alignment
+  walletText: { fontSize: 14, fontWeight: '700', marginLeft: 6 }, // UPDATED: Better spacing
+  coinIcon: { width: 18, height: 18 }, // UPDATED: Slightly larger icon
+  banner: { width: '100%', height: 180, borderRadius: 12, marginBottom: 12, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 16 },
   title: { fontSize: 20, fontWeight: '800', marginBottom: 6 },
   desc: { fontSize: 14, marginBottom: 12 },
-  card: { borderRadius: 12, padding: 12, borderWidth: 1, marginBottom: 16 },
+  card: { borderRadius: 12, padding: 12, borderWidth: 1, marginBottom: 16, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.15, shadowRadius: 12 },
   rowText: { fontSize: 13, fontWeight: '600', marginBottom: 6 },
   progressWrap: { height: 10, borderRadius: 6, overflow: 'hidden', marginTop: 6, marginBottom: 6 },
   progressBar: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 },
   progressFill: { position: 'absolute', left: 0, top: 0, bottom: 0 },
   progressText: { fontSize: 12, marginTop: 4, fontWeight: '600' },
-  buyBtn: { paddingVertical: 14, borderRadius: 12, alignItems: 'center', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.18, shadowRadius: 12 },
+  buyBtn: { paddingVertical: 14, borderRadius: 12, alignItems: 'center', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 16 },
   buyText: { fontSize: 16, fontWeight: '800' },
   buySub: { fontSize: 11, marginTop: 2, fontWeight: '700' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },

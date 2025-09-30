@@ -5,10 +5,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useThemeColors } from './theme';
 import { fetchGameEvents } from '../config/firebase';
+import { ChevronLeft } from 'lucide-react-native'; // ADDED: proper back icon
+import { useUser } from '../context/UserContext'; // ADDED: for wallet
 
 const EventsListScreen = ({ navigation }) => {
   const colors = useThemeColors();
   const nav = useNavigation();
+  const { balance } = useUser(); // ADDED: for wallet display
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -107,18 +110,37 @@ const EventsListScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}> 
-      {/* Header: back + wallet */}
-      <SafeAreaView edges={["top"]} style={[styles.header, { borderColor: colors.border, backgroundColor: colors.background }]}> 
-        <View style={styles.headerInner}> 
-          <TouchableOpacity onPress={() => nav.goBack()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={{ color: colors.text, fontWeight: '800', fontSize: 18 }}>←</Text>
-          </TouchableOpacity>
-          <Text style={{ color: colors.text, fontWeight: '800', fontSize: 16 }}>PvP Events</Text>
-          <TouchableOpacity onPress={() => nav.navigate('CoinBundle')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={{ color: colors.accent, fontWeight: '800', fontSize: 18 }}>💰</Text>
-          </TouchableOpacity>
-        </View>
+      {/* Custom Events Header */}
+      <SafeAreaView edges={["top"]} style={[styles.header, { backgroundColor: colors.background }]}>
+        <LinearGradient
+          colors={[colors.backgroundLight + "FF", colors.backgroundLight + "80"]}
+          style={styles.headerGradient}
+        >
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => nav.goBack()} style={styles.backButton}>
+              <ChevronLeft size={24} color={colors.text} />
+            </TouchableOpacity>
+            
+            <Text style={[styles.headerTitle, { color: colors.text }]}>PvP Events</Text>
+            
+            <TouchableOpacity onPress={() => nav.navigate('CoinBundle')} style={styles.walletButton}>
+              <LinearGradient
+                colors={[colors.backgroundLight, colors.background]}
+                style={[styles.walletPill, { borderColor: colors.border }]}
+              >
+                <View style={styles.walletContent}>
+                  <Image
+                    source={require("../../assets/rupee.png")}
+                    style={styles.coinIcon}
+                  />
+                  <Text style={[styles.walletText, { color: colors.accent }]}>{balance?.toLocaleString() || "0"}</Text>
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
       </SafeAreaView>
+      
       <FlatList
         data={events}
         keyExtractor={(item) => item.id}
@@ -133,21 +155,29 @@ const EventsListScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { borderBottomWidth: 1, paddingVertical: 12 },
-  headerInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: 680, alignSelf: 'center', paddingHorizontal: 16 },
+  header: { paddingBottom: 0 },
+  headerGradient: { paddingHorizontal: 16, paddingVertical: 12 },
+  headerContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  backButton: { padding: 8 },
+  headerTitle: { fontSize: 18, fontWeight: '800', flex: 1, textAlign: 'center' },
+  walletButton: { borderRadius: 20, overflow: 'hidden' },
+  walletPill: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, minWidth: 80 }, // UPDATED: Better padding, min width for responsiveness
+  walletContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }, // ADDED: Container for proper alignment
+  walletText: { fontSize: 14, fontWeight: '700', marginLeft: 6 }, // UPDATED: Better spacing
+  coinIcon: { width: 18, height: 18 }, // UPDATED: Slightly larger icon
   listContent: { paddingHorizontal: 16, paddingVertical: 12, width: '100%', maxWidth: 680, alignSelf: 'center' },
   card: {
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
     marginBottom: 14,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
     width: '100%',
   },
   rowTop: { flexDirection: 'row', alignItems: 'center' },
-  thumb: { width: 80, height: 60, borderRadius: 8, backgroundColor: '#111' },
+  thumb: { width: 80, height: 60, borderRadius: 8, backgroundColor: '#111', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 },
   title: { fontSize: 16, fontWeight: '800' },
   desc: { fontSize: 13, marginBottom: 10 },
@@ -161,7 +191,7 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 10, fontWeight: '800' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   retryBtn: { marginTop: 12, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 8 },
-  viewBtn: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  viewBtn: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },
   viewBtnText: { fontSize: 12, fontWeight: '800' },
 });
 
