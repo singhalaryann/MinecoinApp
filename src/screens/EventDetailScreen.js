@@ -66,7 +66,6 @@ const EventDetailScreen = ({ route }) => {
         />
       ) : null}
 
-      <Text style={[styles.title, { color: colors.text }]}>{event.title}</Text>
       <Text style={[styles.desc, { color: colors.text + 'B3' }]}>{event.description}</Text>
 
       <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
@@ -113,7 +112,6 @@ const styles = StyleSheet.create({
   walletText: { fontSize: 14, fontWeight: '700', marginLeft: 6 }, // UPDATED: Better spacing
   coinIcon: { width: 18, height: 18 }, // UPDATED: Slightly larger icon
   banner: { width: '100%', height: 180, borderRadius: 12, marginBottom: 12, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 16 },
-  title: { fontSize: 20, fontWeight: '800', marginBottom: 6 },
   desc: { fontSize: 14, marginBottom: 12 },
   card: { borderRadius: 12, padding: 12, borderWidth: 1, marginBottom: 16, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.15, shadowRadius: 12 },
   rowText: { fontSize: 13, fontWeight: '600', marginBottom: 6 },

@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from '../components/common/Header';
 import GameCard from '../components/games/GameCard';
 import NotificationBanner from '../components/common/NotificationBanner';
-import { fetchGameAssets } from '../config/firebase';
+import { fetchGameAssets, fetchGameEvents } from '../config/firebase';
 import { useUser } from '../context/UserContext';
 import { useAuth } from '../context/AuthContext';
 import { useThemeColors, colors as staticColors } from './theme';
@@ -319,6 +319,30 @@ const MainScreen = () => {
   // Get live theme colors from Nova dashboard
   const themeColors = useThemeColors();
   
+  // Animation for LIVE badge pulse
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  
+  // Start pulse animation for LIVE badge
+  useEffect(() => {
+    const pulseAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.2,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulseAnimation.start();
+    
+    return () => pulseAnimation.stop();
+  }, [pulseAnim]);
+  
   // Safety check - ensure colors are loaded before rendering
   if (!themeColors) {
     return null; // Don't render until colors are ready
@@ -475,6 +499,7 @@ const MainScreen = () => {
   const [tags, setTags] = useState(['all', 'asset', 'companion', 'keys', 'rank']); // PERMANENT tags
   const [selectedSection, setSelectedSection] = useState('all');
   const [selectedTag, setSelectedTag] = useState('all'); // NEW: Selected tag filter
+  const [events, setEvents] = useState([]); // NEW: Events data for dynamic banner
   const { balance } = useUser();
 
   // Check cache on mount
@@ -692,6 +717,23 @@ const MainScreen = () => {
     console.log('🚀 Component mounted - loading Firebase assets immediately');
     loadGameAssets();
   }, []); // Empty dependency array means this runs once on mount
+
+  // NEW: Fetch events data for dynamic banner
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        console.log('🎯 Fetching events for dynamic banner...');
+        const eventsData = await fetchGameEvents();
+        setEvents(eventsData || []);
+        console.log('✅ Events loaded:', eventsData?.length || 0, 'events');
+      } catch (error) {
+        console.error('❌ Failed to load events:', error);
+        setEvents([]);
+      }
+    };
+    
+    loadEvents();
+  }, []); // Run once on mount
 
   // NEW: Combined filtering for both section and tag
   const filteredGames = useMemo(() => {
@@ -912,14 +954,50 @@ const MainScreen = () => {
         contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ADDED: Quick entry to PvP Events */}
+        {/* HERO BANNER: Enhanced PvP Events with Live Indicators */}
         <TouchableOpacity
-          style={{ marginHorizontal: 21, marginBottom: 16, padding: 14, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, shadowColor: colors.shadow, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 }}
+          style={styles.heroBannerContainer}
           onPress={() => navigation.navigate('EventsList')}
-          activeOpacity={0.85}
+          activeOpacity={0.8}
         >
-          <Text style={{ color: colors.text, fontWeight: '800', fontSize: 16 }}>⚡ PvP Events</Text>
-          <Text style={{ color: colors.text + 'B3', marginTop: 4, fontSize: 12 }}>Browse and join tournaments</Text>
+          <LinearGradient
+            colors={[colors.accent + '20', colors.accent + '10', colors.accent + '05']}
+            style={styles.heroBannerGradient}
+          >
+            {/* Dynamic Live Indicator Badge - Only show when events exist */}
+            {events.length > 0 && (
+              <Animated.View 
+                style={[
+                  styles.liveBadge, 
+                  { 
+                    backgroundColor: colors.error,
+                    transform: [{ scale: pulseAnim }]
+                  }
+                ]}
+              >
+                <View style={[styles.livePulse, { backgroundColor: colors.white }]} />
+                <Text style={[styles.liveText, { color: colors.white }]}>LIVE</Text>
+              </Animated.View>
+            )}
+            
+            {/* Main Content */}
+            <View style={styles.heroBannerContent}>
+              <View style={styles.heroBannerCenter}>
+                <Text style={[styles.heroBannerTitle, { color: colors.accent }]}>
+                  ⚡ PvP TOURNAMENTS ⚡
+                </Text>
+                {events.length > 0 ? (
+                  <Text style={[styles.heroBannerSubtitle, { color: colors.text }]}>
+                    🏆 {events.length} Active Event{events.length !== 1 ? 's' : ''} Available 🏆
+                  </Text>
+                ) : (
+                  <Text style={[styles.heroBannerSubtitle, { color: colors.text }]}>
+                    🏆 Check Back Soon for Tournaments 🏆
+                  </Text>
+                )}
+              </View>
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
 
         <ModernGamingHero
@@ -1219,6 +1297,91 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: 40,
+  },
+
+  // Hero Banner Styles
+  heroBannerContainer: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  heroBannerGradient: {
+    padding: 20,
+    position: 'relative',
+    minHeight: 120,
+    justifyContent: 'center',
+  },
+  liveBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    zIndex: 2,
+  },
+  livePulse: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 4,
+    // Animation will be handled by CSS or Animated API
+  },
+  liveText: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  heroBannerContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroBannerCenter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  heroBannerTitle: {
+    fontSize: 24,
+    fontWeight: '900',
+    letterSpacing: 1,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  heroBannerSubtitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+    opacity: 0.9,
+    textAlign: 'center',
+  },
+  heroBannerStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  heroStatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  heroStatIcon: {
+    fontSize: 14,
+    marginRight: 4,
+  },
+  heroStatText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  heroStatDivider: {
+    width: 1,
+    height: 16,
+    marginHorizontal: 12,
+    opacity: 0.3,
   },
 });
 

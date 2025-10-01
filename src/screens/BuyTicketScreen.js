@@ -14,7 +14,7 @@ const BuyTicketScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { user } = useAuth();
-  const { balance } = useUser(); // ADDED: for wallet display
+  const { balance, updateBalance } = useUser(); // ADDED: for wallet display and balance updates
   const { eventId, priceCoins = 100 } = route.params || {};
   useEffect(() => {
     if (!user) {
@@ -44,8 +44,11 @@ const BuyTicketScreen = () => {
 
       setLoading(true);
 
-      // Deduct coins
-      await deductUserCoins(user.email, priceCoins);
+      // Deduct coins and get new balance
+      const newBalance = await deductUserCoins(user.email, priceCoins);
+      
+      // Update UserContext balance immediately for real-time UI update
+      updateBalance(newBalance);
 
       // Create ticket
       const ticketId = await createTicket(eventId, user.email, { upiName, discordName });
@@ -108,7 +111,6 @@ const BuyTicketScreen = () => {
       
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <Text style={[styles.title, { color: colors.text }]}>Buy Ticket</Text>
           <Text style={[styles.subtitle, { color: colors.text + 'B3' }]}>Coins needed: {priceCoins}</Text>
 
           <View style={[styles.field, { borderColor: colors.border, backgroundColor: colors.card }]}>
@@ -161,7 +163,6 @@ const styles = StyleSheet.create({
   walletText: { fontSize: 14, fontWeight: '700', marginLeft: 6 }, // UPDATED: Better spacing
   coinIcon: { width: 18, height: 18 }, // UPDATED: Slightly larger icon
   container: { padding: 16 },
-  title: { fontSize: 20, fontWeight: '800', marginBottom: 4 },
   subtitle: { fontSize: 13, marginBottom: 16 },
   field: { borderWidth: 1, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 12, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 8 },
   label: { fontSize: 12, marginBottom: 6, fontWeight: '600' },

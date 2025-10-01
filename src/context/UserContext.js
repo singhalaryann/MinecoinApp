@@ -853,6 +853,7 @@ const addCoins = useCallback(
         addCoins,
         subtractBalance,   // ✅ NEW
         addBalance,
+        updateBalance,     // ✅ NEW: Expose updateBalance function
         generateGiftCard,
         claimGiftCode,
         hasMcVerified,
